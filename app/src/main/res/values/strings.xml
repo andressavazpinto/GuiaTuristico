@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Guia</string>
+    <string name="sigIn">Entre</string>
+    <string name="or">ou</string>
+    <string name="signUp">Cadastre-se</string>
+    <string name="email">Email</string>
+    <string name="password">Senha</string>
+    <string name="logIn">Entrar</string>
+    <string name="forgotPass">Esqueci minha senha</string>
+    <string name="forgetPass">Esqueceu sua senha?</string>
+    <string name="messagePass">Por favor, informe seu email para enviarmos uma senha temporária</string>
+    <string name="cancel">Cancelar</string>
+    <string name="send">Enviar</string>
+</resources>

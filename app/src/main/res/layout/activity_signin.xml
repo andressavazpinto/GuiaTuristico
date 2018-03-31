@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:orientation="vertical">
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <view
+                class="android.support.v7.widget.ActionMenuView"
+                id="@+id/view"
+                layout_width="match_parent"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/actionBarHeight" />
+
+            <ImageView
+                android:id="@+id/logo"
+                android:layout_width="288dp"
+                android:layout_height="178dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:layout_marginRight="@dimen/activity_vertical_margin"
+                app:srcCompat="@mipmap/logo"
+
+                />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="@dimen/activity_horizontal_margin"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:layout_marginRight="@dimen/activity_vertical_margin"
+                android:layout_marginTop="@dimen/activity_horizontal_margin"
+                android:orientation="vertical">
+
+                <view
+                    class="android.support.v7.widget.ActionMenuView"
+                    id="view"
+                    layout_width="match_parent"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/actionBarHeight" />
+
+                <Button
+                    android:id="@+id/buttonSignIn"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/button_height"
+                    android:layout_weight="1"
+                    android:background="@color/buttonColor"
+                    android:text="@string/sigIn"
+                    android:textAllCaps="true"
+                    android:textColor="@color/textButton"
+                    android:onClick="onSigInClicked"/>
+
+                <TextView
+                    android:id="@+id/textOr"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="@string/or"
+                    android:textAllCaps="false"
+                    android:textColor="@color/textColor" />
+
+                <Button
+                    android:id="@+id/buttonSignUp"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/button_height"
+                    android:layout_weight="1"
+                    android:background="@color/buttonColor"
+                    android:text="@string/signUp"
+                    android:textAllCaps="true"
+                    android:textColor="@color/textButton"
+                    android:onClick="onSigUpClicked"/>
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>

@@ -81,13 +81,10 @@
 
                 <Button
                     android:id="@+id/buttonLogin"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/button_height"
                     android:layout_weight="1"
-                    android:background="@color/buttonColor"
+                    android:background="@drawable/pattern_button"
                     android:text="@string/logIn"
-                    android:textAllCaps="true"
-                    android:textColor="@color/textButton"
+                    style="@style/patternButton"
                     android:layout_marginTop="10dp"
                     android:layout_marginBottom="10dp"/>
 

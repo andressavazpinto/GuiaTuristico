@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#003f63</color>
-    <color name="colorPrimaryDark">#000000</color> //cor da barra superior do celular
+    <color name="colorPrimary">#026097</color>
+    <color name="colorPrimaryDark">#003f63</color> //cor da barra superior do celular
     <color name="colorAccent">#1a1a1a</color> //cor do ponto de inserção
 
     <color name="background">#FFFFFF</color>

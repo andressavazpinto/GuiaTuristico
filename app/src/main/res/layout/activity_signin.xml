@@ -53,13 +53,10 @@
 
                 <Button
                     android:id="@+id/buttonSignIn"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/button_height"
                     android:layout_weight="1"
-                    android:background="@color/buttonColor"
+                    android:background="@drawable/pattern_button"
+                    style="@style/patternButton"
                     android:text="@string/sigIn"
-                    android:textAllCaps="true"
-                    android:textColor="@color/textButton"
                     android:onClick="onSigInClicked"/>
 
                 <TextView
@@ -76,13 +73,10 @@
 
                 <Button
                     android:id="@+id/buttonSignUp"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/button_height"
                     android:layout_weight="1"
-                    android:background="@color/buttonColor"
+                    android:background="@drawable/pattern_button"
                     android:text="@string/signUp"
-                    android:textAllCaps="true"
-                    android:textColor="@color/textButton"
+                    style="@style/patternButton"
                     android:onClick="onSigUpClicked"/>
             </LinearLayout>
 

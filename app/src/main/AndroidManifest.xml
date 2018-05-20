@@ -17,5 +17,9 @@
         </activity>
         <activity android:name="com.tcc.guiaturistico.activity.LoginActivity"
                   android:windowSoftInputMode="stateHidden"/> //faz com que o teclado não venha aberto ao iniciar a activity
+        <activity android:name="com.tcc.guiaturistico.activity.RegisterActivity"
+            android:windowSoftInputMode="stateHidden"/>
     </application>
+
+    <uses-permission android:name="android.permission.INTERNET" />
 </manifest>

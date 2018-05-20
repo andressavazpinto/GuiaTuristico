@@ -11,4 +11,10 @@
     <string name="messagePass">Por favor, informe seu email para enviarmos uma senha temporária</string>
     <string name="cancel">Cancelar</string>
     <string name="send">Enviar</string>
+    <string name="name">Nome</string>
+    <string name="dateOfBirth">Data de nascimento</string>
+    <string name="occupation">Ocupação</string>
+    <string name="language">Idioma</string>
+    <string name="localization">Localização</string>
+    <string name="toContinue">Continuar</string>
 </resources>

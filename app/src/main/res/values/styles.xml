@@ -15,5 +15,12 @@
         <item name="android:textAllCaps">true</item>
     </style>
 
+    <style name="patternSmallButton">
+        <item name="android:layout_width">@dimen/small_button_width</item>
+        <item name="android:layout_height">@dimen/button_height</item>
+        <item name="android:textColor">@color/textButton</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
 
 </resources>

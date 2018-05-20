@@ -27,20 +27,24 @@ public class MainActivity extends AppCompatActivity {
         buttonSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                abrirLogin();
+                openLogin();
+            }
+        });
+        buttonSignUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openRegister();
             }
         });
     }
 
-    public void abrirLogin(){
+    public void openLogin(){
         Intent intent = new Intent(MainActivity.this, LoginActivity.class);
         startActivity(intent);
     }
 
-    /*public void cadastrar(View view){
-        Intent intent = new Intent(MainActivity.this, CadastroActivity.class);
+    public void openRegister(){
+        Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
         startActivity(intent);
-    }*/
-
-
+    }
 }

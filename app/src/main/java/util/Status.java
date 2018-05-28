@@ -5,5 +5,5 @@ package util;
  */
 
 public enum Status {
-    Ativo, Denunciado, Inativo
+    Active, Reported, Inactive
 }

@@ -21,12 +21,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/actionBarHeight" />
 
-            <view
-                android:id="@+id/view3"
-                class="android.support.v7.widget.ActionMenuView"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/actionBarHeight" />
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -41,12 +35,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:background="@android:color/transparent"
                     android:gravity="center|left"
                     android:ems="10"
                     android:hint="@string/name"
-                    android:inputType="textPersonName"
                     android:textSize="16sp"
+                    android:layout_marginTop="10dp"
                     android:textColor="@color/textColor" />
 
                 <EditText
@@ -54,11 +47,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:background="@android:color/transparent"
                     android:gravity="center|left"
                     android:ems="10"
                     android:hint="@string/dateOfBirth"
-                    android:inputType="date"
+                    android:inputType="number"
                     android:textSize="16sp"
                     android:layout_marginTop="10dp"
                     android:textColor="@color/textColor"/>
@@ -68,7 +60,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:background="@android:color/transparent"
                     android:gravity="center|left"
                     android:ems="10"
                     android:hint="@string/email"
@@ -82,7 +73,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:background="@android:color/transparent"
                     android:gravity="center|left"
                     android:layout_marginTop="10dp"
                     android:ems="10"
@@ -96,7 +86,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:background="@android:color/transparent"
                     android:gravity="center|left"
                     android:ems="10"
                     android:hint="@string/occupation"
@@ -104,39 +93,34 @@
                     android:layout_marginTop="10dp"
                     android:textColor="@color/textColor" />
 
-                <EditText
-                    android:id="@+id/editTextLanguage"
+                <!-- android:id="@+id/editTextLanguage" -->
+                <Spinner
+                    android:id="@+id/spinnerLanguage"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:background="@android:color/transparent"
                     android:gravity="center|left"
                     android:ems="10"
-                    android:hint="@string/language"
+                    android:spinnerMode="dialog"
+                    android:prompt="@string/language"
                     android:textSize="16sp"
                     android:layout_marginTop="10dp"
-                    android:textColor="@color/textColor" />
+                    android:drawSelectorOnTop="false"
+                    style="@style/spinner_style"
+                    android:textColor="@color/textColor"
+                    />
 
                 <EditText
                     android:id="@+id/editTextLocalization"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:background="@android:color/transparent"
                     android:gravity="center|left"
                     android:ems="10"
                     android:hint="@string/localization"
                     android:textSize="16sp"
                     android:layout_marginTop="10dp"
-                    android:layout_marginBottom="15dp"
                     android:textColor="@color/textColor" />
-
-
-                <view
-                    android:id="@+id/view4"
-                    class="android.support.v7.widget.ActionMenuView"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/actionBarHeight" />
 
                 <Button
                     android:id="@+id/buttonContinue"
@@ -144,7 +128,7 @@
                     android:background="@drawable/pattern_button"
                     android:text="@string/toContinue"
                     style="@style/patternSmallButton"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="25dp"
                     android:layout_marginBottom="10dp"
                     android:layout_gravity="right"/>
 

@@ -12,6 +12,8 @@ import android.widget.Button;
 
 import com.tcc.guiaturistico.R;
 
+import service.QuickstartSample;
+
 public class MainActivity extends AppCompatActivity {
 
     Button buttonSignUp, buttonSignIn;

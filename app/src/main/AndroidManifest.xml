@@ -36,7 +36,9 @@
             android:windowSoftInputMode="stateHidden"/>
         <activity
             android:name="com.tcc.guiaturistico.activity.InterestsActivity"
-            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden"/>
+        <activity
+            android:name="com.tcc.guiaturistico.activity.ProfileActivity"
             android:windowSoftInputMode="stateHidden"/>
     </application>
 

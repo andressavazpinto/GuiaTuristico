@@ -84,7 +84,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     public void register() {
-        Gson g = new GsonBuilder().registerTypeAdapter(User.class, new Deserializable())
+        /*Gson g = new GsonBuilder().registerTypeAdapter(User.class, new Deserializable())
                 .setLenient()
                 .create();
 
@@ -127,8 +127,6 @@ public class RegisterActivity extends AppCompatActivity {
                     u.setIdUser(Integer.parseInt(response.body().toString()));
                     System.out.print("Id: " + u.getIdUser());
 
-                    //ESSA MENSAGEM TEM QUE SER PEGA PELO @STRINGS
-                    Toast.makeText(getApplicationContext(), "Cadastrado com sucesso", Toast.LENGTH_LONG).show();
                     openInterests();
                 }
             }
@@ -139,9 +137,9 @@ public class RegisterActivity extends AppCompatActivity {
                 Log.e(TAG, aux);
                 Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
             }
-        });
-        //openInterests();
-        openHome();
+        });*/
+        openInterests();
+        //openHome();
     }
 
     public void openHome(){

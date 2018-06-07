@@ -1,5 +1,6 @@
 package com.tcc.guiaturistico.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -92,7 +93,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         if (id == R.id.nav_profile) {
-            // Handle the camera action
+            openProfile();
         } else if (id == R.id.nav_guide) {
 
         } else if (id == R.id.nav_settings) {
@@ -102,11 +103,18 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_changeInterests) {
 
         } else if (id == R.id.nav_logout) {
-
+            //fechar sessão
+            startActivity(new Intent(this, LoginActivity.class));  //O efeito ao ser pressionado do botão (no caso abre a activity)
+            finishAffinity();
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void openProfile(){
+        Intent intent = new Intent(HomeActivity.this, ProfileActivity.class);
+        startActivity(intent);
     }
 }

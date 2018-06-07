@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <view
+                android:id="@+id/view2"
+                class="android.support.v7.widget.ActionMenuView"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/actionBarHeight" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="@dimen/activity_horizontal_margin"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:layout_marginRight="@dimen/activity_vertical_margin"
+                android:layout_marginTop="@dimen/activity_horizontal_margin"
+                android:orientation="vertical">
+
+                <EditText
+                    android:id="@+id/editTextName"
+                    style="@style/editText_style"
+                    android:hint="@string/name" />
+
+                <EditText
+                    android:id="@+id/editTextDateOfBirth"
+                    android:hint="@string/dateOfBirth"
+                    android:inputType="number"
+                    style="@style/editText_style" />
+
+                <EditText
+                    android:id="@+id/editTextUserEmail"
+                    android:hint="@string/email"
+                    android:inputType="textEmailAddress"
+                    style="@style/editTextEmailPass_style"/>
+
+                <EditText
+                    android:id="@+id/editTextPassword"
+                    android:hint="@string/password"
+                    android:inputType="textPassword"
+                    style="@style/editTextEmailPass_style"/>
+
+                <EditText
+                    android:id="@+id/editTextOccupation"
+                    android:hint="@string/occupation"
+                    style="@style/editText_style" />
+
+                <!-- android:id="@+id/editTextLanguage" -->
+                <Spinner
+                    android:id="@+id/spinnerLanguage"
+                    android:spinnerMode="dialog"
+                    android:prompt="@string/language"
+                    android:drawSelectorOnTop="false"
+                    style="@style/spinner_style"
+                    />
+
+                <EditText
+                    android:id="@+id/editTextLocalization"
+                    android:hint="@string/localization"
+                    style="@style/editText_style" />
+
+                <Button
+                    android:id="@+id/buttonSave"
+                    android:layout_weight="1"
+                    android:background="@drawable/pattern_button"
+                    android:text="@string/save"
+                    style="@style/patternButton"
+                    android:layout_marginTop="25dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_gravity="end"/>
+
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

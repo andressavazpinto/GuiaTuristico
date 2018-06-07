@@ -27,6 +27,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import service.InterestService;
 import util.DBHelper;
+import util.Message;
 
 /**
  * Created by Andressa on 27/05/2018.
@@ -51,7 +52,7 @@ public class InterestsActivity extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); //Mostrar o botão
         getSupportActionBar().setHomeButtonEnabled(true);      //Ativar o botão
-        getSupportActionBar().setTitle("");     //Titulo para ser exibido na sua Action Bar em frente à seta
+        getSupportActionBar().setTitle(Message.interests);     //Titulo para ser exibido na sua Action Bar em frente à seta
 
         listInterests();
 

@@ -1,6 +1,7 @@
 package service;
 
 import model.User;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import util.Url;
 import retrofit2.Call;
@@ -25,4 +26,7 @@ public interface UserService {
 
     @POST("users/login")
     Call<User> login(@Body User user);
+
+    @PUT("users/{id}")
+    Call<User> update(@Body User user);
 }

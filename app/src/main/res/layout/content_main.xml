@@ -23,8 +23,9 @@
                 android:id="@+id/imageView4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/home_top1"
+                app:srcCompat="@mipmap/ic_launcher"
                 android:scaleType="centerCrop" />
+                <!--app:srcCompat="@drawable/home_top1"-->
         </RelativeLayout>
 
         <include layout="@layout/layout_middle_home" />
@@ -39,10 +40,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
-                app:srcCompat="@drawable/home_bottom1"
-                android:scaleType="centerCrop"/>
+                app:srcCompat="@mipmap/ic_launcher"
+                android:scaleType="centerCrop" />
+                <!--app:srcCompat="@drawable/home_bottom1"!-->
         </RelativeLayout>
-
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

@@ -66,7 +66,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void login() {
-        editTextUserEmail = findViewById(R.id.editTextUserEmail);
+        /*editTextUserEmail = findViewById(R.id.editTextUserEmail);
         editTextPassword = findViewById(R.id.editTextPassword);
 
         Gson g = new GsonBuilder().registerTypeAdapter(User.class, new Deserializable())
@@ -118,7 +118,6 @@ public class LoginActivity extends AppCompatActivity {
 
                         User user = dbHelper.getUser();
                         Log.i("DadosDoCara", user.toString());
-                        Toast.makeText(getApplicationContext(), "Login realizado", Toast.LENGTH_LONG).show();
                         openHome();
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -134,7 +133,8 @@ public class LoginActivity extends AppCompatActivity {
                 Log.e(TAG, aux);
                 Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
             }
-        });
+        });*/
+        openHome();
     }
 
     public void openHome(){

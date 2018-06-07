@@ -9,4 +9,7 @@
     <color name="textButton">#FFFFFF</color>
     <color name="buttonColor">#343F4B</color>
 
+    <color name="textItem">#343F4B</color>
+    <color name="backgroundNav">#000000</color>
+
 </resources>

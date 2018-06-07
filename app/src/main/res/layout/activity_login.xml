@@ -47,29 +47,21 @@
 
                 <EditText
                     android:id="@+id/editTextUserEmail"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center|left"
-                    android:ems="10"
                     android:hint="@string/email"
                     android:inputType="textEmailAddress"
-                    android:textSize="16sp"
-                    android:textColor="@color/textColor"/>
+                    style="@style/editTextEmailPass_style"/>
 
                 <EditText
                     android:id="@+id/editTextPassword"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center|left"
-                    android:layout_marginBottom="15dp"
-                    android:layout_marginTop="10dp"
-                    android:ems="10"
+                    style="@style/editTextEmailPass_style"
                     android:hint="@string/password"
-                    android:inputType="textPassword"
-                    android:textSize="16sp"
-                    android:textColor="@color/textColor"/>
+                    android:inputType="textPassword" />
+
+                <view
+                    android:id="@+id/view24"
+                    class="android.support.v7.widget.ActionMenuView"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/actionBarHeight" />
 
                 <Button
                     android:id="@+id/buttonLogin"
@@ -77,7 +69,6 @@
                     android:background="@drawable/pattern_button"
                     android:text="@string/logIn"
                     style="@style/patternButton"
-                    android:layout_marginTop="10dp"
                     android:layout_marginBottom="10dp"/>
 
                 <TextView

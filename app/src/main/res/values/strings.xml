@@ -26,7 +26,16 @@
     <string name="cooking">Culinária</string>
     <string name="culture">Cultura</string>
     <string name="sport">Esporte</string>
-    <string name="style">Moda</string>
+
+    <string name="profile">Perfil</string>
+    <string name="guide">Guia</string>
+    <string name="settings">Configurações</string>
+    <string name="chats">Conversas</string>
+    <string name="changeInterests">Alterar interesses</string>
+    <string name="logout">Sair</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
 
 
     <string-array name="list_languages">

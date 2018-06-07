@@ -6,7 +6,8 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        style="@style/patternMargin">
 
         <TextView
             android:id="@+id/textView"
@@ -14,32 +15,23 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/messagePass"
-            android:layout_marginBottom="@dimen/activity_horizontal_margin"
-            android:layout_marginLeft="@dimen/activity_vertical_margin"
-            android:layout_marginRight="@dimen/activity_vertical_margin"
-            android:layout_marginTop="@dimen/activity_horizontal_margin"
-            android:textSize="16sp"/>
-
+            android:textSize="16sp"
+            />
     </RelativeLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_marginBottom="@dimen/activity_horizontal_margin"
+        android:layout_marginLeft="@dimen/activity_vertical_margin"
+        android:layout_marginRight="@dimen/activity_vertical_margin">
 
         <EditText
-            android:id="@+id/editTextUserEmail2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:ems="10"
-            android:gravity="center|left"
+            android:id="@+id/editTextUserEmail"
             android:hint="@string/email"
             android:inputType="textEmailAddress"
-            android:textColor="@color/textColor"
-            android:layout_marginLeft="@dimen/activity_vertical_margin"
-            android:layout_marginRight="@dimen/activity_vertical_margin"
-            android:textSize="16sp" />
+            style="@style/editText_style"/>
+
     </LinearLayout>
 </LinearLayout>

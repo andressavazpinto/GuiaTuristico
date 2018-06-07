@@ -1,18 +1,13 @@
 package com.tcc.guiaturistico.activity;
 
-import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,7 +19,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import model.User;
-import model.UserDes;
+import model.Deserializable;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -71,10 +66,10 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void login() {
-        editTextUserEmail = (EditText) findViewById(R.id.editTextUserEmail);
-        editTextPassword = (EditText) findViewById(R.id.editTextPassword);
+        editTextUserEmail = findViewById(R.id.editTextUserEmail);
+        editTextPassword = findViewById(R.id.editTextPassword);
 
-        Gson g = new GsonBuilder().registerTypeAdapter(User.class, new UserDes())
+        Gson g = new GsonBuilder().registerTypeAdapter(User.class, new Deserializable())
                 .setLenient()
                 .create();
 
@@ -104,6 +99,9 @@ public class LoginActivity extends AppCompatActivity {
                 else {
                     try {
                         JSONObject jsonUser = new JSONObject(new Gson().toJson(response.body()));
+
+                        System.out.println(response.body());
+
                         u.setIdUser(jsonUser.getInt("idUser"));
                         u.setName(jsonUser.getString("name"));
                         u.setDateOfBirth(jsonUser.getString("dateOfBirth"));
@@ -142,5 +140,6 @@ public class LoginActivity extends AppCompatActivity {
     public void openHome(){
         Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
         startActivity(intent);
+        finishAffinity();
     }
 }

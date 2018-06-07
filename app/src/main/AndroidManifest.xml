@@ -21,21 +21,22 @@
         </activity>
         <activity
             android:name="com.tcc.guiaturistico.activity.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name="com.tcc.guiaturistico.activity.LoginActivity"
+            android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden"/> //faz com que o teclado não venha aberto ao iniciar a activity
         <activity
             android:name="com.tcc.guiaturistico.activity.RegisterActivity"
             android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name="com.tcc.guiaturistico.activity.LanguageActivity"
-            android:windowSoftInputMode="stateHidden"/>
-        <activity
             android:name="com.tcc.guiaturistico.activity.HomeActivity"
+            android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden"/>
         <activity
             android:name="com.tcc.guiaturistico.activity.InterestsActivity"
+            android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden"/>
     </application>
 

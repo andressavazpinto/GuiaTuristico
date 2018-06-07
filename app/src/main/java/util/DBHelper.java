@@ -9,7 +9,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import model.User;
-import util.Status;
 
 /**
  * Created by Andressa on 26/05/2018.
@@ -65,7 +64,6 @@ public class DBHelper extends SQLiteOpenHelper {
         cv.put("statusAccount", u.getStatusAccount().toString());
 
         db.insert("user", null, cv);
-
         db.close();
     }
 
@@ -82,7 +80,7 @@ public class DBHelper extends SQLiteOpenHelper {
             u.setIdUser(c.getInt(0));
             u.setName(c.getString(1));
 
-            String array[] = new String[3];
+            String array[];
             array = c.getString(2).toString().split("-");
             String aux = array[2]+"/"+array[1]+"/"+array[0];
             u.setDateOfBirth(aux);
@@ -95,6 +93,7 @@ public class DBHelper extends SQLiteOpenHelper {
             u.setStatusAccount(Enum.valueOf(Status.class, c.getString(8)));
         }
 
+        db.close();
         return u;
     }
 }

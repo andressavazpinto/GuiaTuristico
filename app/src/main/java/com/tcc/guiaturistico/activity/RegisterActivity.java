@@ -18,7 +18,7 @@ import com.google.gson.GsonBuilder;
 import com.tcc.guiaturistico.R;
 
 import model.User;
-import model.UserDes;
+import model.Deserializable;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -34,7 +34,7 @@ import util.Status;
 
 public class RegisterActivity extends AppCompatActivity {
     private static final String TAG = "Error";
-    public EditText editTextName, editTextDateOfBirth, editTextUserEmail, editTextPassword, editTextOccupation, editTextLocalization, editTextLanguage;
+    public EditText editTextName, editTextDateOfBirth, editTextUserEmail, editTextPassword, editTextOccupation, editTextLocalization;
     public Spinner spinnerLanguage;
     public Button buttonRegister;
 
@@ -48,16 +48,15 @@ public class RegisterActivity extends AppCompatActivity {
             StrictMode.setThreadPolicy(policy);
         }
 
-        editTextName = (EditText) findViewById(R.id.editTextName);
+        editTextName = findViewById(R.id.editTextName);
 
-        editTextDateOfBirth = (EditText) findViewById(R.id.editTextDateOfBirth);
+        editTextDateOfBirth = findViewById(R.id.editTextDateOfBirth);
         editTextDateOfBirth.addTextChangedListener(Mask.insert(Mask.FORMAT_DATE, editTextDateOfBirth));
 
-        editTextUserEmail = (EditText) findViewById(R.id.editTextUserEmail);
-        editTextPassword = (EditText) findViewById(R.id.editTextPassword);
-        editTextOccupation = (EditText) findViewById(R.id.editTextOccupation);
+        editTextUserEmail = findViewById(R.id.editTextUserEmail);
+        editTextPassword = findViewById(R.id.editTextPassword);
+        editTextOccupation = findViewById(R.id.editTextOccupation);
 
-        //editTextLanguage = (EditText) findViewById(R.id.editTextLanguage);
         //String[] list_languages = getResources().getStringArray(R.array.list_languages);
 
         spinnerLanguage = findViewById(R.id.spinnerLanguage);
@@ -69,38 +68,23 @@ public class RegisterActivity extends AppCompatActivity {
 
         //pegar o idioma do celular spinnerLanguage.setSelection();
 
-        editTextLocalization = (EditText) findViewById(R.id.editTextLocalization);
-
-        /*editTextLanguage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                selectLanguage();
-            }
-        });*/
+        editTextLocalization = findViewById(R.id.editTextLocalization);
 
         buttonRegister = findViewById(R.id.buttonContinue);
-
         buttonRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 register();
             }
         });
-
     }
 
     public String selectLanguage() {
         return (String) spinnerLanguage.getSelectedItem();
     }
 
-    /*public void selectLanguage () {
-        Intent intent = new Intent(this, LanguageActivity.class);
-        startActivity(intent);
-    }*/
-
     public void register() {
-
-        Gson g = new GsonBuilder().registerTypeAdapter(User.class, new UserDes())
+        Gson g = new GsonBuilder().registerTypeAdapter(User.class, new Deserializable())
                 .setLenient()
                 .create();
 
@@ -114,7 +98,7 @@ public class RegisterActivity extends AppCompatActivity {
         final User u = new User();
         u.setName(editTextName.getText().toString());
 
-        String array[] = new String[3];
+        String array[];
         array = editTextDateOfBirth.getText().toString().split("/");
         String aux = array[2]+"-"+array[1]+"-"+array[0];
         u.setDateOfBirth(aux);
@@ -156,10 +140,19 @@ public class RegisterActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
             }
         });
+        //openInterests();
+        openHome();
+    }
+
+    public void openHome(){
+        Intent intent = new Intent(RegisterActivity.this, HomeActivity.class);
+        startActivity(intent);
+        finishAffinity();
     }
 
     private void openInterests() {
         Intent intent = new Intent(RegisterActivity.this, InterestsActivity.class);
+
         startActivity(intent);
     }
 }

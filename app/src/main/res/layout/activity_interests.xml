@@ -1,19 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginBottom="@dimen/activity_horizontal_margin"
-        android:layout_marginLeft="@dimen/activity_vertical_margin"
-        android:layout_marginRight="@dimen/activity_vertical_margin"
-        android:layout_marginTop="@dimen/activity_horizontal_margin">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    style="@style/patternMargin">
 
         <view
-            android:id="@+id/view2"
+            android:id="@+id/view20"
             class="android.support.v7.widget.ActionMenuView"
             android:layout_width="match_parent"
             android:layout_height="@dimen/actionBarHeight" />
@@ -28,47 +21,21 @@
             android:layout_marginBottom="10dp"
             android:gravity="center"/>
 
-        <CheckBox
-            android:id="@+id/checkBoxArt"
+        <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ListView
+            android:id="@+id/linear_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/art" />
+            android:layout_height="match_parent"
+            android:orientation="vertical"></ListView>
+        </ScrollView>
 
         <CheckBox
-            android:id="@+id/checkBoxCooking"
+            android:id="@+id/checkBoxInterest"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/cooking" />
-
-        <CheckBox
-            android:id="@+id/checkBoxCulture"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/culture" />
-
-        <CheckBox
-            android:id="@+id/checkBoxSport"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/sport" />
-
-        <CheckBox
-            android:id="@+id/checkBoxStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/style" />
-
-        <CheckBox
-            android:id="@+id/checkBoxLanguage"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/language" />
+            android:layout_marginTop="10dp" />
 
         <view
             android:id="@+id/view2"
@@ -84,8 +51,7 @@
             style="@style/patternSmallButton"
             android:layout_marginTop="25dp"
             android:layout_marginBottom="10dp"
-            android:layout_gravity="right"/>
+            android:layout_gravity="end"
+            android:layout_height="0dp"/>
 
-    </LinearLayout>
-
-</RelativeLayout>
+</LinearLayout>

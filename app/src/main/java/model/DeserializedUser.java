@@ -12,7 +12,7 @@ import java.lang.reflect.Type;
  * Created by Andressa on 19/05/2018.
  */
 
-public class Deserializable implements JsonDeserializer {
+public class DeserializedUser implements JsonDeserializer {
 
     @Override
     public Object deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {

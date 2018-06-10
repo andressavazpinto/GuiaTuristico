@@ -18,14 +18,15 @@ import com.tcc.guiaturistico.R;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import model.DeserializedUser;
 import model.User;
-import model.Deserializable;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import service.UserService;
+import util.DBController;
 import util.DBHelper;
 import util.Status;
 
@@ -38,14 +39,21 @@ public class LoginActivity extends AppCompatActivity {
     EditText editTextUserEmail, editTextPassword;
     TextView textForgetPass;
     Button buttonLogin;
-    DBHelper dbHelper;
+    DBController crud;
+    User u;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        dbHelper = new DBHelper(this);
+        //crud = new DBController(getBaseContext());
+        try {
+            crud = new DBController(this);
+        } catch (Exception e) {
+            System.out.println("não criou o banco");
+        }
+        u = new User();
 
         buttonLogin = findViewById(R.id.buttonLogin);
         buttonLogin.setOnClickListener(new View.OnClickListener() {
@@ -66,10 +74,10 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void login() {
-        /*editTextUserEmail = findViewById(R.id.editTextUserEmail);
+        editTextUserEmail = findViewById(R.id.editTextUserEmail);
         editTextPassword = findViewById(R.id.editTextPassword);
 
-        Gson g = new GsonBuilder().registerTypeAdapter(User.class, new Deserializable())
+        Gson g = new GsonBuilder().registerTypeAdapter(User.class, new DeserializedUser())
                 .setLenient()
                 .create();
 
@@ -79,8 +87,6 @@ public class LoginActivity extends AppCompatActivity {
                 .build();
 
         UserService service = retrofit.create(UserService.class);
-
-        final User u = new User();
 
         u.setEmail(editTextUserEmail.getText().toString());
         u.setPassword(editTextPassword.getText().toString());
@@ -92,11 +98,11 @@ public class LoginActivity extends AppCompatActivity {
             public void onResponse(Call<User> call, Response<User> response) {
                 String aux;
                 if(!response.isSuccessful()) {
-                    aux = "Erro: " + (response.code());
+                    aux = "Deu falha no sucesso: " + (response.code());
                     Log.i(TAG, aux);
                     Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
                 }
-                else {
+                else if(response.isSuccessful()) {
                     try {
                         JSONObject jsonUser = new JSONObject(new Gson().toJson(response.body()));
 
@@ -114,31 +120,39 @@ public class LoginActivity extends AppCompatActivity {
 
                         //FAZER ESSE MESMO PROCESSO APÓS CADASTRO, ALIÁS NO CADASTRO DEVE-SE RETORNAR OS DADOS DO USUÁRIO
                         //registrar os dados do user no bd interno do app
-                        dbHelper.insertUser(u);
+                        try {
+                            crud.insertUser(u);
+                            //User user = crud.getUser();
+                            //System.out.println("Usuário logado:" + user.toString());
+                        } catch(Exception e) {
+                            e.printStackTrace();
+                        }
 
-                        User user = dbHelper.getUser();
-                        Log.i("DadosDoCara", user.toString());
                         openHome();
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
                     System.out.print("Id: " + u.getIdUser());
                 }
             }
 
             @Override
             public void onFailure(Call<User> call, Throwable t) {
-                String aux = " Erro: " + t.getMessage();
+                String aux = " Deu falha no login: " + t.getMessage();
                 Log.e(TAG, aux);
                 Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
             }
-        });*/
+        });
         openHome();
     }
 
     public void openHome(){
         Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+
+        intent.putExtra("name", u.getName());
+        intent.putExtra("localization", u.getLocalization());
+
         startActivity(intent);
         finishAffinity();
     }

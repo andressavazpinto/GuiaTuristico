@@ -15,9 +15,6 @@ import android.widget.TextView;
 
 import com.tcc.guiaturistico.R;
 
-import model.User;
-import util.DBHelper;
-
 /**
  * Created by Andressa on 27/05/2018.
  */
@@ -26,33 +23,38 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     public Button buttonRamdom, buttonByRegion;
     public TextView nameNavHeader, localizationNavHeader;
-    DBHelper dbHelper;
+    View headerView;
+    NavigationView navigationView;
+    Toolbar toolbar;
+    DrawerLayout drawer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        dbHelper = new DBHelper(this);
+        // Obtém a referência do layout de navegação
+        navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        // Obtém a referência da view de cabeçalho
+        headerView = navigationView.getHeaderView(0);
+
+        // Obtém a referência do nome do usuário e altera seu nome
+        nameNavHeader = headerView.findViewById(R.id.nameNavHeader);
+        nameNavHeader.setText(getIntent().getStringExtra("name")); //pegando o que foi passado pela activity anterior
+
+        localizationNavHeader = headerView.findViewById(R.id.localizationNavHeader);
+        localizationNavHeader.setText(getIntent().getStringExtra("localization"));
+
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        nameNavHeader = findViewById(R.id.nameNavHeader);
-        localizationNavHeader = findViewById(R.id.localizationNavHeader);
-
-        //User u = dbHelper.getUser();
-        //nameNavHeader.setText(u.getName());
-        //localizationNavHeader.setText(u.getLocalization());
 
         buttonByRegion = findViewById(R.id.buttonByRegion);
         buttonRamdom = findViewById(R.id.buttonRamdom);
@@ -79,6 +81,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
+
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -90,6 +93,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
+
         int id = item.getItemId();
 
         if (id == R.id.nav_profile) {

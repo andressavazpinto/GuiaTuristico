@@ -3,14 +3,28 @@ package com.tcc.guiaturistico.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.tcc.guiaturistico.R;
 
+import model.DeserializedUser;
+import model.User;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import service.UserService;
+import util.DBController;
 import util.Message;
 
 /**
@@ -21,11 +35,18 @@ public class ProfileActivity extends AppCompatActivity {
 
     Button buttonSave;
     public Spinner spinnerLanguage;
+    public EditText editTextName, editTextDateOfBirth, editTextEmail, editTextPassword, editTextOccupation, editTextLocalization;
+    DBController crud;
+    User user;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+
+        crud = new DBController(this);
+        user = crud.getUser();
+        read(user.getIdUser()); //carrega na tela os dados do usuário
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); //Mostrar o botão
         getSupportActionBar().setHomeButtonEnabled(true);      //Ativar o botão
@@ -58,8 +79,62 @@ public class ProfileActivity extends AppCompatActivity {
         return true;
     }
 
+    public void read(int id) {
+
+        Gson g = new GsonBuilder().registerTypeAdapter(User.class, new DeserializedUser())
+                .setLenient()
+                .create();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(UserService.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create(g))
+                .build();
+
+        UserService service = retrofit.create(UserService.class);
+
+        Call<User> requestUsuario = service.read(id);
+        requestUsuario.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                if(!response.isSuccessful())
+                    Log.i("erro", "Deu erro: " + response.code());
+                else {
+                    User u = response.body();
+
+                    editTextName = findViewById(R.id.editTextName);
+                    editTextDateOfBirth = findViewById(R.id.editTextDateOfBirth);
+                    editTextEmail = findViewById(R.id.editTextUserEmail);
+                    editTextPassword = findViewById(R.id.editTextPassword);
+                    editTextOccupation = findViewById(R.id.editTextOccupation);
+                    editTextLocalization = findViewById(R.id.editTextLocalization);
+
+                    editTextName.setText(u.getName());
+
+                    String array[];
+                    array = u.getDateOfBirth().split("-");
+                    String aux = array[2]+"/"+array[1]+"/"+array[0];
+                    editTextDateOfBirth.setText(aux);
+
+                    editTextEmail.setText(u.getEmail());
+                    //editTextPassword
+                    editTextOccupation.setText(u.getOccupation());
+                    editTextLocalization.setText(u.getLocalization());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                Log.e("erro", "Deu ruim: " + t.getMessage());
+            }
+        });
+    }
+
+    public String selectLanguage() {
+        return (String) spinnerLanguage.getSelectedItem();
+    }
+
     public void update() {
-        /*Gson g = new GsonBuilder().registerTypeAdapter(User.class, new Deserializable())
+        Gson g = new GsonBuilder().registerTypeAdapter(User.class, new DeserializedUser())
                 .setLenient()
                 .create();
 
@@ -71,6 +146,8 @@ public class ProfileActivity extends AppCompatActivity {
         UserService service = retrofit.create(UserService.class);
 
         final User u = new User();
+
+        u.setIdUser(user.getIdUser());
         u.setName(editTextName.getText().toString());
 
         String array[];
@@ -78,40 +155,37 @@ public class ProfileActivity extends AppCompatActivity {
         String aux = array[2]+"-"+array[1]+"-"+array[0];
         u.setDateOfBirth(aux);
 
-        u.setEmail(editTextUserEmail.getText().toString());
+        u.setEmail(editTextEmail.getText().toString());
         u.setPassword(editTextPassword.getText().toString());
         u.setOccupation(editTextOccupation.getText().toString());
-
         u.setLanguage(selectLanguage());
-
         u.setLocalization(editTextLocalization.getText().toString());
-        u.setStatusAccount(Status.Active);
 
-        Call<Integer> requestUser = service.update(u);
+        Call<User> requestUser = service.update(u);
 
-        requestUser.enqueue(new Callback<Integer>() {
+        requestUser.enqueue(new Callback<User>() {
             @Override
-            public void onResponse(Call<Integer> call, Response<Integer> response) {
+            public void onResponse(Call<User> call, Response<User> response) {
                 String aux;
                 if(!response.isSuccessful()) {
                     aux = "Erro: " + (response.code());
-                    Log.i(TAG, aux);
+                    Log.i("erro", aux);
                     Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
                 }
-                else {
-                    //ESSA MENSAGEM TEM QUE SER PEGA PELO @STRINGS
+                else if(response.isSuccessful()) {
+                    User us = response.body();
+                    crud.updateUser(us);
+                    System.out.println(us.toString());
                     Toast.makeText(getApplicationContext(), Message.saveProfile, Toast.LENGTH_LONG).show();
-                    //finish();
-                    finishAffinity();
                 }
             }
 
             @Override
-            public void onFailure(Call<Integer> call, Throwable t) {
+            public void onFailure(Call<User> call, Throwable t) {
                 String aux = " Erro: " + t.getMessage();
-                Log.e(TAG, aux);
+                Log.e("erro", aux);
                 Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
             }
-        });*/
+        });
     }
 }

@@ -27,6 +27,6 @@ public interface UserService {
     @POST("users/login")
     Call<User> login(@Body User user);
 
-    @PUT("users/{id}")
+    @PUT("users")
     Call<User> update(@Body User user);
 }

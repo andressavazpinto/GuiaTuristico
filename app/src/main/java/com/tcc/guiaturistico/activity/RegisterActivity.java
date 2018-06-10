@@ -18,7 +18,6 @@ import com.google.gson.GsonBuilder;
 import com.tcc.guiaturistico.R;
 
 import model.User;
-import model.Deserializable;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -84,7 +83,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     public void register() {
-        /*Gson g = new GsonBuilder().registerTypeAdapter(User.class, new Deserializable())
+        /*Gson g = new GsonBuilder().registerTypeAdapter(User.class, new DeserializedUser())
                 .setLenient()
                 .create();
 

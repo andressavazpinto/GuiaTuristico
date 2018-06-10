@@ -17,7 +17,7 @@ import model.User;
 public class DBHelper extends SQLiteOpenHelper {
 
     public static final String BASE_NAME = "DBApp";
-    public static final int BASE_VERSION = 1;
+    public static final int BASE_VERSION = 2;
 
     public DBHelper(Context context) {
         super(context, BASE_NAME, null, BASE_VERSION);
@@ -25,7 +25,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        String sqlCreateTableUser = "CREATE TABLE user("
+        String sqlCreateTableUser = "CREATE TABLE IF NOT EXISTS user("
                                 + 	"idUser INTEGER NOT NULL, "
                                 +   "name VARCHAR(140) NOT NULL, "
                                 +   "dateOfBirth DATE NOT NULL, "
@@ -43,57 +43,7 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
         String sqlDropTableUser = "DROP TABLE user";
-
         sqLiteDatabase.execSQL(sqlDropTableUser);
-
         onCreate(sqLiteDatabase);
-    }
-
-    public void insertUser(User u) {
-        SQLiteDatabase db = getWritableDatabase();
-
-        ContentValues cv = new ContentValues();
-        cv.put("idUser", u.getIdUser());
-        cv.put("name", u.getName());
-        cv.put("dateOfBirth", u.getDateOfBirth());
-        cv.put("language", u.getLanguage());
-        cv.put("occupation", u.getOccupation());
-        cv.put("email", u.getEmail());
-        cv.put("password", u.getPassword());
-        cv.put("localization", u.getLocalization());
-        cv.put("statusAccount", u.getStatusAccount().toString());
-
-        db.insert("user", null, cv);
-        db.close();
-    }
-
-    public User getUser() {
-        User u = new User();
-
-        SQLiteDatabase db = getReadableDatabase();
-
-        String sqlGetUser = "SELECT * FROM user";
-
-        Cursor c = db.rawQuery(sqlGetUser, null);
-
-        if(c.moveToFirst()) {
-            u.setIdUser(c.getInt(0));
-            u.setName(c.getString(1));
-
-            String array[];
-            array = c.getString(2).toString().split("-");
-            String aux = array[2]+"/"+array[1]+"/"+array[0];
-            u.setDateOfBirth(aux);
-
-            u.setLanguage(c.getString(3));
-            u.setOccupation(c.getString(4));
-            u.setEmail(c.getString(5));
-            u.setPassword(c.getString(6));
-            u.setLocalization(c.getString(7));
-            u.setStatusAccount(Enum.valueOf(Status.class, c.getString(8)));
-        }
-
-        db.close();
-        return u;
     }
 }

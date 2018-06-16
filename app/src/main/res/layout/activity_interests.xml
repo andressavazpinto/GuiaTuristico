@@ -1,9 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     style="@style/patternMargin">
+
+    <include layout="@layout/progress_bar"/>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <view
+                class="android.support.v7.widget.ActionMenuView"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/actionBarHeight" />
+        <TextView
+            android:id="@+id/textViewCheckInterests"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/checkInterests"
+            android:visibility="gone"
+            android:textSize="18sp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:gravity="center"/>
+
+            <view
+                android:id="@+id/view2"
+                class="android.support.v7.widget.ActionMenuView"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/actionBarHeight" />
+                <LinearLayout
+                    android:id="@+id/linearCheck"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                </LinearLayout>
 
         <view
             android:id="@+id/view20"
@@ -11,47 +48,16 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/actionBarHeight" />
 
-        <TextView
-            android:id="@+id/textViewCheckInterests"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/checkInterests"
-            android:textSize="18sp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:gravity="center"/>
-
-        <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <ListView
-            android:id="@+id/linear_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"></ListView>
-        </ScrollView>
-
-        <CheckBox
-            android:id="@+id/checkBoxInterest"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp" />
-
-        <view
-            android:id="@+id/view2"
-            class="android.support.v7.widget.ActionMenuView"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/actionBarHeight" />
-
         <Button
             android:id="@+id/buttonContinue"
             android:layout_weight="1"
-            android:background="@drawable/pattern_button"
+            android:background="@drawable/selector_button"
             android:text="@string/toContinue"
             style="@style/patternSmallButton"
+            android:visibility="gone"
             android:layout_marginTop="25dp"
             android:layout_marginBottom="10dp"
-            android:layout_gravity="end"
-            android:layout_height="0dp"/>
-
-</LinearLayout>
+            android:layout_gravity="end" />
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

@@ -50,7 +50,7 @@
                 <Button
                     android:id="@+id/buttonSignIn"
                     android:layout_weight="1"
-                    android:background="@drawable/pattern_button"
+                    android:background="@drawable/selector_button"
                     style="@style/patternButton"
                     android:text="@string/sigIn"
                     android:onClick="onSigInClicked"/>
@@ -70,7 +70,7 @@
                 <Button
                     android:id="@+id/buttonSignUp"
                     android:layout_weight="1"
-                    android:background="@drawable/pattern_button"
+                    android:background="@drawable/selector_button"
                     android:text="@string/signUp"
                     style="@style/patternButton"
                     android:onClick="onSigUpClicked"/>

@@ -4,12 +4,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
-import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -20,13 +20,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import model.Interest;
+import model.InterestDeserializer;
+import model.UserInterest;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import service.InterestService;
-import util.DBHelper;
+import service.UserInterestService;
+import util.DBController;
 import util.Message;
 
 /**
@@ -35,62 +38,71 @@ import util.Message;
 
 public class InterestsActivity extends AppCompatActivity {
 
-    CheckBox[] checkBoxInterest;
-    Button buttonContinue;
-    DBHelper dbHelper;
+    private CheckBox[] checkBoxInterest;
+    private Button buttonContinue;
+    private DBController crud;
     private static final String TAG = "Error";
-    int array[];
-    ArrayList<Interest> interests;
-    Interest interest;
-    
+    private ArrayList<Interest> interests;
+    private ArrayList<Interest> selectedInterests;
+    private LinearLayout linearLayout;
+    private ProgressBar spinner;
+    private TextView textViewCheckInterests;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_interests);
 
-        dbHelper = new DBHelper(this);
+        crud = new DBController(this);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true); //Mostrar o botão
-        getSupportActionBar().setHomeButtonEnabled(true);      //Ativar o botão
-        getSupportActionBar().setTitle(Message.interests);     //Titulo para ser exibido na sua Action Bar em frente à seta
+        getSupportActionBar().setTitle(Message.interests);
 
+        linearLayout = findViewById(R.id.linearCheck);
+
+        spinner = findViewById(R.id.progressBar);
+        textViewCheckInterests = findViewById(R.id.textViewCheckInterests);
+
+        selectedInterests = new ArrayList<Interest>();
         listInterests();
 
         buttonContinue = findViewById(R.id.buttonContinue);
-        /*buttonContinue.setOnClickListener(new View.OnClickListener() {
+        buttonContinue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //registerInterests();
+                spinner.setVisibility(View.VISIBLE);
+                registerInterests();
             }
-        });*/
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) { //Botão adicional na ToolBar
-        switch (item.getItemId()) {
-            case android.R.id.home:  //ID do seu botão (gerado automaticamente pelo android, usando como está, deve funcionar
-                startActivity(new Intent(this, LoginActivity.class));  //O efeito ao ser pressionado do botão (no caso abre a activity)
-                finishAffinity();  //Método para matar a activity e não deixa-lá indexada na pilhagem
-                break;
-            default:break;
-        }
-        return true;
+        });
     }
 
     private void listInterests(List<Interest> list) {
         this.interests = (ArrayList<Interest>) list;
-        System.out.println("dentro do lisInterests" + this.interests.toString());
+        checkBoxInterest = new CheckBox[list.size()];
 
-        checkBoxInterest = new CheckBox[1];
-        checkBoxInterest[0] = findViewById(R.id.checkBoxInterest);
+        if (list.size() > 0) {
+            int i=0;
+            do {
+                final int j = i;
+                CheckBox checkBox = new CheckBox(this);
+                checkBox.setTextColor(getResources().getColor(R.color.textItem));
+                checkBox.setTextSize(16);
+                checkBox.setText(list.get(j).getName());
+                checkBox.setId(list.get(j).getIdInterest());
+                checkBox.setPadding(16,16,16,16);
 
-        ListView layout = (ListView) findViewById(R.id.linear_view);
-        checkBoxInterest[0].setText(interests.get(0).getName());
-        layout.addView((View)checkBoxInterest[0]);
+                linearLayout.addView(checkBox);
+                checkBoxInterest[i] = checkBox;
+                i++;
+            } while(i<list.size());
+        }
+        textViewCheckInterests.setVisibility(View.VISIBLE);
+        buttonContinue.setVisibility(View.VISIBLE);
+        spinner.setVisibility(View.GONE);
     }
 
     private void listInterests() {
-        System.out.println("entrou em listIntesrests()");
+        spinner.setVisibility(View.VISIBLE);
+
         Gson g = new GsonBuilder()
                 .setLenient()
                 .create();
@@ -101,7 +113,6 @@ public class InterestsActivity extends AppCompatActivity {
                 .build();
 
         InterestService service = retrofit.create(InterestService.class);
-        //final Interest i = new Interest();
 
         Call<List<Interest>> requestInterest = service.list();
 
@@ -116,20 +127,13 @@ public class InterestsActivity extends AppCompatActivity {
                     System.out.println("sem sucesso");
                 }
                 else {
-                    System.out.println("entrou no else de listInterests()");
-
                     List<Interest> output = response.body();
-                    //for(Interest i : output)
-                        //output.add(i);
-
                     listInterests(output);
-                    System.out.println("antes da chamada do retorno list " + interests.toString());
                 }
             }
 
             @Override
             public void onFailure(Call<List<Interest>> call, Throwable t) {
-                System.out.println("de falha no listIntesrests()");
                 String aux = " Erro: " + t.getMessage();
                 Log.e(TAG, aux);
                 Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
@@ -137,7 +141,8 @@ public class InterestsActivity extends AppCompatActivity {
         });
     }
 
-    /*private void registerInterests() {
+    private void registerInterests() {
+        select();
 
         Gson g = new GsonBuilder().registerTypeAdapter(UserInterest.class, new InterestDeserializer())
                 .setLenient()
@@ -150,44 +155,73 @@ public class InterestsActivity extends AppCompatActivity {
 
         UserInterestService service = retrofit.create(UserInterestService.class);
 
+        for(int i = 0; i<selectedInterests.size(); i++) {
 
-        for(int i = 0; i<interests.size(); i++) {
             final UserInterest userInterest = new UserInterest();
-            //userInterest.setIdUser(<>);
-            //userInterest.setIdInterest(<>);
+            userInterest.setIdUser(crud.getUser().getIdUser());
+            userInterest.setIdInterest(selectedInterests.get(i).getIdInterest());
+            System.out.println(userInterest.toString());
 
             Call<Integer> requestUser = service.insert(userInterest);
 
-        requestUser.enqueue(new Callback<Interest() {
-            @Override
-            public void onResponse(Call<Interest> call, Response<Interest> response) {
-                String aux;
-                if(!response.isSuccessful()) {
-                    aux = "Erro: " + (response.code());
-                    Log.i(TAG, aux);
+            requestUser.enqueue(new Callback<Integer>() {
+                @Override
+                public void onResponse(Call<Integer> call, Response<Integer> response) {
+                    String aux;
+                    if(!response.isSuccessful()) {
+                        aux = "Erro: " + (response.code());
+                        Log.i(TAG, aux);
+                        Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
+                    }
+                    else {
+                        Toast.makeText(getApplicationContext(), "Cadastrado com sucesso", Toast.LENGTH_LONG).show();
+
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Integer> call, Throwable t) {
+                    String aux = " Erro: " + t.getMessage();
+                    Log.e(TAG, aux);
                     Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
                 }
-                else {
-
-                    //ESSA MENSAGEM TEM QUE SER PEGA PELO @STRINGS
-                    Toast.makeText(getApplicationContext(), "Cadastrado com sucesso", Toast.LENGTH_LONG).show();
-                    openHome();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Interest> call, Throwable t) {
-                String aux = " Erro: " + t.getMessage();
-                Log.e(TAG, aux);
-                Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
-            }
-        });
+            });
         }
+        openHome();
     }
 
     public void openHome(){
-        Intent intent = new Intent(InterestsActivity.this, HomeActivity.class);
+        Intent intent = new Intent(this, HomeActivity.class);
+        intent.putExtra("name", crud.getUser().getName());
+        intent.putExtra("localization", crud.getUser().getLocalization());
         startActivity(intent);
         finishAffinity();
-    }*/
+    }
+
+    public void select() {
+        for (int i = 0; i < interests.size(); i++) {
+            int idInterest = interests.get(i).getIdInterest();
+            if (checkBoxInterest[i].isChecked()) {
+            //insert
+                if (!selectedInterests.contains(idInterest)) {
+                    Interest in = new Interest(idInterest, null);
+                    selectedInterests.add(in);
+                }
+            } else {
+            //delete
+                if (selectedInterests.contains(idInterest)) {
+                    Interest in = new Interest(idInterest, null);
+                    selectedInterests.remove(in);
+                }
+            }
+            if (selectedInterests.contains(idInterest)) {
+                checkBoxInterest[i].setChecked(true);
+            } else {
+                checkBoxInterest[i].setChecked(false);
+            }
+        }
+        System.out.println(selectedInterests.toString());
+    }
 }
+
+

@@ -1,13 +1,20 @@
 package com.tcc.guiaturistico.activity;
 
+import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,7 +25,7 @@ import com.tcc.guiaturistico.R;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import model.DeserializedUser;
+import model.UserDeserializer;
 import model.User;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -27,7 +34,6 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import service.UserService;
 import util.DBController;
-import util.DBHelper;
 import util.Status;
 
 /**
@@ -36,48 +42,54 @@ import util.Status;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "Error";
-    EditText editTextUserEmail, editTextPassword;
-    TextView textForgetPass;
-    Button buttonLogin;
-    DBController crud;
-    User u;
+    private EditText editTextUserEmail, editTextPassword;
+    private TextView textForgetPass;
+    private ProgressBar spinner;
+    private Button buttonLogin;
+    private DBController crud;
+    private User u;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        //crud = new DBController(getBaseContext());
-        try {
-            crud = new DBController(this);
-        } catch (Exception e) {
-            System.out.println("não criou o banco");
-        }
+        crud = new DBController(this);
         u = new User();
+
+        spinner = findViewById(R.id.progressBar);
+
+        editTextUserEmail = findViewById(R.id.editTextUserEmail);
+        editTextPassword = findViewById(R.id.editTextPassword);
 
         buttonLogin = findViewById(R.id.buttonLogin);
         buttonLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                login();
+                InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+                if (imm.isActive()) {
+                    imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+                }
+                if(validateFields()) {
+                    spinner.setVisibility(View.VISIBLE);
+                    login();
+                }
             }
         });
+
 
         textForgetPass =  findViewById(R.id.textForgotPass);
         textForgetPass.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DialogFragment d = new DialogForgotPassActivity();
+                DialogFragment d = new DialogForgotPass();
                 d.show(getFragmentManager(), "esqueceu");
             }
         });
     }
 
     public void login() {
-        editTextUserEmail = findViewById(R.id.editTextUserEmail);
-        editTextPassword = findViewById(R.id.editTextPassword);
-
-        Gson g = new GsonBuilder().registerTypeAdapter(User.class, new DeserializedUser())
+        Gson g = new GsonBuilder().registerTypeAdapter(User.class, new UserDeserializer())
                 .setLenient()
                 .create();
 
@@ -118,17 +130,13 @@ public class LoginActivity extends AppCompatActivity {
                         u.setLocalization(jsonUser.getString("localization"));
                         u.setStatusAccount(Enum.valueOf(Status.class, jsonUser.getString("statusAccount")));
 
-                        //FAZER ESSE MESMO PROCESSO APÓS CADASTRO, ALIÁS NO CADASTRO DEVE-SE RETORNAR OS DADOS DO USUÁRIO
-                        //registrar os dados do user no bd interno do app
                         try {
                             crud.insertUser(u);
-                            //User user = crud.getUser();
-                            //System.out.println("Usuário logado:" + user.toString());
+                            openHome();
                         } catch(Exception e) {
                             e.printStackTrace();
                         }
 
-                        openHome();
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -144,7 +152,7 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
             }
         });
-        openHome();
+        spinner.setVisibility(View.GONE);
     }
 
     public void openHome(){
@@ -155,5 +163,22 @@ public class LoginActivity extends AppCompatActivity {
 
         startActivity(intent);
         finishAffinity();
+    }
+
+    public boolean validateFields() {
+        Boolean aux = true;
+        if(editTextUserEmail.getText().length() == 0 | !editTextUserEmail.getText().toString().contains("@")){
+            editTextUserEmail.setBackground(ContextCompat.getDrawable(LoginActivity.this, R.drawable.shape_line_error));
+            aux = false;
+        }
+        else
+            editTextUserEmail.setBackground(ContextCompat.getDrawable(LoginActivity.this, R.drawable.shape_line_success));
+        if(editTextPassword.getText().length() == 0){
+            editTextPassword.setBackground(ContextCompat.getDrawable(LoginActivity.this, R.drawable.shape_line_error));
+            aux = false;
+        }
+        else
+            editTextPassword.setBackground(ContextCompat.getDrawable(LoginActivity.this, R.drawable.shape_line_success));
+        return aux;
     }
 }

@@ -58,12 +58,7 @@ public class DBController {
     public User getUser() {
         User u = new User();
         String[] colums = new String[]{"idUser", "name", "dateOfBirth", "language", "occupation", "email", "localization", "statusAccount"};
-        //Cursor cursor = db.query("user", colums, "idUser = ?", new String[]{""+u.getIdUser()}, null, null, null);
         Cursor cursor = db.query("user", colums, null, null, null, null, null);
-
-        //db = helper.getReadableDatabase();
-        //String sqlGetUser = "SELECT * FROM user";
-        //Cursor c = db.rawQuery(sqlGetUser, null);
 
         if(cursor.getCount() > 0) {
             cursor.moveToNext();
@@ -73,20 +68,18 @@ public class DBController {
                 u.setName(cursor.getString(1));
 
                 String array[];
-                array = cursor.getString(2).toString().split("-");
+                array = cursor.getString(2).split("-");
                 String aux = array[2]+"/"+array[1]+"/"+array[0];
                 u.setDateOfBirth(aux);
 
                 u.setLanguage(cursor.getString(3));
                 u.setOccupation(cursor.getString(4));
                 u.setEmail(cursor.getString(5));
-                u.setPassword(cursor.getString(6));
-                u.setLocalization(cursor.getString(7));
+                u.setLocalization(cursor.getString(6));
                 u.setStatusAccount(Enum.valueOf(Status.class, "Active"));
             } while(cursor.moveToNext());
         }
-
-        //db.close();
+        cursor.close();
         return u;
     }
 }

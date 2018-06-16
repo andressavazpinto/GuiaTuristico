@@ -27,12 +27,12 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         String sqlCreateTableUser = "CREATE TABLE IF NOT EXISTS user("
                                 + 	"idUser INTEGER NOT NULL, "
-                                +   "name VARCHAR(140) NOT NULL, "
-                                +   "dateOfBirth DATE NOT NULL, "
-                                +   "language VARCHAR(200) NOT NULL, "
-                                +   "occupation VARCHAR(200) NOT NULL, "
-                                +   "email VARCHAR(300) NOT NULL, "
-                                +   "password VARCHAR (300) NOT NULL, "
+                                +   "name VARCHAR(140), "// NOT NULL, "
+                                +   "dateOfBirth DATE, "// NOT NULL, "
+                                +   "language VARCHAR(200), "// NOT NULL, "
+                                +   "occupation VARCHAR(200), "// NOT NULL, "
+                                +   "email VARCHAR(300), "// NOT NULL, "
+                                +   "password VARCHAR (300), "// NOT NULL, "
                                 +   "localization VARCHAR(300), "
                                 +   "statusAccount VARCHAR(50), "
                                 +   "PRIMARY KEY(idUser))";

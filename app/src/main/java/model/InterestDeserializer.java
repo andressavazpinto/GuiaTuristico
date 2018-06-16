@@ -9,18 +9,18 @@ import com.google.gson.JsonParseException;
 import java.lang.reflect.Type;
 
 /**
- * Created by Andressa on 19/05/2018.
+ * Created by Andressa on 10/06/2018.
  */
 
-public class DeserializedUser implements JsonDeserializer {
+public class InterestDeserializer  implements JsonDeserializer {
 
     @Override
     public Object deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         JsonElement element = json.getAsJsonObject();
 
-        if(json.getAsJsonObject() != null)
+        if (json.getAsJsonObject() != null)
             element = json.getAsJsonObject();
 
-        return (new Gson().fromJson(element, User.class));
+        return (new Gson().fromJson(element, Interest.class));
     }
 }

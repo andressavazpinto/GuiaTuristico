@@ -6,6 +6,7 @@
     android:background="@color/background"
     android:orientation="vertical">
 
+    <include layout="@layout/progress_bar"/>
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -66,7 +67,7 @@
                 <Button
                     android:id="@+id/buttonLogin"
                     android:layout_weight="1"
-                    android:background="@drawable/pattern_button"
+                    android:background="@drawable/selector_button"
                     android:text="@string/logIn"
                     style="@style/patternButton"
                     android:layout_marginBottom="10dp"/>
@@ -86,5 +87,4 @@
 
         </LinearLayout>
     </ScrollView>
-
 </RelativeLayout>

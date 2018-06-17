@@ -57,7 +57,7 @@ public class ProfileActivity extends AppCompatActivity {
         read(user.getIdUser()); //carrega na tela os dados do usuário
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
+        //getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setTitle(Message.profile);
 
         spinnerLanguage = findViewById(R.id.spinnerLanguage);
@@ -74,6 +74,7 @@ public class ProfileActivity extends AppCompatActivity {
         editTextLocalization = findViewById(R.id.editTextLocalization);
 
         buttonSave = findViewById(R.id.buttonSave);
+        buttonSave.setVisibility(View.VISIBLE);
         buttonSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

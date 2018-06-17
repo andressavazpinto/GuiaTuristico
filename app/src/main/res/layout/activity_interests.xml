@@ -49,16 +49,16 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/actionBarHeight" />
 
-        <Button
-            android:id="@+id/buttonContinue"
-            android:layout_weight="1"
-            android:background="@drawable/selector_button"
-            android:text="@string/toContinue"
-            style="@style/patternSmallButton"
-            android:visibility="gone"
-            android:layout_marginTop="25dp"
-            android:layout_marginBottom="10dp"
-            android:layout_gravity="end" />
+            <Button
+                android:id="@+id/buttonSave"
+                android:layout_weight="1"
+                android:background="@drawable/selector_button"
+                android:text="@string/save"
+                style="@style/patternButton"
+                android:layout_marginTop="25dp"
+                android:layout_marginBottom="10dp"
+                android:visibility="gone"
+                android:layout_gravity="end"/>
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>

@@ -17,11 +17,12 @@
     <string name="language">Idioma</string>
     <string name="localization">Localização</string>
     <string name="toContinue">Continuar</string>
+    <string name="ok">OK</string>
     <string name="meetCulture">Conheça outra cultura</string>
     <string name="toStart">Para começar, busque um guia</string>
     <string name="ramdom">Aleatório</string>
     <string name="byRegion">Por região</string>
-    <string name="checkInterests">Marque alguns de seus interesses</string>
+    <string name="checkInterests">Marque seus interesses</string>
     <string name="art">Arte</string>
     <string name="cooking">Culinária</string>
     <string name="culture">Cultura</string>

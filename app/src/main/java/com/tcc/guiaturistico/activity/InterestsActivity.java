@@ -39,7 +39,7 @@ import util.Message;
 public class InterestsActivity extends AppCompatActivity {
 
     private CheckBox[] checkBoxInterest;
-    private Button buttonContinue;
+    private Button buttonSave;
     private DBController crud;
     private static final String TAG = "Error";
     private ArrayList<Interest> interests;
@@ -68,12 +68,15 @@ public class InterestsActivity extends AppCompatActivity {
         //listar os interesses conforme retorno do bd
         listInterests();
 
-        buttonContinue = findViewById(R.id.buttonContinue);
-        buttonContinue.setOnClickListener(new View.OnClickListener() {
+        buttonSave = findViewById(R.id.buttonSave);
+        buttonSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 spinner.setVisibility(View.VISIBLE);
-                registerInterests();
+                if(hasInterests)
+                    updateInterests();
+                else
+                    registerInterests();
             }
         });
     }
@@ -103,11 +106,10 @@ public class InterestsActivity extends AppCompatActivity {
         //checa se o usuário possui interesses marcados
         //fazer um if?
         readUserInterests();
-            //deleteByUser(crud.getUser().getIdUser());
 
         textViewCheckInterests.setVisibility(View.VISIBLE);
         linearLayout.setVisibility(View.VISIBLE);
-        buttonContinue.setVisibility(View.VISIBLE);
+        buttonSave.setVisibility(View.VISIBLE);
         spinner.setVisibility(View.GONE);
     }
 
@@ -287,7 +289,9 @@ public class InterestsActivity extends AppCompatActivity {
     }
 
     //PAREI AQUI
-    public void deleteByUser() {
+    public void updateInterests() {
+        selectInterests();
+
         Gson g = new GsonBuilder()
                 .setLenient()
                 .create();
@@ -299,11 +303,20 @@ public class InterestsActivity extends AppCompatActivity {
 
         UserInterestService service = retrofit.create(UserInterestService.class);
 
-        Call<List<UserInterest>> requestInterest = service.listByUser(crud.getUser().getIdUser());
+        List<UserInterest> userInterests = new ArrayList<UserInterest>();
 
-        requestInterest.enqueue(new Callback<List<UserInterest>>() {
+        for(int i = 0; i<selectedInterests.size(); i++) {
+            final UserInterest ui = new UserInterest();
+            ui.setIdUser(crud.getUser().getIdUser());
+            ui.setIdInterest(selectedInterests.get(i).getIdInterest());
+            userInterests.add(ui);
+        }
+        System.out.println("interesses selecionados " + userInterests.toString());
+        Call<Void> requestInterest = service.update(crud.getUser().getIdUser(), userInterests);
+
+        requestInterest.enqueue(new Callback<Void>() {
             @Override
-            public void onResponse(Call<List<UserInterest>> call, Response<List<UserInterest>> response) {
+            public void onResponse(Call<Void> call, Response<Void> response) {
                 String aux;
                 if(!response.isSuccessful()) {
                     aux = "Erro: " + (response.code());
@@ -312,21 +325,18 @@ public class InterestsActivity extends AppCompatActivity {
                     System.out.println("sem sucesso");
                 }
                 else {
-                    List<UserInterest> output = response.body();
-                    if(output.size() > 0) {
-                        hasInterests = true;
-                        checkInterests(output);
-                    }
+                    Toast.makeText(getApplicationContext(), Message.saveProfile, Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
-            public void onFailure(Call<List<UserInterest>> call, Throwable t) {
+            public void onFailure(Call<Void> call, Throwable t) {
                 String aux = " Erro: " + t.getMessage();
                 Log.e(TAG, aux);
                 Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
             }
         });
+        openHome();
     }
 }
 

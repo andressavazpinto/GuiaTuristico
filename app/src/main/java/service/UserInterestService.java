@@ -8,6 +8,7 @@ import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import util.Url;
 
@@ -27,4 +28,8 @@ public interface UserInterestService {
 
     @GET("users/interests/{idUser}")
     Call<List<UserInterest>> listByUser(@Path("idUser") int idUser);
+
+    @PUT("users/interests/{idUser}")
+    Call<Void> update(@Path("idUser") int idUser, @Body List<UserInterest> userInterests);
+
 }

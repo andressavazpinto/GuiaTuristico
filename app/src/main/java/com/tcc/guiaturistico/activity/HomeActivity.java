@@ -105,7 +105,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_chats) {
 
         } else if (id == R.id.nav_changeInterests) {
-
+            openChangeInterests();
         } else if (id == R.id.nav_logout) {
             //fechar sessão
             startActivity(new Intent(this, LoginActivity.class));  //O efeito ao ser pressionado do botão (no caso abre a activity)
@@ -119,6 +119,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     public void openProfile(){
         Intent intent = new Intent(HomeActivity.this, ProfileActivity.class);
+        startActivity(intent);
+    }
+
+    public void openChangeInterests(){
+        Intent intent = new Intent(HomeActivity.this, InterestsActivity.class);
         startActivity(intent);
     }
 }

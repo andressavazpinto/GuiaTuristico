@@ -47,6 +47,7 @@ public class InterestsActivity extends AppCompatActivity {
     private LinearLayout linearLayout;
     private ProgressBar spinner;
     private TextView textViewCheckInterests;
+    private Boolean hasInterests;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -63,6 +64,8 @@ public class InterestsActivity extends AppCompatActivity {
         textViewCheckInterests = findViewById(R.id.textViewCheckInterests);
 
         selectedInterests = new ArrayList<Interest>();
+        hasInterests = false;
+        //listar os interesses conforme retorno do bd
         listInterests();
 
         buttonContinue = findViewById(R.id.buttonContinue);
@@ -75,27 +78,35 @@ public class InterestsActivity extends AppCompatActivity {
         });
     }
 
+    //infla a tela conforme retorno da API
     private void listInterests(List<Interest> list) {
         this.interests = (ArrayList<Interest>) list;
-        checkBoxInterest = new CheckBox[list.size()];
+        checkBoxInterest = new CheckBox[interests.size()];
 
-        if (list.size() > 0) {
+        if (interests.size() > 0) {
             int i=0;
             do {
                 final int j = i;
                 CheckBox checkBox = new CheckBox(this);
                 checkBox.setTextColor(getResources().getColor(R.color.textItem));
                 checkBox.setTextSize(16);
-                checkBox.setText(list.get(j).getName());
-                checkBox.setId(list.get(j).getIdInterest());
+                checkBox.setText(interests.get(j).getName());
+                checkBox.setId(interests.get(j).getIdInterest());
                 checkBox.setPadding(16,16,16,16);
 
                 linearLayout.addView(checkBox);
                 checkBoxInterest[i] = checkBox;
                 i++;
-            } while(i<list.size());
+            } while(i<interests.size());
         }
+
+        //checa se o usuário possui interesses marcados
+        //fazer um if?
+        readUserInterests();
+            //deleteByUser(crud.getUser().getIdUser());
+
         textViewCheckInterests.setVisibility(View.VISIBLE);
+        linearLayout.setVisibility(View.VISIBLE);
         buttonContinue.setVisibility(View.VISIBLE);
         spinner.setVisibility(View.GONE);
     }
@@ -128,6 +139,7 @@ public class InterestsActivity extends AppCompatActivity {
                 }
                 else {
                     List<Interest> output = response.body();
+                    //chama método para inflar a tela
                     listInterests(output);
                 }
             }
@@ -142,7 +154,7 @@ public class InterestsActivity extends AppCompatActivity {
     }
 
     private void registerInterests() {
-        select();
+        selectInterests();
 
         Gson g = new GsonBuilder().registerTypeAdapter(UserInterest.class, new InterestDeserializer())
                 .setLenient()
@@ -154,39 +166,39 @@ public class InterestsActivity extends AppCompatActivity {
                 .build();
 
         UserInterestService service = retrofit.create(UserInterestService.class);
+        List<UserInterest> userInterests = new ArrayList<UserInterest>();
 
         for(int i = 0; i<selectedInterests.size(); i++) {
+            final UserInterest ui = new UserInterest();
+            ui.setIdUser(crud.getUser().getIdUser());
+            ui.setIdInterest(selectedInterests.get(i).getIdInterest());
+            userInterests.add(ui);
+        }
 
-            final UserInterest userInterest = new UserInterest();
-            userInterest.setIdUser(crud.getUser().getIdUser());
-            userInterest.setIdInterest(selectedInterests.get(i).getIdInterest());
-            System.out.println(userInterest.toString());
+        System.out.println(userInterests.toString());
+        Call<Integer> requestUser = service.insert(userInterests);
 
-            Call<Integer> requestUser = service.insert(userInterest);
-
-            requestUser.enqueue(new Callback<Integer>() {
-                @Override
-                public void onResponse(Call<Integer> call, Response<Integer> response) {
-                    String aux;
-                    if(!response.isSuccessful()) {
-                        aux = "Erro: " + (response.code());
-                        Log.i(TAG, aux);
-                        Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
-                    }
-                    else {
-                        Toast.makeText(getApplicationContext(), "Cadastrado com sucesso", Toast.LENGTH_LONG).show();
-
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<Integer> call, Throwable t) {
-                    String aux = " Erro: " + t.getMessage();
-                    Log.e(TAG, aux);
+        requestUser.enqueue(new Callback<Integer>() {
+            @Override
+            public void onResponse(Call<Integer> call, Response<Integer> response) {
+                String aux;
+                if(!response.isSuccessful()) {
+                    aux = "Erro: " + (response.code());
+                    Log.i(TAG, aux);
                     Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
                 }
-            });
-        }
+                else {
+                    Toast.makeText(getApplicationContext(), Message.successfulRegister, Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Integer> call, Throwable t) {
+                String aux = " Erro: " + t.getMessage();
+                Log.e(TAG, aux);
+                Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
+            }
+        });
         openHome();
     }
 
@@ -198,7 +210,7 @@ public class InterestsActivity extends AppCompatActivity {
         finishAffinity();
     }
 
-    public void select() {
+    public void selectInterests() {
         for (int i = 0; i < interests.size(); i++) {
             int idInterest = interests.get(i).getIdInterest();
             if (checkBoxInterest[i].isChecked()) {
@@ -221,6 +233,100 @@ public class InterestsActivity extends AppCompatActivity {
             }
         }
         System.out.println(selectedInterests.toString());
+    }
+
+    public Boolean readUserInterests() {
+        Gson g = new GsonBuilder()
+                .setLenient()
+                .create();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(InterestService.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create(g))
+                .build();
+
+        UserInterestService service = retrofit.create(UserInterestService.class);
+
+        Call<List<UserInterest>> requestInterest = service.listByUser(crud.getUser().getIdUser());
+
+        requestInterest.enqueue(new Callback<List<UserInterest>>() {
+            @Override
+            public void onResponse(Call<List<UserInterest>> call, Response<List<UserInterest>> response) {
+                String aux;
+                if(!response.isSuccessful()) {
+                    aux = "Erro: " + (response.code());
+                    Log.i(TAG, aux);
+                    Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
+                    System.out.println("sem sucesso");
+                }
+                else {
+                    List<UserInterest> output = response.body();
+                    if(output.size() > 0) {
+                        hasInterests = true;
+                        checkInterests(output);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<UserInterest>> call, Throwable t) {
+                String aux = " Erro: " + t.getMessage();
+                Log.e(TAG, aux);
+                Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
+            }
+        });
+        return hasInterests;
+    }
+
+    public void checkInterests(List<UserInterest> listUserInterests) {
+        for(int i=0; i<listUserInterests.size(); i++) {
+            //checar os negócios
+            int aux = listUserInterests.get(i).getIdInterest();
+            checkBoxInterest[aux-1].setChecked(true);
+        }
+    }
+
+    //PAREI AQUI
+    public void deleteByUser() {
+        Gson g = new GsonBuilder()
+                .setLenient()
+                .create();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(InterestService.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create(g))
+                .build();
+
+        UserInterestService service = retrofit.create(UserInterestService.class);
+
+        Call<List<UserInterest>> requestInterest = service.listByUser(crud.getUser().getIdUser());
+
+        requestInterest.enqueue(new Callback<List<UserInterest>>() {
+            @Override
+            public void onResponse(Call<List<UserInterest>> call, Response<List<UserInterest>> response) {
+                String aux;
+                if(!response.isSuccessful()) {
+                    aux = "Erro: " + (response.code());
+                    Log.i(TAG, aux);
+                    Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
+                    System.out.println("sem sucesso");
+                }
+                else {
+                    List<UserInterest> output = response.body();
+                    if(output.size() > 0) {
+                        hasInterests = true;
+                        checkInterests(output);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<UserInterest>> call, Throwable t) {
+                String aux = " Erro: " + t.getMessage();
+                Log.e(TAG, aux);
+                Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }
 

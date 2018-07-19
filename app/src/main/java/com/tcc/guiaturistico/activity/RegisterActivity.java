@@ -1,9 +1,13 @@
 //https://www.youtube.com/watch?v=bP9RYHKJzNs
 package com.tcc.guiaturistico.activity;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
@@ -16,6 +20,10 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.tcc.guiaturistico.R;
@@ -36,18 +44,22 @@ import util.Status;
  * Created by Andressa on 13/05/2018.
  */
 
-public class RegisterActivity extends AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener{
     private static final String TAG = "Error";
     private EditText editTextName, editTextDateOfBirth, editTextUserEmail, editTextPassword, editTextOccupation, editTextLocalization;
     private Spinner spinnerLanguage;
     private Button buttonRegister;
     private ProgressBar spinner;
     private DBController crud;
+    private GoogleApiClient mGoogleApiClient;
+    private LocationRequest mLocationRequest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+
+        //callConnection();
 
         crud = new DBController(this);
 
@@ -70,7 +82,14 @@ public class RegisterActivity extends AppCompatActivity {
 
         //pegar o idioma do celular spinnerLanguage.setSelection();
 
+
         editTextLocalization = findViewById(R.id.editTextLocalization);
+        editTextLocalization.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                RegisterActivity.this.callAccessLocation(view);
+            }
+        });
 
         spinner = findViewById(R.id.progressBar);
 
@@ -88,6 +107,24 @@ public class RegisterActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if(mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+            startLocationUpdate();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        if(mGoogleApiClient != null) {
+            stopLocationUpdate();
+        }
     }
 
     public String selectLanguage() {
@@ -197,4 +234,114 @@ public class RegisterActivity extends AppCompatActivity {
 
         return aux;
     }
+
+    private synchronized void callConnection() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                                              .addOnConnectionFailedListener(this)
+                                              .addConnectionCallbacks(this)
+                                              .addApi(LocationServices.API)
+                                              .build();
+        mGoogleApiClient.connect();
+    }
+
+    private void initLocationRequest() {
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(5000); //de cinco em cinco
+        mLocationRequest.setFastestInterval(2000); //no mínimo
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    }
+
+    private void startLocationUpdate() {
+        initLocationRequest();
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+    }
+
+    private void stopLocationUpdate() {
+        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+    }
+
+    //listener
+    @Override
+    public void onConnected(Bundle bundle) {
+        Log.i("LOG", "onConnected(" + bundle + ")");
+
+        //obter a última localização conhecida do device
+        Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+
+        if(location != null) {
+            Log.i("LOG", "latitude: " + location.getLatitude());
+            Log.i("LOG", "longitude: " + location.getLongitude());
+        }
+
+        startLocationUpdate();
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.i("LOG", "onConnectionSuspended(" + i + ")");
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        editTextLocalization.setText(("Latitude: " + location.getLatitude() +
+                                      "Longitude: " + location.getLongitude()));
+    }
+
+    public void callAccessLocation(View view) {
+        Log.i(TAG, "callAccessLocation()");
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                //callDialog("É preciso a permission ACCESS_FINE_LOCATION para apresentação dos eventos locais.", new String[]{Manifest.permission.ACCESS_FINE_LOCATION});
+                Log.i("TAG", "permissão negada");
+            } else {
+                //ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_CODE);
+            }
+        } else {
+            callConnection();
+        }
+    }
+
+    /*private void callDialog( String message, final String[] permissions ){
+        mMaterialDialog = new MaterialDialog(this)
+                .setTitle("Permission")
+                .setMessage( message )
+                .setPositiveButton("PERMITIR", new View.OnClickListener() { //colocar no geralzao p traduzir
+                    @Override
+                    public void onClick(View v) {
+                        ActivityCompat.requestPermissions(this, permissions, REQUEST_PERMISSIONS_CODE);
+                        mMaterialDialog.dismiss();
+                    }
+                })
+                .setNegativeButton("NEGAR", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mMaterialDialog.dismiss();
+                    }
+                });
+        mMaterialDialog.show();
+    }*/
+
+    /*@Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        Log.i(TAG, "test");
+        switch( requestCode ){
+            case REQUEST_PERMISSIONS_CODE:
+                for( int i = 0; i < permissions.length; i++ ){
+
+                    if( permissions[i].equalsIgnoreCase( Manifest.permission.ACCESS_FINE_LOCATION )
+                            && grantResults[i] == PackageManager.PERMISSION_GRANTED ){
+
+                        callConnection();
+                    }
+                }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }*/
 }

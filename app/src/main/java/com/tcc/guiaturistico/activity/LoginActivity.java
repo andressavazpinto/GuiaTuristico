@@ -1,9 +1,18 @@
 package com.tcc.guiaturistico.activity;
 
+import com.google.api.gax.paging.Page;
+import com.google.cloud.storage.Bucket;
+import com.google.cloud.storage.BucketInfo;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
+import com.google.cloud.storage.Bucket;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -51,6 +60,8 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+
+
         crud = new DBController(this);
         u = new User();
 
@@ -69,6 +80,16 @@ public class LoginActivity extends AppCompatActivity {
                 }
                 if(validateFields()) {
                     spinner.setVisibility(View.VISIBLE);
+
+                    int SDK_INT = android.os.Build.VERSION.SDK_INT;
+                    if (SDK_INT > 8)
+                    {
+                        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                                .permitAll().build();
+                        StrictMode.setThreadPolicy(policy);
+                        authenticate();
+                    }
+
                     login();
                 }
             }
@@ -177,5 +198,23 @@ public class LoginActivity extends AppCompatActivity {
         else
             editTextPassword.setBackground(ContextCompat.getDrawable(LoginActivity.this, R.drawable.shape_line_success));
         return aux;
+    }
+
+    public void authenticate() {
+        /*Storage storage = StorageOptions.getDefaultInstance().getService();
+        Page<Bucket> buckets = storage.list();
+        for (Bucket bucket : buckets.iterateAll()) {
+            // do something with the info
+            System.out.println(buckets.toString());
+        }*/
+        Storage storage = StorageOptions.getDefaultInstance().getService();
+
+        // The name for the new bucket
+        String bucketName = "my-new-bucket";//args[0];  //
+
+        // Creates the new bucket
+        Bucket bucket = storage.create(BucketInfo.of(bucketName));
+
+        System.out.printf("Bucket %s created.%n", bucket.getName());
     }
 }

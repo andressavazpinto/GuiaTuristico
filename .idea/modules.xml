@@ -3,9 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/GuiaTuristico.iml" filepath="$PROJECT_DIR$/GuiaTuristico.iml" />
-      <module fileurl="file://C:\Users\Bf\AndroidStudioProjects\GuiaTuristico\GuiaTuristico.iml" filepath="C:\Users\Bf\AndroidStudioProjects\GuiaTuristico\GuiaTuristico.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../../Bf/AndroidStudioProjects/GuiaTuristico/GuiaTuristico.iml" filepath="$PROJECT_DIR$/../../../Bf/AndroidStudioProjects/GuiaTuristico/GuiaTuristico.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://C:\Users\Bf\AndroidStudioProjects\GuiaTuristico\app\app.iml" filepath="C:\Users\Bf\AndroidStudioProjects\GuiaTuristico\app\app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../../Bf/AndroidStudioProjects/GuiaTuristico/app/app.iml" filepath="$PROJECT_DIR$/../../../Bf/AndroidStudioProjects/GuiaTuristico/app/app.iml" />
     </modules>
   </component>
 </project>

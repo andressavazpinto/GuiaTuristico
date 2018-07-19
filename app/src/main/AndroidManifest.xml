@@ -10,6 +10,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+        <meta-data android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
         <activity
             android:name="com.tcc.guiaturistico.activity.SplashActivity"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
@@ -43,4 +46,9 @@
     </application>
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!--localização mais precisa:-->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!--localização menos precisa:-->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+
 </manifest>

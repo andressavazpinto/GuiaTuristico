@@ -5,13 +5,11 @@ package com.tcc.guiaturistico.activity;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -51,6 +49,7 @@ import service.LocalizationService;
 import service.UserService;
 import util.DBController;
 import util.Mask;
+import util.Message;
 import util.Status;
 
 /**
@@ -68,7 +67,6 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
     private LocationRequest mLocationRequest;
     private Localization localization;
     private Location location;
-    //private LocationManager locationManager;
     private MaterialDialog mMaterialDialog;
     private static final int REQUEST_PERMISSIONS_CODE = 128;
 
@@ -305,14 +303,13 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
 
     private void startLocationUpdate() {
         initLocationRequest();
-
         Log.i(TAG, "startLocationUpdate()");
-        //ContextCompat
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
 
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                callDialog("É preciso a permission ACCESS_FINE_LOCATION para apresentação dos eventos locais.", new String[]{Manifest.permission.ACCESS_FINE_LOCATION});
+                callDialog(Message.messageAskPermissionAgain, new String[]{Manifest.permission.ACCESS_FINE_LOCATION});
                 Log.i("TAG", "permissão negada");
             } else {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_CODE);
@@ -345,7 +342,7 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
                 != PackageManager.PERMISSION_GRANTED) {
 
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                callDialog("É preciso a permission ACCESS_FINE_LOCATION para apresentação dos eventos locais.", new String[]{Manifest.permission.ACCESS_FINE_LOCATION});
+                callDialog(Message.messageAskPermissionAgain, new String[]{Manifest.permission.ACCESS_FINE_LOCATION});
                 Log.i("TAG", "permissão negada");
             } else {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_CODE);
@@ -396,7 +393,7 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
 
             //solicitar novamente permissão ao usuário
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                callDialog("Para realizar seu cadastro precisamos identificar sua localização.", new String[]{Manifest.permission.ACCESS_FINE_LOCATION});
+                callDialog(Message.messageAskPermissionAgain, new String[]{Manifest.permission.ACCESS_FINE_LOCATION});
                 Log.i("TAG", "permissão negada");
             } else {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_CODE);
@@ -430,16 +427,16 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
 
     private void callDialog( String message, final String[] permissions ) {
         mMaterialDialog = new MaterialDialog(this)
-                .setTitle("Permission")
+                .setTitle(Message.permission)
                 .setMessage(message)
-                .setPositiveButton("PERMITIR", new View.OnClickListener() { //colocar no geralzao p traduzir
+                .setPositiveButton(Message.agree, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         ActivityCompat.requestPermissions(RegisterActivity.this, permissions, REQUEST_PERMISSIONS_CODE);
                         mMaterialDialog.dismiss();
                     }
                 })
-                .setNegativeButton("NEGAR", new View.OnClickListener() {
+                .setNegativeButton(Message.deny, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         mMaterialDialog.dismiss();

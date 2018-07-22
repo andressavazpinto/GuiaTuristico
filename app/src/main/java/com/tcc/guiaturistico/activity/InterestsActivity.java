@@ -207,7 +207,7 @@ public class InterestsActivity extends AppCompatActivity {
     public void openHome(){
         Intent intent = new Intent(this, HomeActivity.class);
         intent.putExtra("name", crud.getUser().getName());
-        intent.putExtra("localization", crud.getUser().getLocalization());
+        //intent.putExtra("localization", crud.getUser().getLocalization());
         startActivity(intent);
         finishAffinity();
     }

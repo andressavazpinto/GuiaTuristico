@@ -1,11 +1,17 @@
 //https://www.youtube.com/watch?v=bP9RYHKJzNs
+//https://www.youtube.com/watch?v=ScK-z8paLlc
+//https://www.youtube.com/watch?v=YvPAOLV-jk8
 package com.tcc.guiaturistico.activity;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -28,6 +34,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.tcc.guiaturistico.R;
 
+import java.io.IOException;
+import java.util.List;
+
+import me.drakeet.materialdialog.MaterialDialog;
+import model.Localization;
+import model.LocalizationDeserializer;
 import model.User;
 import model.UserDeserializer;
 import retrofit2.Call;
@@ -35,6 +47,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import service.LocalizationService;
 import service.UserService;
 import util.DBController;
 import util.Mask;
@@ -53,15 +66,20 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
     private DBController crud;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
+    private Localization localization;
+    private Location location;
+    //private LocationManager locationManager;
+    private MaterialDialog mMaterialDialog;
+    private static final int REQUEST_PERMISSIONS_CODE = 128;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        //callConnection();
-
         crud = new DBController(this);
+        localization = new Localization();
+        callAccessLocation(super.getCurrentFocus());
 
         editTextName = findViewById(R.id.editTextName);
 
@@ -82,14 +100,7 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
 
         //pegar o idioma do celular spinnerLanguage.setSelection();
 
-
         editTextLocalization = findViewById(R.id.editTextLocalization);
-        editTextLocalization.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                RegisterActivity.this.callAccessLocation(view);
-            }
-        });
 
         spinner = findViewById(R.id.progressBar);
 
@@ -103,7 +114,7 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
                 }
                 if(validateFields()) {
                     spinner.setVisibility(View.VISIBLE);
-                    register();
+                    registerLocalization();
                 }
             }
         });
@@ -131,7 +142,47 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
         return (String) spinnerLanguage.getSelectedItem();
     }
 
-    public void register() {
+    public void registerLocalization() {
+        Gson g = new GsonBuilder().registerTypeAdapter(Localization.class, new LocalizationDeserializer())
+                .setLenient()
+                .create();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(LocalizationService.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create(g))
+                .build();
+
+        LocalizationService service = retrofit.create((LocalizationService.class));
+
+        final Localization l = localization;
+
+        Call<Integer> requestLocalization = service.register(l);
+
+        requestLocalization.enqueue(new Callback<Integer>() {
+            @Override
+            public void onResponse(Call<Integer> call, Response<Integer> response) {
+                String aux;
+                if(!response.isSuccessful()) {
+                    aux = "Erro: " + (response.code());
+                    Log.i(TAG, aux);
+                    Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
+                }
+                else {
+                    //SETAR O ID DO ENDEREÇO NO USUÁRIO
+                    registerUser(Integer.parseInt(response.body().toString()));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Integer> call, Throwable t) {
+                String aux = " Erro: " + t.getMessage();
+                Log.e(TAG, aux);
+                Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    public void registerUser(int idLocalization) {
         Gson g = new GsonBuilder().registerTypeAdapter(User.class, new UserDeserializer())
                 .setLenient()
                 .create();
@@ -157,7 +208,8 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
 
         u.setLanguage(selectLanguage());
 
-        u.setLocalization(editTextLocalization.getText().toString());
+        //setar o id da localização após cadastrar
+        u.setIdLocalization(idLocalization);
         u.setStatusAccount(Status.Active);
 
         Call<Integer> requestUser = service.register(u);
@@ -253,7 +305,31 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
 
     private void startLocationUpdate() {
         initLocationRequest();
-        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+
+        Log.i(TAG, "startLocationUpdate()");
+        //ContextCompat
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                callDialog("É preciso a permission ACCESS_FINE_LOCATION para apresentação dos eventos locais.", new String[]{Manifest.permission.ACCESS_FINE_LOCATION});
+                Log.i("TAG", "permissão negada");
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_CODE);
+            }
+        } else {
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+
+            if(location != null) {
+                try {
+                    Address ad = getAddress(location.getLatitude(), location.getLongitude());
+                    localization = setLocalization(localization, ad);
+                } catch (Exception e) {
+                    e.getMessage();
+                }
+                editTextLocalization.setText(localization.getCity() + ", " + localization.getUf());
+            }
+        }
     }
 
     private void stopLocationUpdate() {
@@ -265,14 +341,29 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
     public void onConnected(Bundle bundle) {
         Log.i("LOG", "onConnected(" + bundle + ")");
 
-        //obter a última localização conhecida do device
-        Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
 
-        if(location != null) {
-            Log.i("LOG", "latitude: " + location.getLatitude());
-            Log.i("LOG", "longitude: " + location.getLongitude());
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                callDialog("É preciso a permission ACCESS_FINE_LOCATION para apresentação dos eventos locais.", new String[]{Manifest.permission.ACCESS_FINE_LOCATION});
+                Log.i("TAG", "permissão negada");
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_CODE);
+            }
+        } else {
+            //obter a última localização conhecida do device
+            location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         }
 
+        if(location != null) {
+            try {
+                Address ad = getAddress(location.getLatitude(), location.getLongitude());
+                localization = setLocalization(localization, ad);
+            } catch (Exception e) {
+                e.getMessage();
+            }
+            editTextLocalization.setText(localization.getCity() + ", " + localization.getUf());
+        }
         startLocationUpdate();
     }
 
@@ -288,34 +379,63 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
 
     @Override
     public void onLocationChanged(Location location) {
-        editTextLocalization.setText(("Latitude: " + location.getLatitude() +
-                                      "Longitude: " + location.getLongitude()));
+        try {
+            Address ad = getAddress(location.getLatitude(), location.getLongitude());
+            localization = setLocalization(localization, ad);
+        } catch (Exception e) {
+            e.getMessage();
+        }
+        editTextLocalization.setText(localization.getCity() + ", " + localization.getUf());
     }
 
     public void callAccessLocation(View view) {
         Log.i(TAG, "callAccessLocation()");
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
 
+            //solicitar novamente permissão ao usuário
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                //callDialog("É preciso a permission ACCESS_FINE_LOCATION para apresentação dos eventos locais.", new String[]{Manifest.permission.ACCESS_FINE_LOCATION});
+                callDialog("Para realizar seu cadastro precisamos identificar sua localização.", new String[]{Manifest.permission.ACCESS_FINE_LOCATION});
                 Log.i("TAG", "permissão negada");
             } else {
-                //ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_CODE);
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_CODE);
             }
         } else {
             callConnection();
         }
     }
 
-    /*private void callDialog( String message, final String[] permissions ){
+    public Address getAddress(double latitude, double longitude) throws IOException {
+        Geocoder geocoder;
+        Address address = null;
+        List<Address> addresses;
+
+        geocoder = new Geocoder(getApplicationContext());
+        addresses = geocoder.getFromLocation(latitude, longitude, 1);
+        if(addresses.size() > 0)
+            address = addresses.get(0);
+
+        return address;
+    }
+
+    public Localization setLocalization(Localization l, Address a) {
+        l.setLatitude(a.getLatitude());
+        l.setLongitude(a.getLongitude());
+        l.setCity(a.getLocality());
+        l.setUf(a.getAdminArea());
+        l.setCountry(a.getCountryName());
+        return l;
+    }
+
+    private void callDialog( String message, final String[] permissions ) {
         mMaterialDialog = new MaterialDialog(this)
                 .setTitle("Permission")
-                .setMessage( message )
+                .setMessage(message)
                 .setPositiveButton("PERMITIR", new View.OnClickListener() { //colocar no geralzao p traduzir
                     @Override
                     public void onClick(View v) {
-                        ActivityCompat.requestPermissions(this, permissions, REQUEST_PERMISSIONS_CODE);
+                        ActivityCompat.requestPermissions(RegisterActivity.this, permissions, REQUEST_PERMISSIONS_CODE);
                         mMaterialDialog.dismiss();
                     }
                 })
@@ -326,9 +446,9 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
                     }
                 });
         mMaterialDialog.show();
-    }*/
+    }
 
-    /*@Override
+    @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         Log.i(TAG, "test");
         switch( requestCode ){
@@ -343,5 +463,5 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
                 }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    }*/
+    }
 }

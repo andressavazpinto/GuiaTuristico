@@ -145,7 +145,7 @@ public class LoginActivity extends AppCompatActivity {
                         u.setPassword(jsonUser.getString("password"));
                         u.setOccupation(jsonUser.getString("occupation"));
                         u.setLanguage(jsonUser.getString("language"));
-                        u.setLocalization(jsonUser.getString("localization"));
+                        //u.setLocalization(jsonUser.getString("localization"));
                         u.setStatusAccount(Enum.valueOf(Status.class, jsonUser.getString("statusAccount")));
 
                         try {
@@ -177,7 +177,7 @@ public class LoginActivity extends AppCompatActivity {
         Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
 
         intent.putExtra("name", u.getName());
-        intent.putExtra("localization", u.getLocalization());
+        //intent.putExtra("localization", u.getLocalization());
 
         startActivity(intent);
         finishAffinity();

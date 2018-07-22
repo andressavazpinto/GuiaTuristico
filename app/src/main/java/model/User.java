@@ -10,14 +10,14 @@ import util.Status;
 
 public class User implements Serializable {
 
-    int idUser;
-    String name;
-    String dateOfBirth;
-    String language;
-    String occupation;
-    String email;
-    String password;
-    String localization;
+    private int idUser;
+    private String name;
+    private String dateOfBirth;
+    private String language;
+    private String occupation;
+    private String email;
+    private String password;
+    private int idLocalization;
     Status statusAccount;
 
     public User() {
@@ -29,7 +29,7 @@ public class User implements Serializable {
     }
 
     public User(int idUser, String name, String dateOfBirth, String language, String occupation,
-                String email, String password, String localization, Status statusAccount) {
+                String email, String password, int idLocalization, Status statusAccount) {
         this.idUser = idUser;
         this.name = name;
         this.dateOfBirth = dateOfBirth;
@@ -37,7 +37,7 @@ public class User implements Serializable {
         this.occupation = occupation;
         this.email = email;
         this.password = password;
-        this.localization = localization;
+        this.idLocalization = idLocalization;
         this.statusAccount = statusAccount;
     }
 
@@ -97,12 +97,12 @@ public class User implements Serializable {
         this.password = password;
     }
 
-    public String getLocalization() {
-        return localization;
+    public int getIdLocalization() {
+        return idLocalization;
     }
 
-    public void setLocalization(String localization) {
-        this.localization = localization;
+    public void setIdLocalization(int idLocalization) {
+        this.idLocalization = idLocalization;
     }
 
     public Status getStatusAccount() {
@@ -123,7 +123,7 @@ public class User implements Serializable {
                 ", occupation='" + occupation + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
-                ", localization='" + localization + '\'' +
+                ", idLocalization=" + idLocalization +
                 ", statusAccount=" + statusAccount +
                 '}';
     }

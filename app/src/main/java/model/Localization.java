@@ -1,21 +1,22 @@
 package model;
 
-public class Localization {
+import java.io.Serializable;
+
+public class Localization implements Serializable {
     public int idLocalization;
     public double latitude, longitude;
-    public String city, uf, country, description;
+    public String city, uf, country;
 
     public Localization() {
     }
 
-    public Localization(int idLocalization, double latitude, double longitude, String city, String uf, String country, String description) {
+    public Localization(int idLocalization, double latitude, double longitude, String city, String uf, String country) {
         this.idLocalization = idLocalization;
         this.latitude = latitude;
         this.longitude = longitude;
         this.city = city;
         this.uf = uf;
         this.country = country;
-        this.description = description;
     }
 
     public int getIdLocalization() {
@@ -66,11 +67,15 @@ public class Localization {
         this.country = country;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
+    @Override
+    public String toString() {
+        return "Localization{" +
+                "idLocalization=" + idLocalization +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                ", city='" + city + '\'' +
+                ", uf='" + uf + '\'' +
+                ", country='" + country + '\'' +
+                '}';
     }
 }

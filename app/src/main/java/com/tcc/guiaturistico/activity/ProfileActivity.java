@@ -134,7 +134,7 @@ public class ProfileActivity extends AppCompatActivity {
 
                     editTextUserEmail.setText(u.getEmail());
                     editTextOccupation.setText(u.getOccupation());
-                    editTextLocalization.setText(u.getLocalization());
+                    //editTextLocalization.setText(u.getLocalization());
 
                     spinner.setVisibility(View.GONE);
                 }
@@ -177,7 +177,7 @@ public class ProfileActivity extends AppCompatActivity {
         u.setPassword(editTextPassword.getText().toString());
         u.setOccupation(editTextOccupation.getText().toString());
         u.setLanguage(selectLanguage());
-        u.setLocalization(editTextLocalization.getText().toString());
+        //u.setLocalization(editTextLocalization.getText().toString());
 
         Call<User> requestUser = service.update(u);
 

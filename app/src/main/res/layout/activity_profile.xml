@@ -53,11 +53,6 @@
                     android:inputType="textPassword"
                     style="@style/editTextEmailPass_style"/>
 
-                <EditText
-                    android:id="@+id/editTextOccupation"
-                    android:hint="@string/occupation"
-                    style="@style/editText_style" />
-
                 <!-- android:id="@+id/editTextLanguage" -->
                 <Spinner
                     android:id="@+id/spinnerLanguage"
@@ -66,11 +61,6 @@
                     android:drawSelectorOnTop="false"
                     style="@style/spinner_style"
                     />
-
-                <EditText
-                    android:id="@+id/editTextLocalization"
-                    android:hint="@string/localization"
-                    style="@style/editText_style" />
 
                 <Button
                     android:id="@+id/buttonSave"

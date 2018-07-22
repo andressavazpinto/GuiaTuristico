@@ -39,7 +39,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     private Button buttonSave;
     private Spinner spinnerLanguage;
-    private EditText editTextName, editTextDateOfBirth, editTextUserEmail, editTextPassword, editTextOccupation, editTextLocalization;
+    private EditText editTextName, editTextDateOfBirth, editTextUserEmail, editTextPassword;
     private ProgressBar spinner;
     private DBController crud;
     private User user;
@@ -57,7 +57,6 @@ public class ProfileActivity extends AppCompatActivity {
         read(user.getIdUser()); //carrega na tela os dados do usuário
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        //getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setTitle(Message.profile);
 
         spinnerLanguage = findViewById(R.id.spinnerLanguage);
@@ -70,8 +69,6 @@ public class ProfileActivity extends AppCompatActivity {
         editTextDateOfBirth = findViewById(R.id.editTextDateOfBirth);
         editTextUserEmail = findViewById(R.id.editTextUserEmail);
         editTextPassword = findViewById(R.id.editTextPassword);
-        editTextOccupation = findViewById(R.id.editTextOccupation);
-        editTextLocalization = findViewById(R.id.editTextLocalization);
 
         buttonSave = findViewById(R.id.buttonSave);
         buttonSave.setVisibility(View.VISIBLE);
@@ -80,7 +77,7 @@ public class ProfileActivity extends AppCompatActivity {
             public void onClick(View view) {
                 InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
                 if (imm.isActive()) {
-                    imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+                    hideSoftKeyboard();
                 }
                 if(validateFields()) {
                     spinner.setVisibility(View.VISIBLE);
@@ -90,12 +87,18 @@ public class ProfileActivity extends AppCompatActivity {
         });
     }
 
+    public void hideSoftKeyboard() {
+        if(getCurrentFocus()!=null) {
+            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        }
+    }
+
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) { //Botão adicional na ToolBar
+    public boolean onOptionsItemSelected(MenuItem item) { //botão voltar na ToolBar
         switch (item.getItemId()) {
             case android.R.id.home:
-                startActivity(new Intent(this, HomeActivity.class));
-                finishAffinity();
+                finish();
                 break;
             default:break;
         }
@@ -103,7 +106,6 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     public void read(int id) {
-
         Gson g = new GsonBuilder().registerTypeAdapter(User.class, new UserDeserializer())
                 .setLenient()
                 .create();
@@ -115,8 +117,8 @@ public class ProfileActivity extends AppCompatActivity {
 
         UserService service = retrofit.create(UserService.class);
 
-        Call<User> requestUsuario = service.read(id);
-        requestUsuario.enqueue(new Callback<User>() {
+        Call<User> requestUser = service.read(id);
+        requestUser.enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 if(!response.isSuccessful())
@@ -133,8 +135,6 @@ public class ProfileActivity extends AppCompatActivity {
                     editTextDateOfBirth.setText(aux);
 
                     editTextUserEmail.setText(u.getEmail());
-                    editTextOccupation.setText(u.getOccupation());
-                    //editTextLocalization.setText(u.getLocalization());
 
                     spinner.setVisibility(View.GONE);
                 }
@@ -175,9 +175,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         u.setEmail(editTextUserEmail.getText().toString());
         u.setPassword(editTextPassword.getText().toString());
-        u.setOccupation(editTextOccupation.getText().toString());
         u.setLanguage(selectLanguage());
-        //u.setLocalization(editTextLocalization.getText().toString());
 
         Call<User> requestUser = service.update(u);
 
@@ -224,13 +222,6 @@ public class ProfileActivity extends AppCompatActivity {
         }
         else
             editTextDateOfBirth.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_line_success));
-
-        if(editTextLocalization.getText().length() == 0){
-            editTextLocalization.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_line_error));
-            aux = false;
-        }
-        else
-            editTextLocalization.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_line_success));
 
         if(editTextUserEmail.getText().length() == 0 | !editTextUserEmail.getText().toString().contains("@")){
             editTextUserEmail.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_line_error));

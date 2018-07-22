@@ -17,7 +17,7 @@ import model.User;
 public class DBHelper extends SQLiteOpenHelper {
 
     public static final String BASE_NAME = "DBApp";
-    public static final int BASE_VERSION = 2;
+    public static final int BASE_VERSION = 3;
 
     public DBHelper(Context context) {
         super(context, BASE_NAME, null, BASE_VERSION);
@@ -27,13 +27,13 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         String sqlCreateTableUser = "CREATE TABLE IF NOT EXISTS user("
                                 + 	"idUser INTEGER NOT NULL, "
-                                +   "name VARCHAR(140), "// NOT NULL, "
-                                +   "dateOfBirth DATE, "// NOT NULL, "
-                                +   "language VARCHAR(200), "// NOT NULL, "
-                                +   "occupation VARCHAR(200), "// NOT NULL, "
-                                +   "email VARCHAR(300), "// NOT NULL, "
-                                +   "password VARCHAR (300), "// NOT NULL, "
-                                +   "localization VARCHAR(300), "
+                                +   "name VARCHAR(140), "
+                                +   "dateOfBirth DATE, "
+                                +   "language VARCHAR(200), "
+                                +   "occupation VARCHAR(200), "
+                                +   "email VARCHAR(300), "
+                                +   "password VARCHAR (300), "
+                                +   "idLocalization INTEGER, "
                                 +   "statusAccount VARCHAR(50), "
                                 +   "PRIMARY KEY(idUser))";
 

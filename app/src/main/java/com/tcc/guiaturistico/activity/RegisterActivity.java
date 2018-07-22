@@ -1,6 +1,7 @@
 //https://www.youtube.com/watch?v=bP9RYHKJzNs
 //https://www.youtube.com/watch?v=ScK-z8paLlc
 //https://www.youtube.com/watch?v=YvPAOLV-jk8
+//https://www.youtube.com/watch?v=gLI_jopCS3Y
 package com.tcc.guiaturistico.activity;
 
 import android.Manifest;
@@ -58,7 +59,7 @@ import util.Status;
 
 public class RegisterActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener{
     private static final String TAG = "Error";
-    private EditText editTextName, editTextDateOfBirth, editTextUserEmail, editTextPassword, editTextOccupation, editTextLocalization;
+    private EditText editTextName, editTextDateOfBirth, editTextUserEmail, editTextPassword, editTextLocalization;
     private Spinner spinnerLanguage;
     private Button buttonRegister;
     private ProgressBar spinner;
@@ -86,7 +87,6 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
 
         editTextUserEmail = findViewById(R.id.editTextUserEmail);
         editTextPassword = findViewById(R.id.editTextPassword);
-        editTextOccupation = findViewById(R.id.editTextOccupation);
 
         //String[] list_languages = getResources().getStringArray(R.array.list_languages);
 
@@ -108,7 +108,7 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
             public void onClick(View view) {
                 InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
                 if (imm.isActive()) {
-                    imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+                    hideSoftKeyboard();
                 }
                 if(validateFields()) {
                     spinner.setVisibility(View.VISIBLE);
@@ -116,6 +116,13 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
                 }
             }
         });
+    }
+
+    public void hideSoftKeyboard() {
+        if(getCurrentFocus()!=null) {
+            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        }
     }
 
     @Override
@@ -166,7 +173,7 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
                     Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
                 }
                 else {
-                    //SETAR O ID DO ENDEREÇO NO USUÁRIO
+                    //setar o id do endereço no usuário, realizando seu cadastro
                     registerUser(Integer.parseInt(response.body().toString()));
                 }
             }
@@ -202,7 +209,6 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
 
         u.setEmail(editTextUserEmail.getText().toString());
         u.setPassword(editTextPassword.getText().toString());
-        u.setOccupation(editTextOccupation.getText().toString());
 
         u.setLanguage(selectLanguage());
 
@@ -303,6 +309,7 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
 
     private void startLocationUpdate() {
         initLocationRequest();
+
         Log.i(TAG, "startLocationUpdate()");
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)

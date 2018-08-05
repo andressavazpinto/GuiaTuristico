@@ -43,6 +43,14 @@
 
     <string name="save">Salvar</string>
 
+    <string name="reject">Rejeitar</string>
+    <string name="accept">Aceitar</string>
+    <string name="currently">Atualmente em</string>
+    <string name="timeThere">Horário de lá</string>
+    <string name="waitingReply">Aguardando resposta</string>
+    <string name="guideRejected">O guia rejeitou a conexão</string>
+    <string name="tryAgain">Tente novamente</string>
+
     <string-array name="list_languages">
         <item>English</item>
         <item>Español</item>

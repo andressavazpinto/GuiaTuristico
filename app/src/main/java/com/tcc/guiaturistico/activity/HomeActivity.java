@@ -6,10 +6,10 @@ import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.Toolbar;
+import android.text.Layout;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -36,8 +36,6 @@ import java.util.List;
 import me.drakeet.materialdialog.MaterialDialog;
 import model.Localization;
 import model.LocalizationDeserializer;
-import model.User;
-import model.UserDeserializer;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -94,6 +92,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+
         buttonByRegion = findViewById(R.id.buttonByRegion);
         buttonRamdom = findViewById(R.id.buttonRamdom);
         buttonRamdom.setOnClickListener(new View.OnClickListener() {
@@ -114,6 +113,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void searchRamdomly() {
+        Intent intent = new Intent(this, FoundGuideActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     @Override

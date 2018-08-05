@@ -16,6 +16,8 @@
             android:layout_weight="1"
             android:text="@string/messagePass"
             android:textSize="16sp"
+            android:layout_marginRight="12dp"
+            android:layout_marginLeft="12dp"
             />
     </RelativeLayout>
 
@@ -23,15 +25,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:layout_marginBottom="@dimen/activity_horizontal_margin"
-        android:layout_marginLeft="@dimen/activity_vertical_margin"
+        android:layout_marginBottom="14dp"
+        android:layout_marginLeft="14dp"
         android:layout_marginRight="@dimen/activity_vertical_margin">
 
         <EditText
             android:id="@+id/editTextUserEmail"
             android:hint="@string/email"
             android:inputType="textEmailAddress"
-            style="@style/editText_style"/>
+            style="@style/editText_style"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:layout_marginLeft="@dimen/activity_vertical_margin"/>
+        />
 
     </LinearLayout>
 </LinearLayout>

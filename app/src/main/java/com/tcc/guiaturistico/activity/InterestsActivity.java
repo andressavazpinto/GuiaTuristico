@@ -42,8 +42,7 @@ public class InterestsActivity extends AppCompatActivity {
     private Button buttonSave;
     private DBController crud;
     private static final String TAG = "Error";
-    private ArrayList<Interest> interests;
-    private ArrayList<Interest> selectedInterests;
+    private ArrayList<Interest> interests, selectedInterests;
     private LinearLayout linearLayout;
     private ProgressBar spinner;
     private TextView textViewCheckInterests;

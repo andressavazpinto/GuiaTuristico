@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.tcc.guiaturistico.activity.HomeActivity"
-    tools:showIn="@layout/app_bar">
+    tools:showIn="@layout/app_bar"
+    android:id="@+id/contentMain">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -27,7 +28,34 @@
                 android:scaleType="centerCrop" />
         </RelativeLayout>
 
-        <include layout="@layout/layout_middle_home" />
+        <include layout="@layout/fragment_home"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:id="@+id/fragHome"
+            android:visibility="invisible"
+            />
+
+        <include layout="@layout/fragment_found"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:id="@+id/fragFound"
+            android:visibility="gone"/>
+
+        <!--<include layout="@layout/fragment_rejected"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:id="@+id/fragRejected"
+            android:visibility="gone" />
+
+        <include layout="@layout/fragment_waiting"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:id="@+id/fragWaiting"
+            android:visibility="gone" />!-->
 
         <RelativeLayout
             android:layout_width="match_parent"

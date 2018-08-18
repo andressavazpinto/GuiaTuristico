@@ -2,7 +2,7 @@ package model;
 
 import java.io.Serializable;
 
-import util.Status;
+import util.StatusUser;
 
 /**
  * Created by Andressa on 13/05/2018.
@@ -14,11 +14,10 @@ public class User implements Serializable {
     private String name;
     private String dateOfBirth;
     private String language;
-    private String occupation;
     private String email;
     private String password;
     private int idLocalization;
-    Status statusAccount;
+    StatusUser statusAccount;
 
     public User() {
 
@@ -28,13 +27,12 @@ public class User implements Serializable {
         this.idUser = idUser;
     }
 
-    public User(int idUser, String name, String dateOfBirth, String language, String occupation,
-                String email, String password, int idLocalization, Status statusAccount) {
+    public User(int idUser, String name, String dateOfBirth, String language,
+                String email, String password, int idLocalization, StatusUser statusAccount) {
         this.idUser = idUser;
         this.name = name;
         this.dateOfBirth = dateOfBirth;
         this.language = language;
-        this.occupation = occupation;
         this.email = email;
         this.password = password;
         this.idLocalization = idLocalization;
@@ -73,14 +71,6 @@ public class User implements Serializable {
         this.language = language;
     }
 
-    public String getOccupation() {
-        return occupation;
-    }
-
-    public void setOccupation(String occupation) {
-        this.occupation = occupation;
-    }
-
     public String getEmail() {
         return email;
     }
@@ -105,11 +95,11 @@ public class User implements Serializable {
         this.idLocalization = idLocalization;
     }
 
-    public Status getStatusAccount() {
+    public StatusUser getStatusAccount() {
         return statusAccount;
     }
 
-    public void setStatusAccount(Status statusAccount) {
+    public void setStatusAccount(StatusUser statusAccount) {
         this.statusAccount = statusAccount;
     }
 
@@ -120,7 +110,6 @@ public class User implements Serializable {
                 ", name='" + name + '\'' +
                 ", dateOfBirth='" + dateOfBirth + '\'' +
                 ", language='" + language + '\'' +
-                ", occupation='" + occupation + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", idLocalization=" + idLocalization +

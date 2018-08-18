@@ -4,12 +4,8 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.api.gax.paging.Page;
 import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.BucketInfo;
-import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.StorageOptions;
-import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 
@@ -22,7 +18,6 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -57,7 +52,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import service.UserService;
 import util.DBController;
 import util.Message;
-import util.Status;
+import util.StatusUser;
 
 /**
  * Created by Andressa on 31/03/2018.
@@ -99,25 +94,15 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         buttonLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                spinner.setVisibility(View.VISIBLE);
                 InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
-                if (imm.isActive()) {
+                if (imm.isActive())
                     hideSoftKeyboard();
-                }
 
-                if(validateFields()) {
-                    spinner.setVisibility(View.VISIBLE);
-
-                    /*int SDK_INT = android.os.Build.VERSION.SDK_INT;
-                    if (SDK_INT > 8)
-                    {
-                        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
-                                .permitAll().build();
-                        StrictMode.setThreadPolicy(policy);
-                        authenticate();
-                    }*/
-
+                if(validateFields())
                     login();
-                }
+                else
+                    spinner.setVisibility(View.GONE);
             }
         });
 
@@ -183,10 +168,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                         u.setDateOfBirth(jsonUser.getString("dateOfBirth"));
                         u.setEmail(jsonUser.getString("email"));
                         u.setPassword(jsonUser.getString("password"));
-                        u.setOccupation(jsonUser.getString("occupation"));
                         u.setLanguage(jsonUser.getString("language"));
                         u.setIdLocalization(jsonUser.getInt("idLocalization"));
-                        u.setStatusAccount(Enum.valueOf(Status.class, jsonUser.getString("statusAccount")));
+                        u.setStatusAccount(Enum.valueOf(StatusUser.class, jsonUser.getString("statusAccount")));
 
                         try {
                             crud.insertUser(u);
@@ -194,8 +178,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                         } catch(Exception e) {
                             e.printStackTrace();
                         }
-
-
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

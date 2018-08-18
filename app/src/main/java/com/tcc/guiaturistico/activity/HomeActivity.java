@@ -7,12 +7,16 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
-import android.text.Layout;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -30,20 +34,28 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.tcc.guiaturistico.R;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.List;
 
 import me.drakeet.materialdialog.MaterialDialog;
 import model.Localization;
 import model.LocalizationDeserializer;
+import model.Search;
+import model.SearchDeserializer;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import service.LocalizationService;
+import service.SearchService;
 import service.UserService;
+import util.DBController;
 import util.Message;
+import util.StatusSearch;
 
 /**
  * Created by Andressa on 27/05/2018.
@@ -51,7 +63,7 @@ import util.Message;
 
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
 
-    public Button buttonRamdom, buttonByRegion;
+    FragmentManager fm = getSupportFragmentManager();
     public TextView nameNavHeader, localizationNavHeader;
     private View headerView;
     private NavigationView navigationView;
@@ -63,20 +75,106 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private Location location;
     private MaterialDialog mMaterialDialog;
     private static final int REQUEST_PERMISSIONS_CODE = 128;
+    private DBController crud;
+    private StatusSearch status;
+    private ConstraintLayout layout;
+    private ConstraintLayout contentMain;
+    private CoordinatorLayout appBar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        crud = new DBController(this);
+        setupComponents(savedInstanceState);
+    }
 
-        // Obtém a referência do layout de navegação
+    public void setFragment(int frag1, Fragment frag2) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+        transaction.replace(frag1, frag2);
+        transaction.addToBackStack(null);
+
+        transaction.commit();
+    }
+
+    public void verifyStatusSearch() {
+        final Search s = new Search(1, Enum.valueOf(StatusSearch.class,"Initial"), 3);
+
+        Gson g = new GsonBuilder().registerTypeAdapter(Search.class, new SearchDeserializer())
+                .setLenient()
+                .create();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(UserService.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create(g))
+                .build();
+
+        SearchService service = retrofit.create(SearchService.class);
+
+        Call<Search> requestSearch = service.read(crud.getUser().getIdUser());
+
+        requestSearch.enqueue(new Callback<Search>() {
+            @Override
+            public void onResponse(Call<Search> call, Response<Search> response) {
+                String aux;
+                if(!response.isSuccessful()) {
+                    aux = "Deu falha no sucesso: " + (response.code());
+                    Log.i("TAG", aux);
+                    Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
+                }
+                else if(response.isSuccessful()) {
+                    System.out.print("Entrou no sucesso");
+                    try {
+                        JSONObject jsonSearch = new JSONObject(new Gson().toJson(response.body()));
+
+                        System.out.println("Resultado da chamada search" + response.body());
+
+                        s.setIdUser(jsonSearch.getInt("idUser"));
+                        s.setIdSearch(jsonSearch.getInt("idSearch"));
+                        s.setStatus(Enum.valueOf(StatusSearch.class, jsonSearch.getString("status")));
+
+                        System.out.println("Resultado do status: " + s.getStatus());
+                        setMiddle(s);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Search> call, Throwable t) {
+                String aux = " Deu falha no login: " + t.getMessage();
+                Log.e("TAG", aux);
+                Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    public void setMiddle(Search sea) {
+        status = (Enum.valueOf(StatusSearch.class, sea.getStatus().toString()));
+        System.out.print("Entrou no setMiddle: " + status.toString());
+        switch (status) {
+            case Found:
+                layout.setVisibility(View.GONE);
+                layout = contentMain.findViewById(R.id.fragFound);
+                layout.setVisibility(View.VISIBLE);
+                break;
+                    /*case WaitingAnswer:
+                        fragment = fm.findFragmentById(R.id.fragWaiting);
+                        break;*/
+            default:
+        }
+
+    }
+
+    public void setupComponents(Bundle savedInstanceState) {
+
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        // Obtém a referência da view de cabeçalho
         headerView = navigationView.getHeaderView(0);
 
-        // Obtém a referência do nome do usuário e altera seu nome
         nameNavHeader = headerView.findViewById(R.id.nameNavHeader);
         nameNavHeader.setText(getIntent().getStringExtra("name")); //pegando o que foi passado pela activity anterior
 
@@ -92,30 +190,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        appBar = findViewById(R.id.appbarlayout);
+        contentMain = appBar.findViewById(R.id.contentMain);
+        layout = contentMain.findViewById(R.id.fragHome);
 
-        buttonByRegion = findViewById(R.id.buttonByRegion);
-        buttonRamdom = findViewById(R.id.buttonRamdom);
-        buttonRamdom.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                searchRamdomly();
-            }
-        });
-        buttonByRegion.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                searchByRegion();
-            }
-        });
-    }
-
-    private void searchByRegion() {
-    }
-
-    private void searchRamdomly() {
-        Intent intent = new Intent(this, FoundGuideActivity.class);
-        startActivity(intent);
-        finish();
+        verifyStatusSearch();
     }
 
     @Override

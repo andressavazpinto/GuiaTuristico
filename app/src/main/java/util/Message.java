@@ -14,4 +14,5 @@ public class Message {
     public static String agree = "PERMITIR";
     public static String deny = "NEGAR";
     public static String messageAskPermissionAgain = "Para realizar seu cadastro precisamos identificar sua localização.";
+    public static String searchingGuide = "Procurando...";
 }

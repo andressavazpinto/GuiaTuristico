@@ -26,7 +26,6 @@ public class DBController {
         cv.put("name", u.getName());
         cv.put("dateOfBirth", u.getDateOfBirth());
         cv.put("language", u.getLanguage());
-        cv.put("occupation", u.getOccupation());
         cv.put("email", u.getEmail());
         cv.put("password", u.getPassword());
         cv.put("idLocalization", u.getIdLocalization());
@@ -41,7 +40,6 @@ public class DBController {
         cv.put("name", u.getName());
         cv.put("dateOfBirth", u.getDateOfBirth());
         cv.put("language", u.getLanguage());
-        cv.put("occupation", u.getOccupation());
         cv.put("email", u.getEmail());
         cv.put("password", u.getPassword());
         cv.put("idLocalization", u.getIdLocalization());
@@ -57,7 +55,7 @@ public class DBController {
 
     public User getUser() {
         User u = new User();
-        String[] colums = new String[]{"idUser", "name", "dateOfBirth", "language", "occupation", "email", "idLocalization", "statusAccount"};
+        String[] colums = new String[]{"idUser", "name", "dateOfBirth", "language", "email", "idLocalization", "statusAccount"};
         Cursor cursor = db.query("user", colums, null, null, null, null, null);
 
         if(cursor.getCount() > 0) {
@@ -73,10 +71,9 @@ public class DBController {
                 u.setDateOfBirth(aux);
 
                 u.setLanguage(cursor.getString(3));
-                u.setOccupation(cursor.getString(4));
-                u.setEmail(cursor.getString(5));
-                u.setIdLocalization(cursor.getInt(6));
-                u.setStatusAccount(Enum.valueOf(Status.class, "Active"));
+                u.setEmail(cursor.getString(4));
+                u.setIdLocalization(cursor.getInt(5));
+                u.setStatusAccount(Enum.valueOf(StatusUser.class, "Active"));
             } while(cursor.moveToNext());
         }
         cursor.close();

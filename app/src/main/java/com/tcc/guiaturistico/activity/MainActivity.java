@@ -14,13 +14,16 @@ import com.tcc.guiaturistico.R;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button buttonSignUp, buttonSignIn;
+    private Button buttonSignUp, buttonSignIn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signin);
+        setupComponents();
+    }
 
+    public void setupComponents() {
         buttonSignIn = findViewById(R.id.buttonSignIn);
         buttonSignUp = findViewById(R.id.buttonSignUp);
 

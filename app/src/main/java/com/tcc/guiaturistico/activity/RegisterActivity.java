@@ -51,7 +51,7 @@ import service.UserService;
 import util.DBController;
 import util.Mask;
 import util.Message;
-import util.Status;
+import util.StatusUser;
 
 /**
  * Created by Andressa on 13/05/2018.
@@ -214,7 +214,7 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
 
         //setar o id da localização após cadastrar
         u.setIdLocalization(idLocalization);
-        u.setStatusAccount(Status.Active);
+        u.setStatusAccount(StatusUser.Active);
 
         Call<Integer> requestUser = service.register(u);
 

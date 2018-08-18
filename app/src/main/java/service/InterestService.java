@@ -17,4 +17,5 @@ public interface InterestService {
     @GET("interests")
     Call<List<Interest>> list();
 
+
 }

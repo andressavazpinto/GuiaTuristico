@@ -23,6 +23,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -80,6 +81,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private ConstraintLayout layout;
     private ConstraintLayout contentMain;
     private CoordinatorLayout appBar;
+    private ProgressBar spinner;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -134,6 +136,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         s.setIdSearch(jsonSearch.getInt("idSearch"));
                         s.setStatus(Enum.valueOf(StatusSearch.class, jsonSearch.getString("status")));
 
+                        crud.insertSearch(s);
+
                         System.out.println("Resultado do status: " + s.getStatus());
                         setMiddle(s);
                     } catch (JSONException e) {
@@ -160,15 +164,27 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 layout = contentMain.findViewById(R.id.fragFound);
                 layout.setVisibility(View.VISIBLE);
                 break;
-                    /*case WaitingAnswer:
-                        fragment = fm.findFragmentById(R.id.fragWaiting);
-                        break;*/
+            case Rejected:
+                layout.setVisibility(View.GONE);
+                layout = contentMain.findViewById(R.id.fragRejected);
+                layout.setVisibility(View.VISIBLE);
+                break;
+            case WaitingAnswer:
+                layout.setVisibility(View.GONE);
+                layout = contentMain.findViewById(R.id.fragWaiting);
+                layout.setVisibility(View.VISIBLE);
+                break;
             default:
+                layout.setVisibility(View.VISIBLE);
         }
+        spinner.setVisibility(View.GONE);
 
     }
 
     public void setupComponents(Bundle savedInstanceState) {
+
+        spinner = findViewById(R.id.progressBar);
+        spinner.setVisibility(View.VISIBLE);
 
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);

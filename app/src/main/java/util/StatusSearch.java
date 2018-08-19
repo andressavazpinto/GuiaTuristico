@@ -1,5 +1,5 @@
 package util;
 
 public enum StatusSearch {
-    Initial, Found, WaitingAnswer, Rejected;
+    Initial, Searching, Found, WaitingAnswer, Accepted, Rejected;
 }

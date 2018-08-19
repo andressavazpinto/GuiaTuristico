@@ -9,6 +9,8 @@
     tools:openDrawer="start"
     style="@style/AppTheme.AppBarOverlay">
 
+    <include layout="@layout/progress_bar"/>
+
     <include
         layout="@layout/app_bar"
         android:layout_width="match_parent"

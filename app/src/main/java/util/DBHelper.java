@@ -36,13 +36,21 @@ public class DBHelper extends SQLiteOpenHelper {
                                 +   "statusAccount VARCHAR(50), "
                                 +   "PRIMARY KEY(idUser))";
 
+        String sqlCreateTableSearch = "CREATE TABLE IF NOT EXISTS search("
+                                +     "idUser INTEGER NOT NULL, "
+                                +     "status VARCHAR(50),"
+                                +     "PRIMARY KEY(idUser))";
+
         sqLiteDatabase.execSQL(sqlCreateTableUser);
+        sqLiteDatabase.execSQL(sqlCreateTableSearch);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
         String sqlDropTableUser = "DROP TABLE user";
+        String sqlDropTableSearch = "DROP TABLE search";
         sqLiteDatabase.execSQL(sqlDropTableUser);
+        sqLiteDatabase.execSQL(sqlDropTableSearch);
         onCreate(sqLiteDatabase);
     }
 }

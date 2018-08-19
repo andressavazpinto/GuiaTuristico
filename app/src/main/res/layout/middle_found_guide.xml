@@ -23,6 +23,7 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/activity_vertical_margin"
         android:orientation="vertical">
 
         <LinearLayout
@@ -41,7 +42,7 @@
                 android:gravity="center"
                 android:layout_marginBottom="10dp"
                 android:text="Nome do Guia"
-                android:textSize="24sp" />
+                android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/textViewCurrently"

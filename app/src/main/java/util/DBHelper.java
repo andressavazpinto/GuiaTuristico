@@ -17,7 +17,7 @@ import model.User;
 public class DBHelper extends SQLiteOpenHelper {
 
     public static final String BASE_NAME = "DBApp";
-    public static final int BASE_VERSION = 4;
+    public static final int BASE_VERSION = 5;
 
     public DBHelper(Context context) {
         super(context, BASE_NAME, null, BASE_VERSION);
@@ -36,21 +36,13 @@ public class DBHelper extends SQLiteOpenHelper {
                                 +   "statusAccount VARCHAR(50), "
                                 +   "PRIMARY KEY(idUser))";
 
-        String sqlCreateTableSearch = "CREATE TABLE IF NOT EXISTS search("
-                                +     "idUser INTEGER NOT NULL, "
-                                +     "status VARCHAR(50),"
-                                +     "PRIMARY KEY(idUser))";
-
         sqLiteDatabase.execSQL(sqlCreateTableUser);
-        sqLiteDatabase.execSQL(sqlCreateTableSearch);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
         String sqlDropTableUser = "DROP TABLE user";
-        String sqlDropTableSearch = "DROP TABLE search";
         sqLiteDatabase.execSQL(sqlDropTableUser);
-        sqLiteDatabase.execSQL(sqlDropTableSearch);
         onCreate(sqLiteDatabase);
     }
 }

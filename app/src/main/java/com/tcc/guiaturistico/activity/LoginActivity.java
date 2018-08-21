@@ -94,13 +94,15 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         buttonLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                spinner.setVisibility(View.VISIBLE);
+
                 InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
                 if (imm.isActive())
                     hideSoftKeyboard();
 
-                if(validateFields())
+                if(validateFields()) {
+                    spinner.setVisibility(View.VISIBLE);
                     login();
+                }
                 else
                     spinner.setVisibility(View.GONE);
             }

@@ -1,6 +1,6 @@
 package fragment;
 
-import android.app.Activity;
+
 import android.app.ProgressDialog;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -15,10 +15,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.tcc.guiaturistico.R;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import model.ConnectGuides;
+import model.ConnectGuidesDeserializer;
 import model.Search;
 import model.SearchDeserializer;
 import retrofit2.Call;
@@ -28,7 +26,6 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import service.ConnectGuidesService;
 import service.SearchService;
-import service.UserService;
 import util.DBController;
 import util.Message;
 import util.StatusSearch;
@@ -36,17 +33,24 @@ import util.StatusSearch;
 public class HomeFragment extends Fragment {
 
     public Button buttonRamdom, buttonByRegion;
+    public ProgressDialog progress;
     private DBController crud;
     private Search search;
+    private Boolean found;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup v, Bundle b) {
         View view = inflater.inflate(R.layout.middle_home, v, false);
         crud = new DBController(getContext());
         search = new Search(1, Enum.valueOf(StatusSearch.class,"Initial"), crud.getUser().getIdUser());
+        found = true;
         setupComponents(view);
         setRetainInstance(true); //preservar a instância do fragment
         return view;
+    }
+
+    public void setFound(Boolean found) {
+        this.found = found;
     }
 
     public void setupComponents(View view) {
@@ -55,6 +59,7 @@ public class HomeFragment extends Fragment {
         buttonRamdom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                setStatus("Searching");
                 searchRamdomly();
             }
         });
@@ -64,44 +69,35 @@ public class HomeFragment extends Fragment {
                 searchByRegion();
             }
         });
+
+        progress = new ProgressDialog(fragment.HomeFragment.this.getContext());
+        progress.setMessage(Message.searchingGuide);
+        progress.setIndeterminate(true);
     }
 
     private void searchByRegion() {
     }
 
     private void searchRamdomly() {
-        ProgressDialog progress = new ProgressDialog(fragment.HomeFragment.this.getContext());
-        progress.setMessage(Message.searchingGuide);
-        progress.setIndeterminate(true);
         progress.show();
+        searchRam(search);
 
-        setStatus("Searching");
 
-        //DIGAMOS QUE ENCONTROU O GUIA - MÉTODO A FAZER (fazer um try ou if?)
-        if(searchRam(search)) {
-            setStatus("Found");
-            setConnectGuides(search);
-            getActivity().recreate();
-        }
-        else {
-            progress.cancel();
-            Toast.makeText(getContext(), Message.noneGuide, Toast.LENGTH_LONG).show();
-        }
     }
 
     public void setStatus(String status) {
         search.setStatus(Enum.valueOf(StatusSearch.class,status));
 
-        Gson g = new GsonBuilder().registerTypeAdapter(Search.class, new SearchDeserializer())
+        Gson ga = new GsonBuilder().registerTypeAdapter(Search.class, new SearchDeserializer())
                 .setLenient()
                 .create();
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(UserService.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create(g))
+        Retrofit retrofitt = new Retrofit.Builder()
+                .baseUrl(SearchService.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create(ga))
                 .build();
 
-        SearchService service = retrofit.create(SearchService.class);
+        SearchService service = retrofitt.create(SearchService.class);
 
         Call<Void> requestSearch = service.update(search);
 
@@ -112,7 +108,7 @@ public class HomeFragment extends Fragment {
                 if(!response.isSuccessful()) {
                     aux = "Deu falha no sucesso: " + (response.code());
                     Log.i("TAG", aux);
-                    Toast.makeText(getContext(), aux, Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getContext(), aux, Toast.LENGTH_LONG).show();
                 }
                 else if(response.isSuccessful()) {
                     System.out.print("Entrou no sucesso");
@@ -130,12 +126,12 @@ public class HomeFragment extends Fragment {
 
     public void setConnectGuides(Search search) {
 
-        Gson g = new GsonBuilder().registerTypeAdapter(ConnectGuides.class, new SearchDeserializer())
+        Gson g = new GsonBuilder().registerTypeAdapter(ConnectGuides.class, new ConnectGuidesDeserializer())
                 .setLenient()
                 .create();
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(UserService.BASE_URL)
+                .baseUrl(ConnectGuidesService.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create(g))
                 .build();
 
@@ -153,7 +149,7 @@ public class HomeFragment extends Fragment {
                     Toast.makeText(getContext(), aux, Toast.LENGTH_LONG).show();
                 }
                 else if(response.isSuccessful()) {
-                    System.out.print("Entrou no sucesso");
+                    System.out.print("Resultado: Entrou no sucesso do connect: " + response.body());
                 }
             }
 
@@ -166,24 +162,23 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    public boolean searchRam(Search search) {
+    public void searchRam(final Search search) {
+        System.out.println("Resultado: Entrou no searchRam + " + search.toString());
 
-        final boolean[] out = {false};
-
-        Gson g = new GsonBuilder().registerTypeAdapter(ConnectGuides.class, new SearchDeserializer())
+        Gson g = new GsonBuilder().registerTypeAdapter(ConnectGuides.class, new ConnectGuidesDeserializer())
                 .setLenient()
                 .create();
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(UserService.BASE_URL)
+                .baseUrl(ConnectGuidesService.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create(g))
                 .build();
 
         ConnectGuidesService service = retrofit.create(ConnectGuidesService.class);
 
-        Call<Boolean> requestSearch = service.searchRandomly(search);
+        Call<Boolean> requestSearchRam = service.searchRandomly(search);
 
-        requestSearch.enqueue(new Callback<Boolean>() {
+        requestSearchRam.enqueue(new Callback<Boolean>() {
             @Override
             public void onResponse(Call<Boolean> call, Response<Boolean> response) {
                 String aux;
@@ -191,7 +186,17 @@ public class HomeFragment extends Fragment {
                     Log.i("TAG", "Falhou no searchRam" + response.code());
                 }
                 else if(response.isSuccessful()) {
-                    out[0] = response.body();
+                    setFound(response.body());
+                    if(found) {
+                        setStatus("Found");
+                        setConnectGuides(search);
+                        getActivity().recreate();
+                    }
+                    else {
+                        progress.cancel();
+                        Toast.makeText(getContext(), Message.noneGuide, Toast.LENGTH_LONG).show();
+                    }
+                    System.out.println("Resultado da busca: " + response.body());
                 }
             }
 
@@ -202,6 +207,6 @@ public class HomeFragment extends Fragment {
                 Toast.makeText(getContext(), aux, Toast.LENGTH_LONG).show();
             }
         });
-        return out[0];
+        System.out.println("Resultado do searchRam: " + found);
     }
 }

@@ -8,12 +8,8 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
-import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -64,7 +60,6 @@ import util.StatusSearch;
 
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
 
-    FragmentManager fm = getSupportFragmentManager();
     public TextView nameNavHeader, localizationNavHeader;
     private View headerView;
     private NavigationView navigationView;
@@ -88,16 +83,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         crud = new DBController(this);
-        setupComponents(savedInstanceState);
-    }
-
-    public void setFragment(int frag1, Fragment frag2) {
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-
-        transaction.replace(frag1, frag2);
-        transaction.addToBackStack(null);
-
-        transaction.commit();
+        setupComponents();
     }
 
     public void verifyStatusSearch() {
@@ -123,14 +109,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 if(!response.isSuccessful()) {
                     aux = "Deu falha no sucesso: " + (response.code());
                     Log.i("TAG", aux);
-                    Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
                 }
                 else if(response.isSuccessful()) {
-                    System.out.print("Entrou no sucesso");
                     try {
                         JSONObject jsonSearch = new JSONObject(new Gson().toJson(response.body()));
-
-                        System.out.println("Resultado da chamada search" + response.body());
 
                         s.setIdUser(jsonSearch.getInt("idUser"));
                         s.setIdSearch(jsonSearch.getInt("idSearch"));
@@ -157,8 +140,13 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     public void setMiddle(Search sea) {
         status = (Enum.valueOf(StatusSearch.class, sea.getStatus().toString()));
-        System.out.print("Entrou no setMiddle: " + status.toString());
+
         switch (status) {
+            case Searching:
+                layout.setVisibility(View.GONE);
+                layout = contentMain.findViewById(R.id.fragHome);
+                layout.setVisibility(View.VISIBLE);
+                break;
             case Found:
                 layout.setVisibility(View.GONE);
                 layout = contentMain.findViewById(R.id.fragFound);
@@ -181,7 +169,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
-    public void setupComponents(Bundle savedInstanceState) {
+    public void setupComponents() {
 
         spinner = findViewById(R.id.progressBar);
         spinner.setVisibility(View.VISIBLE);

@@ -154,7 +154,7 @@ public class HomeFragment extends Fragment {
                         //setConnectGuides(search);
                         getActivity().recreate();
                     }
-                    else {
+                    else if(found == false){
                         progress.cancel();
                         Toast.makeText(getContext(), Message.noneGuide, Toast.LENGTH_LONG).show();
                     }
@@ -170,5 +170,7 @@ public class HomeFragment extends Fragment {
             }
         });
         System.out.println("Resultado do searchRam: " + found);
+        progress.cancel();
+        //Toast.makeText(getContext(), Message.noneGuide, Toast.LENGTH_LONG).show();
     }
 }

@@ -86,8 +86,11 @@ public class FoundGuideFragment extends Fragment {
     }
 
     public void rejectGuide() {
-
-//        setStatus("Initial");
+        search1.setStatus(Enum.valueOf(StatusSearch.class, "Initial"));
+        search2.setStatus(Enum.valueOf(StatusSearch.class, "Rejected"));
+        setStatusSearch(search1);
+        setStatusSearch(search2);
+        getActivity().recreate();
     }
 
     public void readConnectGuides(int id) {

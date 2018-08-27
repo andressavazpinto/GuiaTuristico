@@ -7,8 +7,8 @@
     <color name="background">#FFFFFF</color>
     <color name="textColor">#8492A6</color>
     <color name="textButton">#FFFFFF</color>
-    <!--<color name="buttonColor">#343F4B</color>-->
     <color name="buttonColor">#003f63</color>
+    <color name="buttonColorSelect">#28a000</color>
     <color name="buttonPressed">#4b5b6d</color>
 
     <color name="textItem">#343F4B</color>

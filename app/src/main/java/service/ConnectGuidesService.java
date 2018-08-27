@@ -1,10 +1,13 @@
 package service;
 
+import model.ConnectGuides;
 import model.Search;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
+import retrofit2.http.Path;
 import util.Url;
 
 public interface ConnectGuidesService {
@@ -14,5 +17,8 @@ public interface ConnectGuidesService {
     Call<Void> update(@Body Search search);
 
     @POST("connectguides")
-    Call<Boolean> searchRandomly(@Body Search search);
+    Call<ConnectGuides> searchRandomly(@Body Search search);
+
+    @GET("connectguides/{id}")
+    Call<ConnectGuides> read(@Path("id") int id);
 }

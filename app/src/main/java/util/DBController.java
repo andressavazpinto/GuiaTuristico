@@ -36,14 +36,14 @@ public class DBController {
         db.close();
     }
 
-    public void insertSearch(Search s) {
+    /*public void insertSearch(Search s) {
         ContentValues cv = new ContentValues();
         cv.put("idUser", s.getIdUser());
         cv.put("status", s.getStatus().toString());
 
         db.insert("search", null, cv);
         db.close();
-    }
+    }*/
 
     public void updateUser(User u) {
         ContentValues cv = new ContentValues();
@@ -59,21 +59,21 @@ public class DBController {
         db.close();
     }
 
-    public void updateSearch(Search s) {
+    /*public void updateSearch(Search s) {
         ContentValues cv = new ContentValues();
         cv.put("status", s.getStatus().toString());
 
         db.update("search", cv, "idUser = ?", new String[]{""+s.getIdUser()});
         db.close();
-    }
+    }*/
 
     public void deleteUser(User u) {
         db.delete("user", "idUser = " + u.getIdUser(), null);
     }
 
-    public void deleteSearch(Search s) {
+    /*public void deleteSearch(Search s) {
         db.delete("search", "idUser = " + s.getIdUser(), null);
-    }
+    }*/
 
     public User getUser() {
         User u = new User();
@@ -102,7 +102,7 @@ public class DBController {
         return u;
     }
 
-    public Search getSearch() {
+    /*public Search getSearch() {
         Search s = new Search();
         String[] colums = new String[]{"idUser", "status"};
         Cursor cursor = db.query("search", colums, null, null, null, null, null);
@@ -117,5 +117,5 @@ public class DBController {
         }
         cursor.close();
         return s;
-    }
+    }*/
 }

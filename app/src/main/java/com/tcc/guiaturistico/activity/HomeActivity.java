@@ -109,7 +109,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 if(!response.isSuccessful()) {
                     aux = "Deu falha no sucesso: " + (response.code());
                     Log.i("TAG", aux);
-                    //Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
                 }
                 else if(response.isSuccessful()) {
                     try {
@@ -119,9 +118,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         s.setIdSearch(jsonSearch.getInt("idSearch"));
                         s.setStatus(Enum.valueOf(StatusSearch.class, jsonSearch.getString("status")));
 
-                        crud.insertSearch(s);
-
-                        System.out.println("Resultado do status: " + s.getStatus());
+                        System.out.println("Resultado do status na HomeActivity: " + s.getStatus());
                         setMiddle(s);
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -142,6 +139,15 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         status = (Enum.valueOf(StatusSearch.class, sea.getStatus().toString()));
 
         switch (status) {
+            case Accepted:
+                Intent intent = new Intent(this, ChatActivity.class);
+                startActivity(intent);
+                //finishAffinity();
+                finish();
+                break;
+            case Initial:
+                layout.setVisibility(View.VISIBLE);
+                break;
             case Searching:
                 layout.setVisibility(View.GONE);
                 layout = contentMain.findViewById(R.id.fragHome);
@@ -162,6 +168,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 layout = contentMain.findViewById(R.id.fragWaiting);
                 layout.setVisibility(View.VISIBLE);
                 break;
+
             default:
                 layout.setVisibility(View.VISIBLE);
         }
@@ -196,6 +203,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         appBar = findViewById(R.id.appbarlayout);
         contentMain = appBar.findViewById(R.id.contentMain);
+        contentMain.setVisibility(View.VISIBLE);
         layout = contentMain.findViewById(R.id.fragHome);
 
         verifyStatusSearch();
@@ -240,12 +248,12 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void openProfile(){
-        Intent intent = new Intent(HomeActivity.this, ProfileActivity.class);
+        Intent intent = new Intent(this, ProfileActivity.class);
         startActivity(intent);
     }
 
     public void openChangeInterests(){
-        Intent intent = new Intent(HomeActivity.this, InterestsActivity.class);
+        Intent intent = new Intent(this, InterestsActivity.class);
         startActivity(intent);
     }
 

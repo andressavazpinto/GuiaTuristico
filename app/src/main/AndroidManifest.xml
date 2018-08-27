@@ -38,6 +38,10 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden"/>
         <activity
+            android:name="com.tcc.guiaturistico.activity.ChatActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden"/>
+        <activity
             android:name="com.tcc.guiaturistico.activity.InterestsActivity"
             android:windowSoftInputMode="stateHidden"/>
         <activity

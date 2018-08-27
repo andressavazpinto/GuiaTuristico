@@ -42,6 +42,8 @@ import java.util.List;
 
 import me.drakeet.materialdialog.MaterialDialog;
 import model.Localization;
+import model.Search;
+import model.SearchDeserializer;
 import model.UserDeserializer;
 import model.User;
 import retrofit2.Call;
@@ -49,9 +51,11 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import service.SearchService;
 import service.UserService;
 import util.DBController;
 import util.Message;
+import util.StatusSearch;
 import util.StatusUser;
 
 /**
@@ -155,7 +159,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             public void onResponse(Call<User> call, Response<User> response) {
                 String aux;
                 if(!response.isSuccessful()) {
-                    aux = "Deu falha no sucesso: " + (response.code());
+                    aux = "Deu falha aqui no sucesso: " + (response.code());
                     Log.i(TAG, aux);
                     Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
                 }
@@ -174,10 +178,16 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                         u.setIdLocalization(jsonUser.getInt("idLocalization"));
                         u.setStatusAccount(Enum.valueOf(StatusUser.class, jsonUser.getString("statusAccount")));
 
+                        System.out.println("Resultado do login: " + u.toString());
+
                         try {
+                            try {crud.deleteUser(crud.getUser());} catch (Exception e) {e.printStackTrace();}
                             crud.insertUser(u);
-                            openHome();
+                            System.out.println("Resultado do crud: " + u.getIdUser());
+                            verifyStatusSearch(u.getIdUser());
                         } catch(Exception e) {
+                            //crud.updateUser(u);
+                            //verifyStatusSearch(u.getIdUser());
                             e.printStackTrace();
                         }
                     } catch (JSONException e) {
@@ -191,18 +201,27 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             public void onFailure(Call<User> call, Throwable t) {
                 String aux = " Deu falha no login: " + t.getMessage();
                 Log.e(TAG, aux);
-                Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
+                //Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
             }
         });
         spinner.setVisibility(View.GONE);
     }
 
-    public void openHome(){
-        Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+    public void openHome(Search s){
+        System.out.print("Resultado entrou no openHome()");
+
+        Intent intent;
+        StatusSearch status = (Enum.valueOf(StatusSearch.class, s.getStatus().toString()));
+        switch (status) {
+            case Accepted:
+                intent = new Intent(this, ChatActivity.class);
+                break;
+            default:
+                intent = new Intent(this, HomeActivity.class);
+        }
 
         intent.putExtra("name", u.getName());
         intent.putExtra("localization", getLocalizationDescription());
-
         startActivity(intent);
         finishAffinity();
     }
@@ -436,5 +455,55 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         Bucket bucket = storage.create(BucketInfo.of(bucketName));
 
         System.out.printf("Bucket %s created.%n", bucket.getName());
+    }
+
+    public void verifyStatusSearch(int id) {
+        final Search s = new Search(1, Enum.valueOf(StatusSearch.class,"Initial"), 3);
+
+        Gson g = new GsonBuilder().registerTypeAdapter(Search.class, new SearchDeserializer())
+                .setLenient()
+                .create();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(UserService.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create(g))
+                .build();
+
+        SearchService service = retrofit.create(SearchService.class);
+
+        Call<Search> requestSearch = service.read(id);
+
+        requestSearch.enqueue(new Callback<Search>() {
+            @Override
+            public void onResponse(Call<Search> call, Response<Search> response) {
+                String aux;
+                if(!response.isSuccessful()) {
+                    aux = "Deu falha no sucesso: " + (response.code());
+                    Log.i("TAG", aux);
+                }
+                else if(response.isSuccessful()) {
+                    try {
+                        JSONObject jsonSearch = new JSONObject(new Gson().toJson(response.body()));
+
+                        s.setIdUser(jsonSearch.getInt("idUser"));
+                        s.setIdSearch(jsonSearch.getInt("idSearch"));
+                        s.setStatus(Enum.valueOf(StatusSearch.class, jsonSearch.getString("status")));
+
+                        System.out.println("Resultado do status na LoginActivity: " + s.getStatus());
+
+                        openHome(s);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Search> call, Throwable t) {
+                String aux = " Deu falha no login: " + t.getMessage();
+                Log.e("TAG", aux);
+                Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }

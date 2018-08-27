@@ -13,8 +13,12 @@ public class WaitingAnswerFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup v, Bundle b) {
         View view = inflater.inflate(R.layout.middle_waiting, v, false);
-        //setupComponents(view);
+        setupComponents(view);
         setRetainInstance(true); //preservar a instância do fragment
         return view;
+    }
+
+    public void setupComponents(View view) {
+
     }
 }

@@ -51,6 +51,10 @@
     <string name="guideRejected">O guia rejeitou a conexão</string>
     <string name="tryAgain">Tente novamente</string>
 
+    <string name="write">Escreva</string>
+    <string name="buttonCam">Enviar imagem</string>
+    <string name="buttonSend">Enviar texto informado</string>
+
     <string-array name="list_languages">
         <item>English</item>
         <item>Español</item>

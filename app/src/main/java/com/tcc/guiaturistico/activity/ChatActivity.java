@@ -1,6 +1,6 @@
 package com.tcc.guiaturistico.activity;
 
-import android.content.Intent;
+/*import android.content.Intent;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.CoordinatorLayout;
@@ -116,5 +116,92 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
     public void openChangeInterests(){
         Intent intent = new Intent(this, InterestsActivity.class);
         startActivity(intent);
+    }
+}*/
+
+
+
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.widget.ListView;
+
+import com.tcc.guiaturistico.R;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import adapter.ChatAdapterRight;
+import model.Message;
+
+public class ChatActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_chat);
+
+        ListView chat = findViewById(R.id.list_messages);
+        List<Message> estabelecimentos = getMessages();
+
+        final ChatAdapterRight adapter = new ChatAdapterRight(estabelecimentos, this);
+        chat.setAdapter(adapter);
+    }
+
+    private List<Message> getMessages() {
+        List<Message> list = new ArrayList();
+
+        Message m1 = new Message();
+        Message m2 = new Message();
+        Message m3 = new Message();
+        Message m4 = new Message();
+        Message m5 = new Message();
+        Message m6 = new Message();
+        Message m7 = new Message();
+        Message m8 = new Message();
+        Message m9 = new Message();
+        Message m10 = new Message();
+
+        m1.setContent("Oiee, como vai vocêeeeeee? Vem sempre aquiiiiiii? O que está achando do app???");
+        m1.setDataHora("18:30");
+
+        m2.setContent("tudo bem??");
+        m2.setDataHora("8:30");
+
+        m3.setContent("Oiee");
+        m3.setDataHora("18:30");
+
+        m4.setContent("tudo bem??");
+        m4.setDataHora("8:30");
+
+        m5.setContent("Oiee");
+        m5.setDataHora("18:30");
+
+        m6.setContent("tudo bem??");
+        m6.setDataHora("8:30");
+
+        m7.setContent("Oiee");
+        m7.setDataHora("18:30");
+
+        m8.setContent("tudo bem??");
+        m8.setDataHora("8:30");
+
+        m9.setContent("Oiee");
+        m9.setDataHora("18:30");
+
+        m10.setContent("tudo bem??");
+        m10.setDataHora("8:30");
+
+        list.add(m1);
+        list.add(m2);
+        list.add(m3);
+        list.add(m4);
+        list.add(m5);
+        list.add(m6);
+        list.add(m7);
+        list.add(m8);
+        list.add(m9);
+        list.add(m10);
+
+        return list;
     }
 }

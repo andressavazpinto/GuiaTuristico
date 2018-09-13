@@ -17,7 +17,7 @@ import model.User;
 public class DBHelper extends SQLiteOpenHelper {
 
     public static final String BASE_NAME = "DBApp";
-    public static final int BASE_VERSION = 7;
+    public static final int BASE_VERSION = 8;
 
     public DBHelper(Context context) {
         super(context, BASE_NAME, null, BASE_VERSION);

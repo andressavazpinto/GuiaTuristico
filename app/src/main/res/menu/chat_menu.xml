@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/automaticTranslation"
+        android:title="@string/automaticTranslation"
+        app:actionLayout="@layout/switch_item"
+        app:showAsAction="withText"/>
+    <item
+        android:id="@+id/suggestion"
+        android:title="@string/suggestion">
+        <menu>
+        </menu>
+    </item>
+    <item
+        android:id="@+id/reportGuide"
+        android:title="@string/reportGuide" />
+    <item
+        android:id="@+id/leftSession"
+        android:title="@string/leftSession" />
+</menu>

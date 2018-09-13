@@ -9,7 +9,7 @@ public class Url {
     //também é necessário que a API esteja ativa na rede
 
     //Morato
-    public static String BASE_URL = "http://192.168.0.101:8089/GuiaWSMaven/rest/";
+    //public static String BASE_URL = "http://192.168.0.101:8089/GuiaWSMaven/rest/";
     //SP
-    //public static String BASE_URL = "http://192.168.0.4:8089/GuiaWSMaven/rest/";
+    public static String BASE_URL = "http://192.168.0.4:8089/GuiaWSMaven/rest/";
 }

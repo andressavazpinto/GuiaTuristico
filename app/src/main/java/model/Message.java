@@ -1,13 +1,14 @@
 package model;
 
 public class Message {
-    private int idMessage;
+    private int idMessage, idUser;
     private String content, dataHora;
 
     public Message() {
     }
 
-    public Message(int idMessage, String content, String dataHora) {
+    public Message(int idMessage, int idUser, String content, String dataHora) {
+        this.idUser = idUser;
         this.idMessage = idMessage;
         this.content = content;
         this.dataHora = dataHora;
@@ -20,6 +21,10 @@ public class Message {
     public void setIdMessage(int idMessage) {
         this.idMessage = idMessage;
     }
+
+    public int getIdUser() { return idUser; }
+
+    public void setIdUser(int idUser) { this.idUser = idUser; }
 
     public String getContent() {
         return content;

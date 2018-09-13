@@ -10,9 +10,32 @@
     android:id="@+id/contentChat"
     android:visibility="gone">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-    </LinearLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <ListView
+                    android:id="@+id/list_messages"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1.05"
+                    android:clickable="false"
+                    android:divider="@drawable/divider_messages"
+                    android:layout_gravity="top">
+                </ListView>
+
+                <include
+                    layout="@layout/chat_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="bottom"/>
+            </LinearLayout>
+        </RelativeLayout>
 </android.support.constraint.ConstraintLayout>
+

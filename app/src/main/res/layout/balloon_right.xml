@@ -20,10 +20,10 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <ImageView
+            android:contentDescription="@string/yourMessage"
             android:id="@+id/imageContent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/home_bottom1"
             android:visibility="gone" />
 
         <TextView
@@ -33,17 +33,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/colorAccent"
-            android:textSize="@dimen/text_size_chat"
-            android:text="Het John. The politic climb is embarased"/>
+            android:textSize="@dimen/text_size_chat" />
 
         <TextView
             android:id="@+id/textViewDateTime"
             style="@style/Base.TextAppearance.AppCompat.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
+            android:layout_gravity="end"
             android:layout_marginTop="12dp"
-            android:textColor="@color/textColor"
-            android:text="12:55 (18:55)" />
+            android:textColor="@color/textColor"/>
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>

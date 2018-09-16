@@ -76,6 +76,7 @@
         <item>O que não posso deixar de conhecer?</item>
     </string-array>
 
-
+    <string name="yourMessage">Sua mensagem</string>
+    <string name="guideMessage">Mensagem do guia</string>
 
 </resources>

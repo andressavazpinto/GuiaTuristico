@@ -11,7 +11,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -29,13 +28,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -46,7 +43,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.tcc.guiaturistico.R;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -64,10 +60,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
     private List<Message> list;
     private ListView chat;
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
-    private ArrayAdapter<String> arrayAdapter;
     private EditText message;
-    private String encodedImage;
-    ImageButton camButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -109,7 +102,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
         contentMain.setVisibility(View.VISIBLE);
 
         ImageButton sendButton = contentMain.findViewById(R.id.imageButtonSend);
-        camButton = contentMain.findViewById(R.id.imageButtonCam);
+        ImageButton camButton = contentMain.findViewById(R.id.imageButtonCam);
         message = contentMain.findViewById(R.id.editTextWrite);
 
         chat = contentMain.findViewById(R.id.list_messages);
@@ -234,7 +227,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
 
         recentMessagesQuery.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 list.clear();
                 for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
@@ -246,7 +239,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
 
             @NonNull
             @Override
-            public void onCancelled(DatabaseError error) {
+            public void onCancelled(@NonNull DatabaseError error) {
                 Log.w("ChatActivity", "Failed to read value.", error.toException());
             }
         });
@@ -300,7 +293,6 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
             } else {
 
             }
-            return;
         }
     }
 }

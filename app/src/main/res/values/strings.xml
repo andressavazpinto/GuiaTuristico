@@ -55,7 +55,7 @@
     <string name="buttonCam">Enviar imagem</string>
     <string name="buttonSend">Enviar texto informado</string>
     <string name="automaticTranslation">Tradução automática</string>
-    <string name="suggestion">Sugestão</string>
+    <string name="suggestions">Sugestões</string>
     <string name="reportGuide">Denunciar guia</string>
     <string name="leftSession">Abandonar sessão</string>
 
@@ -65,18 +65,17 @@
         <item>Português-BR</item>
     </string-array>
 
-    <string name="quickstart_message">Click the SUBSCRIBE TO NEWS button below to subscribe to the
-    news topic. Messages sent to the news topic will be received. The LOG TOKEN button logs the
-    InstanceID token to logcat.</string>
-    <string name="subscribe_to_news">Subscribe To News</string>
-    <string name="log_token">Log Token</string>
-    <string name="msg_subscribed">Subscribed to news topic</string>
-    <string name="msg_token_fmt" translatable="false">InstanceID Token: %s</string>
-    <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
-    <!--
-        This is the name that users will see when interacting with this channel.
-        It should describe the category of notifications that will be sent through this channel
-     -->
-    <string name="default_notification_channel_name" translatable="true">News</string>
-    <string name="msg_subscribe_failed">Failed to subscribe to news topic</string>
+    <string-array name="list_cook">
+        <item>Prato típico da sua região</item>
+        <item>Cardápio de um restaurante/ bar</item>
+        <item>Seu prato favorito</item>
+        <item>Melhor restaurante</item>
+        <item>Petisco típico em bares</item>
+        <item>Prato exótico</item>
+        <item>Café da mahã típico</item>
+        <item>O que não posso deixar de conhecer?</item>
+    </string-array>
+
+
+
 </resources>

@@ -4,7 +4,9 @@
     xmlns:style="http://schemas.android.com/apk/res-auto"
     tools:showIn="navigation_view">
 
-    <group android:checkableBehavior="single">
+    <group
+        android:checkableBehavior="single"
+        android:id="@+id/group_settings">
         <item
             android:id="@+id/nav_profile"
             android:title="@string/profile" />
@@ -22,12 +24,12 @@
             android:title="@string/changeInterests" />
     </group>
 
-    <item android:title="">
-        <menu>
+    <group
+        android:id="@+id/group_logout"
+        android:checkableBehavior="single">
             <item
                 android:id="@+id/nav_logout"
                 android:title="@string/logout" />
-        </menu>
-    </item>
+    </group>
 
 </menu>

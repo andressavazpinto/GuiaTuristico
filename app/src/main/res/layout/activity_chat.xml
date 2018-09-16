@@ -16,13 +16,16 @@
             android:orientation="vertical">
 
             <ListView
+                android:layout_alignParentBottom="true"
                 android:id="@+id/list_messages"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1.05"
                 android:clickable="false"
                 android:divider="@drawable/divider_messages"
-                android:layout_gravity="top">
+                android:layout_gravity="top"
+                android:stackFromBottom="true"
+                android:transcriptMode="alwaysScroll">
             </ListView>
 
             <include

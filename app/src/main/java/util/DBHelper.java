@@ -2,13 +2,9 @@
 
 package util;
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-
-import model.User;
 
 /**
  * Created by Andressa on 26/05/2018.
@@ -16,8 +12,8 @@ import model.User;
 
 public class DBHelper extends SQLiteOpenHelper {
 
-    public static final String BASE_NAME = "DBApp";
-    public static final int BASE_VERSION = 8;
+    private static final String BASE_NAME = "DBApp";
+    private static final int BASE_VERSION = 8;
 
     public DBHelper(Context context) {
         super(context, BASE_NAME, null, BASE_VERSION);

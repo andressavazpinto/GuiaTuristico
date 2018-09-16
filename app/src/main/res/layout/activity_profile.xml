@@ -70,6 +70,7 @@
                     style="@style/patternButton"
                     android:layout_marginTop="25dp"
                     android:layout_marginBottom="10dp"
+                    android:layout_alignParentBottom="true"
                     android:layout_gravity="end"/>
 
             </LinearLayout>

@@ -1,51 +1,78 @@
 //https://www.youtube.com/watch?v=U0xcNBg3Lhw até 4'
 //https://www.youtube.com/watch?v=wVCz1a3ogqk ver a partir do 6'
+//https://www.youtube.com/watch?v=AnNpUGyryiE - foto galeria
 package com.tcc.guiaturistico.activity;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.tcc.guiaturistico.R;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import adapter.ChatAdapter;
 import model.Message;
 
 public class ChatActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    private final int GALERY_IMAGE = 1;
+    private final int PERMISSION_REQUEST = 2;
     private ProgressBar spinner;
-    public TextView nameNavHeader, localizationNavHeader;
-    ConstraintLayout contentMain;
-    FirebaseDatabase database;
-    List<Message> list;
+    private TextView nameNavHeader, localizationNavHeader;
+    private ConstraintLayout contentMain;
+    private List<Message> list;
+    private ListView chat;
+    private FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private ArrayAdapter<String> arrayAdapter;
+    private EditText message;
+    private String encodedImage;
+    ImageButton camButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        database = FirebaseDatabase.getInstance();
         list = new ArrayList<Message>();
         setupComponents();
     }
@@ -80,6 +107,39 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
         ConstraintLayout otherContent = appBar.findViewById(R.id.contentMain);
         otherContent.setVisibility(View.GONE);
         contentMain.setVisibility(View.VISIBLE);
+
+        ImageButton sendButton = contentMain.findViewById(R.id.imageButtonSend);
+        camButton = contentMain.findViewById(R.id.imageButtonCam);
+        message = contentMain.findViewById(R.id.editTextWrite);
+
+        chat = contentMain.findViewById(R.id.list_messages);
+
+        sendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String text = message.getText().toString();
+                sendMessage(text, "text", 1);
+            }
+        });
+
+        camButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(ContextCompat.checkSelfPermission(getApplicationContext(),
+                        Manifest.permission.READ_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    if(ActivityCompat.shouldShowRequestPermissionRationale(ChatActivity.this,
+                            Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                    } else {
+                        ActivityCompat.requestPermissions(ChatActivity.this,
+                                new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE },
+                                PERMISSION_REQUEST);
+                    }
+                }
+                Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(intent, GALERY_IMAGE);
+            }
+        });
 
         getMessages();
     }
@@ -135,12 +195,17 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
         switch (id) {
             case R.id.automaticTranslation:
                 break;
-            case R.id.suggestion:
+            case R.id.suggestions:
                 break;
             case R.id.reportGuide:
                 break;
             case R.id.leftSession:
                 break;
+            default:
+                //pegar a sugestão
+                message.setText(item.getTitle());
+                //posicionar o cursor no final do texto
+                message.setSelection(message.getText().length());
         }
         return super.onOptionsItemSelected(item);
     }
@@ -156,50 +221,86 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void listMessages() {
-        //chamar lista de mensagens pela API. Trabalhar com paginação e pilha, ou leitura desc.
-        //Apresnder a pegar mensagem em tempo real. Setar balão correto na exibição
-        ListView chat = contentMain.findViewById(R.id.list_messages);
-
         final ChatAdapter adapter = new ChatAdapter(list, this, this);
         chat.setAdapter(adapter);
+        chat.setStackFromBottom(true);
     }
 
     private void getMessages() {
         Log.d("ChatActivity", "Inside of getMessages(): " + list.toString());
-        final Message m1 = new Message();
+        //AQUI DEVO PASSAR O ID DA CONVERSA
+        final DatabaseReference myRef = database.getReference("/chat/1/messages/");
+        Query recentMessagesQuery = myRef.limitToLast(10);
 
-        // Read from the database
-        DatabaseReference myRef = database.getReference("message");
-        //DatabaseReference myRef = database.getReference().getRoot();
-        myRef.addValueEventListener(new ValueEventListener() {
+        recentMessagesQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                // This method is called once with the initial value and again
-                // whenever data at this location is updated.
-                String value = dataSnapshot.getValue(String.class);
-                //String value = dataSnapshot.getValue(Message.class);
-                //
-                Log.d("ChatActivity", "Value is: " + value);
 
-                m1.setContent(dataSnapshot.getValue(String.class));
-                m1.setDataHora("18:30");
-                m1.setIdUser(3);
-                list.add(m1);
-
+                list.clear();
+                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
+                    Message a = postSnapshot.getValue(Message.class);
+                    list.add(a);
+                }
                 listMessages();
             }
 
+            @NonNull
             @Override
             public void onCancelled(DatabaseError error) {
-                // Failed to read value
                 Log.w("ChatActivity", "Failed to read value.", error.toException());
             }
         });
 
-        // Write a message to the database
-        //DatabaseReference myRef = database.getReference("message");
-        //myRef.setValue("Hello, World!");
-
         spinner.setVisibility(View.GONE);
+    }
+
+    public void sendMessage(String text, String type, int idChat) {
+        if(text != null & ! text.equals("") & ! text.matches(" ")) {
+            DatabaseReference myRef = database.getReference();
+
+            final Message m2 = new Message(11, 3, text, type);
+
+            Map<String, Object> postValues = m2.toMap();
+            Map<String, Object> childUpdates = new HashMap();
+            childUpdates.put("/chat/" + idChat + "/messages/" + m2.getIdMessage(), postValues);
+
+            myRef.updateChildren(childUpdates);
+        }
+        message.setText("");
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == RESULT_OK && requestCode == 1) {
+            Uri selectedImage = data.getData();
+            String[] filePath = { MediaStore.Images.Media.DATA };
+            Cursor c = getContentResolver().query(selectedImage, filePath, null, null, null);
+            c.moveToFirst();
+            int columnIndex = c.getColumnIndex(filePath[0]);
+            String picturePath = c.getString(columnIndex);
+            c.close();
+
+            Bitmap image = (BitmapFactory.decodeFile(picturePath));
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            image.compress(Bitmap.CompressFormat.JPEG, 100, baos); //bm is the bitmap object
+            byte[] b = baos.toByteArray();
+            String encodedImage = Base64.encodeToString(b, Base64.DEFAULT);
+            Log.w("ChatActivity", "Encode image: " + encodedImage);
+            sendMessage(encodedImage, "Image", 1);
+        }
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        if(requestCode == PERMISSION_REQUEST) {
+            if(grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+            } else {
+
+            }
+            return;
+        }
     }
 }

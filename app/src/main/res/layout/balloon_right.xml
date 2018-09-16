@@ -4,8 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="@dimen/margenBalaoBottom"
-    android:layout_marginLeft="@dimen/margenLeftChat"
-    android:layout_marginStart="@dimen/margenLeftChat">
+    android:layout_marginEnd="@dimen/margenLeftChat"
+    android:layout_marginStart="@dimen/margenLeftChat"
+    android:id="@+id/balloon_rigth">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -14,11 +15,16 @@
         android:orientation="vertical"
         android:paddingBottom="@dimen/paddingBalaoDirBottom"
         android:paddingEnd="@dimen/paddingBalaoDirRight"
-        android:paddingLeft="@dimen/paddingBalaoDirLeft"
-        android:paddingRight="@dimen/paddingBalaoDirRight"
         android:paddingStart="@dimen/paddingBalaoDirLeft"
         android:paddingTop="@dimen/paddingBalaoDirTop"
         app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:id="@+id/imageContent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/home_bottom1"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/textViewContent"
@@ -26,12 +32,12 @@
             android:linksClickable="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/textColor"
+            android:textColor="@color/colorAccent"
             android:textSize="@dimen/text_size_chat"
             android:text="Het John. The politic climb is embarased"/>
 
         <TextView
-            android:id="@+id/textViewDataHora"
+            android:id="@+id/textViewDateTime"
             style="@style/Base.TextAppearance.AppCompat.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

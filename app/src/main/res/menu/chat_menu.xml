@@ -8,9 +8,18 @@
         app:actionLayout="@layout/switch_item"
         app:showAsAction="withText"/>
     <item
-        android:id="@+id/suggestion"
-        android:title="@string/suggestion">
-        <menu>
+        android:id="@+id/suggestions"
+        android:title="@string/suggestions">
+        <menu >
+            <item android:id="@+id/submenu"
+                android:title="@string/cooking"
+                app:showAsAction="ifRoom|withText" >
+                <menu>
+                    <item
+                        android:id="@+id/cook"
+                        android:title="@string/sigIn" />
+                </menu>
+            </item>
         </menu>
     </item>
     <item

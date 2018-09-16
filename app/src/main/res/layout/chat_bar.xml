@@ -15,7 +15,7 @@
             android:id="@+id/imageButtonCam"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/cam"
+            app:srcCompat="@drawable/ic_cam"
             android:background="@null"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="@dimen/activity_horizontal_margin"
@@ -29,13 +29,14 @@
             android:layout_weight="1"
             android:ems="10"
             android:hint="@string/write"
-            style="@style/editText_style"/>
+            style="@style/editText_style"
+            android:layout_gravity="start"/>
 
         <ImageButton
             android:id="@+id/imageButtonSend"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/send"
+            app:srcCompat="@drawable/ic_send_message"
             android:background="@null"
             android:layout_gravity="center_vertical"
             android:layout_marginEnd="@dimen/activity_horizontal_margin"

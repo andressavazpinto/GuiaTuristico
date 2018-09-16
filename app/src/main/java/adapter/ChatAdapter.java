@@ -3,14 +3,17 @@ package adapter;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.text.format.DateFormat;
 
 import com.tcc.guiaturistico.R;
-import com.tcc.guiaturistico.activity.ChatActivity;
 
 import java.util.List;
 
@@ -48,16 +51,27 @@ public class ChatAdapter extends BaseAdapter {
         Message message = messages.get(position);
 
         @SuppressLint("ViewHolder")
-        View view = activity.getLayoutInflater().inflate(R.layout.balloon_left, parent, false);
-
-        if(message.getIdUser() == crud.getUser().getIdUser())
+        View view;
+        if (message.getIdUser() == crud.getUser().getIdUser())
             view = activity.getLayoutInflater().inflate(R.layout.balloon_right, parent, false);
+        else
+            view = activity.getLayoutInflater().inflate(R.layout.balloon_left, parent, false);
 
         TextView textViewContent = view.findViewById(R.id.textViewContent);
-        TextView textViewDataHora = view.findViewById(R.id.textViewDataHora);
+        if(message.getType().equals("String")) {
+            textViewContent.setText(message.getContent());
+        }
+        else if(message.getType().equals("Image")) {
+            textViewContent.setVisibility(View.GONE);
+            ImageView imageContent = view.findViewById(R.id.imageContent);
+            imageContent.setVisibility(View.VISIBLE);
+            byte[] decodedString = Base64.decode(message.getContent(), Base64.DEFAULT);
+            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+            imageContent.setImageBitmap(decodedByte);
+        }
 
-        textViewContent.setText(message.getContent());
-        textViewDataHora.setText(message.getDataHora());
+        TextView textViewDataHora = view.findViewById(R.id.textViewDateTime);
+        textViewDataHora.setText(DateFormat.format("dd/MM/yyyy (HH:mm)", message.getDateTime()));
 
         return view;
     }

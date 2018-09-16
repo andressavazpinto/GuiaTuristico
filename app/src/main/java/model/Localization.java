@@ -3,9 +3,9 @@ package model;
 import java.io.Serializable;
 
 public class Localization implements Serializable {
-    public int idLocalization;
-    public double latitude, longitude;
-    public String city, uf, country;
+    private int idLocalization;
+    private double latitude, longitude;
+    private String city, uf, country;
 
     public Localization() {
     }

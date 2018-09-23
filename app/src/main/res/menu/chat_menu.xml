@@ -11,13 +11,62 @@
         android:id="@+id/suggestions"
         android:title="@string/suggestions">
         <menu >
-            <item android:id="@+id/submenu"
+            <item android:id="@+id/submenu_cooking"
                 android:title="@string/cooking"
                 app:showAsAction="ifRoom|withText" >
                 <menu>
-                    <item
-                        android:id="@+id/cook"
-                        android:title="@string/sigIn" />
+                    <item android:title="@string/cook1" />
+                    <item android:title="@string/cook2" />
+                    <item android:title="@string/cook3" />
+                    <item android:title="@string/cook4" />
+                    <item android:title="@string/cook5" />
+                    <item android:title="@string/cook6" />
+                    <item android:title="@string/cook7" />
+                    <item android:title="@string/cook8" />
+                </menu>
+            </item>
+            <item android:id="@+id/submenu_culture"
+                android:title="@string/culture"
+                app:showAsAction="ifRoom|withText" >
+                <menu>
+                    <item android:title="@string/culture1" />
+                    <item android:title="@string/culture2" />
+                    <item android:title="@string/culture3" />
+                    <item android:title="@string/culture4" />
+                    <item android:title="@string/culture5" />
+                    <item android:title="@string/culture6" />
+                    <item android:title="@string/culture7" />
+                    <item android:title="@string/culture8" />
+                    <item android:title="@string/culture9" />
+                    <item android:title="@string/culture10" />
+                </menu>
+            </item>
+            <item android:id="@+id/submenu_art"
+                android:title="@string/art"
+                app:showAsAction="ifRoom|withText" >
+                <menu>
+                    <item android:title="@string/art1" />
+                    <item android:title="@string/art2" />
+                    <item android:title="@string/art3" />
+                    <item android:title="@string/art4" />
+                    <item android:title="@string/art5" />
+                    <item android:title="@string/art6" />
+                    <item android:title="@string/art7" />
+                    <item android:title="@string/art8" />
+                </menu>
+            </item>
+            <item android:id="@+id/submenu_others"
+                android:title="@string/others"
+                app:showAsAction="ifRoom|withText" >
+                <menu>
+                    <item android:title="@string/others1" />
+                    <item android:title="@string/others2" />
+                    <item android:title="@string/others3" />
+                    <item android:title="@string/others4" />
+                    <item android:title="@string/others5" />
+                    <item android:title="@string/others6" />
+                    <item android:title="@string/others7" />
+                    <item android:title="@string/others8" />
                 </menu>
             </item>
         </menu>

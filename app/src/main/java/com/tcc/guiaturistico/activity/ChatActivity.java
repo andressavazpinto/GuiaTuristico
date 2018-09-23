@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -30,6 +31,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -53,6 +55,7 @@ import model.Message;
 
 public class ChatActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private final int GALERY_IMAGE = 1;
+    private final int TAKE_PICTURE = 3;
     private final int PERMISSION_REQUEST = 2;
     private ProgressBar spinner;
     private TextView nameNavHeader, localizationNavHeader;
@@ -61,6 +64,9 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
     private ListView chat;
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private EditText message;
+    private BottomSheetDialog mBottomSheetDialog;
+    private View sheetView;
+    private String suggestion;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -111,7 +117,31 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onClick(View view) {
                 String text = message.getText().toString();
-                sendMessage(text, "text", 1);
+                sendMessage(text, "String", 1);
+            }
+        });
+
+        mBottomSheetDialog = new BottomSheetDialog(this);
+        sheetView = this.getLayoutInflater().inflate(R.layout.cam_bottom_sheet, null);
+        mBottomSheetDialog.setContentView(sheetView);
+        LinearLayout cam = sheetView.findViewById(R.id.fragment_history_bottom_sheet_cam);
+        LinearLayout photoLibrary = sheetView.findViewById(R.id.fragment_history_bottom_sheet_photo_library);
+
+        cam.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                if(takePicture.resolveActivity(getPackageManager()) != null) {
+                   startActivityForResult(takePicture, TAKE_PICTURE);
+                }
+            }
+        });
+
+        photoLibrary.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(intent, GALERY_IMAGE);
             }
         });
 
@@ -123,18 +153,20 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
                         != PackageManager.PERMISSION_GRANTED) {
                     if(ActivityCompat.shouldShowRequestPermissionRationale(ChatActivity.this,
                             Manifest.permission.READ_EXTERNAL_STORAGE)) {
+
                     } else {
                         ActivityCompat.requestPermissions(ChatActivity.this,
                                 new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE },
                                 PERMISSION_REQUEST);
+
                     }
                 }
-                Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(intent, GALERY_IMAGE);
+                mBottomSheetDialog.show();
             }
         });
 
-        getMessages();
+        //no lugar do 1, passar o id do chat atual deste usuário
+        getMessages(1);
     }
 
     @Override
@@ -159,8 +191,6 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
             case R.id.nav_guide:
                 break;
             case R.id.nav_settings:
-                break;
-            case R.id.nav_chats:
                 break;
             case R.id.nav_changeInterests:
                 openChangeInterests();
@@ -194,11 +224,22 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.leftSession:
                 break;
+            case R.id.submenu_cooking:
+                break;
+            case R.id.submenu_culture:
+                break;
+            case R.id.submenu_art:
+                break;
+            case R.id.submenu_others:
+                break;
             default:
-                //pegar a sugestão
-                message.setText(item.getTitle());
-                //posicionar o cursor no final do texto
-                message.setSelection(message.getText().length());
+
+                Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                if(takePicture.resolveActivity(getPackageManager()) != null) {
+                    //texto da sugestão
+                    //suggestion = item.getTitle().toString();
+                    startActivityForResult(takePicture, TAKE_PICTURE);
+                }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -214,15 +255,15 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void listMessages() {
+        spinner.setVisibility(View.GONE);
         final ChatAdapter adapter = new ChatAdapter(list, this, this);
         chat.setAdapter(adapter);
         chat.setStackFromBottom(true);
     }
 
-    private void getMessages() {
+    private void getMessages(int idChat) {
         Log.d("ChatActivity", "Inside of getMessages(): " + list.toString());
-        //AQUI DEVO PASSAR O ID DA CONVERSA
-        final DatabaseReference myRef = database.getReference("/chat/1/messages/");
+        final DatabaseReference myRef = database.getReference("/chat/"+ idChat +"/messages/");
         Query recentMessagesQuery = myRef.limitToLast(10);
 
         recentMessagesQuery.addValueEventListener(new ValueEventListener() {
@@ -244,18 +285,19 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-        spinner.setVisibility(View.GONE);
+
     }
 
     public void sendMessage(String text, String type, int idChat) {
         if(text != null & ! text.equals("") & ! text.matches(" ")) {
             DatabaseReference myRef = database.getReference();
 
-            final Message m2 = new Message(11, 3, text, type);
+            String key = myRef.child("messages").push().getKey();
+            final Message m2 = new Message(1, 3, text, type);
 
             Map<String, Object> postValues = m2.toMap();
             Map<String, Object> childUpdates = new HashMap();
-            childUpdates.put("/chat/" + idChat + "/messages/" + m2.getIdMessage(), postValues);
+            childUpdates.put("/chat/" + idChat + "/messages/" + key, postValues);
 
             myRef.updateChildren(childUpdates);
         }
@@ -279,9 +321,24 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
             byte[] b = baos.toByteArray();
             String encodedImage = Base64.encodeToString(b, Base64.DEFAULT);
             Log.w("ChatActivity", "Encode image: " + encodedImage);
+
             sendMessage(encodedImage, "Image", 1);
         }
+        if(requestCode == TAKE_PICTURE && resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap image = (Bitmap) extras.get("data");
 
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            image.compress(Bitmap.CompressFormat.JPEG, 100, baos); //bm is the bitmap object
+            byte[] b = baos.toByteArray();
+            String encodedImage = Base64.encodeToString(b, Base64.DEFAULT);
+            Log.w("ChatActivity", "Encode image: " + encodedImage);
+
+            //sendMessage(suggestion, "String", 1);
+            sendMessage(encodedImage, "Image", 1);
+        }
+        mBottomSheetDialog.dismiss();
     }
 
     @Override

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="@dimen/margenBalaoBottom"
+    android:layout_marginBottom="10dp"
     android:layout_marginEnd="@dimen/margenLeftChat"
     android:layout_marginStart="@dimen/margenLeftChat"
     android:id="@+id/balloon_rigth">
@@ -19,12 +19,12 @@
         android:paddingTop="@dimen/paddingBalaoDirTop"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <ImageView
+        <util.ResizableImageView
             android:contentDescription="@string/yourMessage"
             android:id="@+id/imageContent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone" />
+            android:visibility="gone"/>
 
         <TextView
             android:id="@+id/textViewContent"

@@ -232,8 +232,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         } else if (id == R.id.nav_settings) {
 
-        } else if (id == R.id.nav_chats) {
-
         } else if (id == R.id.nav_changeInterests) {
             openChangeInterests();
         } else if (id == R.id.nav_logout) {

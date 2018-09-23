@@ -19,7 +19,7 @@
         android:paddingTop="5dp"
         app:layout_constraintStart_toStartOf="parent">
 
-    <ImageView
+    <util.ResizableImageView
         android:contentDescription="@string/guideMessage"
         android:id="@+id/imageContent"
         android:layout_width="wrap_content"

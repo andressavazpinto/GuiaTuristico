@@ -65,12 +65,12 @@
                 <Button
                     android:id="@+id/buttonSave"
                     android:layout_weight="1"
+                    android:layout_height="0dp"
                     android:background="@drawable/selector_button"
                     android:text="@string/save"
                     style="@style/patternButton"
                     android:layout_marginTop="25dp"
                     android:layout_marginBottom="10dp"
-                    android:layout_alignParentBottom="true"
                     android:layout_gravity="end"/>
 
             </LinearLayout>

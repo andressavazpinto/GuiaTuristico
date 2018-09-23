@@ -186,8 +186,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                             System.out.println("Resultado do crud: " + u.getIdUser());
                             verifyStatusSearch(u.getIdUser());
                         } catch(Exception e) {
-                            //crud.updateUser(u);
-                            //verifyStatusSearch(u.getIdUser());
                             e.printStackTrace();
                         }
                     } catch (JSONException e) {
@@ -437,24 +435,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    }
-
-    public void authenticate() {
-        /*Storage storage = StorageOptions.getDefaultInstance().getService();
-        Page<Bucket> buckets = storage.list();
-        for (Bucket bucket : buckets.iterateAll()) {
-            // do something with the info
-            System.out.println(buckets.toString());
-        }*/
-        Storage storage = StorageOptions.getDefaultInstance().getService();
-
-        // The name for the new bucket
-        String bucketName = "my-new-bucket";//args[0];  //
-
-        // Creates the new bucket
-        Bucket bucket = storage.create(BucketInfo.of(bucketName));
-
-        System.out.printf("Bucket %s created.%n", bucket.getName());
     }
 
     public void verifyStatusSearch(int id) {

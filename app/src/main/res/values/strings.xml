@@ -65,18 +65,51 @@
         <item>Português-BR</item>
     </string-array>
 
-    <string-array name="list_cook">
-        <item>Prato típico da sua região</item>
-        <item>Cardápio de um restaurante/ bar</item>
-        <item>Seu prato favorito</item>
-        <item>Melhor restaurante</item>
-        <item>Petisco típico em bares</item>
-        <item>Prato exótico</item>
-        <item>Café da mahã típico</item>
-        <item>O que não posso deixar de conhecer?</item>
-    </string-array>
+    <string name="cook1">Prato típico da sua região</string>
+    <string name="cook2">Cardápio de um restaurante/ bar</string>
+    <string name="cook3">Seu prato favorito</string>
+    <string name="cook4">Melhor restaurante</string>
+    <string name="cook5">Petisco típico em bares</string>
+    <string name="cook6">Prato exótico</string>
+    <string name="cook7">Café da manhã típico</string>
+    <string name="cook8">O que não pode deixar de conhecer</string>
+
+    <string name="culture1">Algo escrito na sua língua</string>
+    <string name="culture2">Festa típica</string>
+    <string name="culture3">Transporte público da sua cidade</string>
+    <string name="culture4">Arquitetura da cidade</string>
+    <string name="culture5">Comércio/ Shopping/ Loja</string>
+    <string name="culture6">Praia / Lago / Cachoeira</string>
+    <string name="culture7">Rua importante</string>
+    <string name="culture8">Foto da sua mesa de trabalho/ escola/ faculdade</string>
+    <string name="culture9">Foto da sua escola/ faculdade</string>
+    <string name="culture10">O que não pode deixar de conhecer</string>
+
+    <string name="art1">Museu / Teatro</string>
+    <string name="art2">Casa de shows / concertos</string>
+    <string name="art3">Capa CD favorito</string>
+    <string name="art4">Livraria</string>
+    <string name="art5">Obra de arte</string>
+    <string name="art6">Centro histórico</string>
+    <string name="art7">Balada / Festival / Show</string>
+    <string name="art8">O que não pode deixar de conhecer</string>
+
+    <string name="others">Outros</string>
+    <string name="others1">Mostre como está o tempo</string>
+    <string name="others2">Mostre sua vista</string>
+    <string name="others3">Seu lugar favorito na cidade</string>
+    <string name="others4">Seu ambiente de estudo</string>
+    <string name="others5">Cômodo da sua casa</string>
+    <string name="others6">Sua rua</string>
+    <string name="others7">Belezas naturais</string>
+    <string name="others8">Hospedagem</string>
 
     <string name="yourMessage">Sua mensagem</string>
     <string name="guideMessage">Mensagem do guia</string>
+
+    <string name="developing">Em desenvolvimento... Tente buscar pelo modo aleatório</string>
+
+    <string name="camera">Câmera</string>
+    <string name="photo_library">Galeria de fotos</string>
 
 </resources>

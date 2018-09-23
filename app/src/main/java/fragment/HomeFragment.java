@@ -1,6 +1,7 @@
 package fragment;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,6 +14,8 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.tcc.guiaturistico.R;
+import com.tcc.guiaturistico.activity.ByRegionActivity;
+import com.tcc.guiaturistico.activity.HomeActivity;
 
 import model.ConnectGuides;
 import model.ConnectGuidesDeserializer;
@@ -76,6 +79,9 @@ public class HomeFragment extends Fragment {
     }
 
     private void searchByRegion() {
+        Intent intent = new Intent(getActivity(), ByRegionActivity.class);
+        getActivity().startActivity(intent);
+        //startActivity(intent);
     }
 
     private void searchRamdomly() {

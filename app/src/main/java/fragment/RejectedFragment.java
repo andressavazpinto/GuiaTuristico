@@ -1,7 +1,9 @@
 package fragment;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,6 +14,9 @@ import android.widget.Button;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.tcc.guiaturistico.R;
+import com.tcc.guiaturistico.activity.ByRegionActivity;
+
+import javax.annotation.ParametersAreNonnullByDefault;
 
 import model.Search;
 import model.SearchDeserializer;
@@ -32,7 +37,7 @@ public class RejectedFragment extends Fragment {
     private Search search1;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup v, Bundle b) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup v, Bundle b) {
         View view = inflater.inflate(R.layout.middle_rejected, v, false);
 
         crud = new DBController(getContext());
@@ -61,6 +66,8 @@ public class RejectedFragment extends Fragment {
     }
 
     private void searchByRegion() {
+        Intent intent = new Intent(getActivity(), ByRegionActivity.class);
+        getActivity().startActivity(intent);
     }
 
     private void searchRamdomly() {
@@ -91,7 +98,7 @@ public class RejectedFragment extends Fragment {
 
         requestSearch.enqueue(new Callback<Void>() {
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
+            public void onResponse(@ParametersAreNonnullByDefault Call<Void> call, @ParametersAreNonnullByDefault Response<Void> response) {
                 String aux;
                 if(!response.isSuccessful()) {
                     aux = "Deu falha no sucesso: " + (response.code());
@@ -103,7 +110,7 @@ public class RejectedFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<Void> call, Throwable t) {
+            public void onFailure(@ParametersAreNonnullByDefault Call<Void> call, @ParametersAreNonnullByDefault Throwable t) {
                 String aux = " Deu falha: " + t.getMessage();
                 Log.e("TAG", aux);
             }

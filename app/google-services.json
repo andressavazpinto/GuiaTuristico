@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1050018003883",
+    "firebase_url": "https://guia-tcc.firebaseio.com",
+    "project_id": "guia-tcc",
+    "storage_bucket": "guia-tcc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1050018003883:android:32d4532f071a2ef0",
+        "android_client_info": {
+          "package_name": "com.tcc.guiaturistico"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1050018003883-lmrt0sjguir0g11um4tj4v626acsjj04.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tcc.guiaturistico",
+            "certificate_hash": "a7ab06eae7338f8fff7dab30c77fcd04844abc4c"
+          }
+        },
+        {
+          "client_id": "1050018003883-0natkclublf4knucvblgjeu3vceo4g4f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBcz_KC6DSCrtAr2B3G1drJYmaWH1LlUR8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1050018003883-0natkclublf4knucvblgjeu3vceo4g4f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

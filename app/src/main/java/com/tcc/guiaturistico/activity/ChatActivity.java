@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -19,6 +20,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -35,6 +37,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -42,21 +45,44 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.tcc.guiaturistico.R;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import adapter.ChatAdapter;
+import model.Localization;
+import model.LocalizationDeserializer;
 import model.Message;
+import model.Translate;
+import model.TranslateDeserializer;
+import okio.ByteString;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.POST;
+import service.LocalizationService;
+import service.TranslationService;
 
 public class ChatActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private final int GALERY_IMAGE = 1;
     private final int TAKE_PICTURE = 3;
+    private final int CAMERA = 4;
     private final int PERMISSION_REQUEST = 2;
+    private File fileImage = null;
     private ProgressBar spinner;
     private TextView nameNavHeader, localizationNavHeader;
     private ConstraintLayout contentMain;
@@ -66,7 +92,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
     private EditText message;
     private BottomSheetDialog mBottomSheetDialog;
     private View sheetView;
-    private String suggestion;
+    //private String suggestion;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -77,7 +103,6 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void setupComponents() {
-
         spinner = findViewById(R.id.progressBar);
         spinner.setVisibility(View.VISIBLE);
 
@@ -132,7 +157,17 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
             public void onClick(View v) {
                 Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 if(takePicture.resolveActivity(getPackageManager()) != null) {
-                   startActivityForResult(takePicture, TAKE_PICTURE);
+                   //startActivityForResult(takePicture, TAKE_PICTURE);
+                    try {
+                        fileImage = createFile();
+                    } catch (IOException ex) {
+                        //Manipulação em caso de falha
+                    }
+                    if(fileImage != null) {
+                        Uri photoURI = FileProvider.getUriForFile(getBaseContext(), getBaseContext().getApplicationContext().getPackageName() + ".provider", fileImage);
+                        takePicture.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                        startActivityForResult(takePicture, TAKE_PICTURE);
+                    }
                 }
             }
         });
@@ -153,7 +188,6 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
                         != PackageManager.PERMISSION_GRANTED) {
                     if(ActivityCompat.shouldShowRequestPermissionRationale(ChatActivity.this,
                             Manifest.permission.READ_EXTERNAL_STORAGE)) {
-
                     } else {
                         ActivityCompat.requestPermissions(ChatActivity.this,
                                 new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE },
@@ -161,6 +195,20 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
 
                     }
                 }
+
+                if(ContextCompat.checkSelfPermission(getApplicationContext(),
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    if(ActivityCompat.shouldShowRequestPermissionRationale(ChatActivity.this,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+
+                    } else {
+                        ActivityCompat.requestPermissions(ChatActivity.this,
+                                new String[]{ Manifest.permission.WRITE_EXTERNAL_STORAGE },
+                                PERMISSION_REQUEST);
+                    }
+                }
+
                 mBottomSheetDialog.show();
             }
         });
@@ -278,7 +326,6 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
                 listMessages();
             }
 
-            @NonNull
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.w("ChatActivity", "Failed to read value.", error.toException());
@@ -301,6 +348,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
 
             myRef.updateChildren(childUpdates);
         }
+        translate();
         message.setText("");
     }
 
@@ -338,11 +386,27 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
             //sendMessage(suggestion, "String", 1);
             sendMessage(encodedImage, "Image", 1);
         }
+        if(requestCode == CAMERA && resultCode == RESULT_OK) {
+            sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(fileImage)));
+
+            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+            bmOptions.inJustDecodeBounds = true;
+
+            Bitmap image = (BitmapFactory.decodeFile(fileImage.getAbsolutePath(), bmOptions));
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            image.compress(Bitmap.CompressFormat.JPEG, 100, baos); //bm is the bitmap object
+            byte[] b = baos.toByteArray();
+            String encodedImage = Base64.encodeToString(b, Base64.DEFAULT);
+
+            //sendMessage(suggestion, "String", 1);
+            sendMessage(encodedImage, "Image", 1);
+        }
+
         mBottomSheetDialog.dismiss();
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         if(requestCode == PERMISSION_REQUEST) {
             if(grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -351,5 +415,53 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
 
             }
         }
+    }
+
+    private File createFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        File directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        return new File(directory.getPath() + File.separator + "Guia_" + timeStamp + ".jpg");
+    }
+
+    private void translate() {
+        Gson g = new GsonBuilder().registerTypeAdapter(Translate.class, new TranslateDeserializer())
+                .setLenient()
+                .create();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(TranslationService.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create(g))
+                .build();
+
+        TranslationService service = retrofit.create((TranslationService.class));
+
+        final Translate t = new Translate(message.getText().toString(), "en", "es", "text");
+        //String auth = "Bearer ya29.c.El8nBvUbV4IFlWWxvYGa9TdHMYtS2m7WPIduTTZZW85QmDMIvPayH4-TPEAP-fRddti62lcmMboePDZ1BW7tIAbwaUzZeANU5pYRa9K1iNKznrR555bdmjHMXFkCJtGZ7g" ;
+        String API_KEY = "AIzaSyByLqEvttULJFQRbNxpPqa4dxETVOgP_e8";
+        Log.i("ChatActivity", t.toString());
+
+        Call<Object> request = service.translate(t, API_KEY);
+
+        request.enqueue(new Callback<Object>() {
+            @Override
+            public void onResponse(@ParametersAreNonnullByDefault Call<Object> call, @ParametersAreNonnullByDefault Response<Object> response) {
+                String aux;
+                if(!response.isSuccessful()) {
+                    aux = "Erro: " + (response.code());
+                    Log.i("ChatActivity", aux);
+                    Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
+                }
+                else {
+                    Log.i("ChatActivity", (response.body().toString()));
+                }
+            }
+
+            @Override
+            public void onFailure(@ParametersAreNonnullByDefault Call<Object> call, @ParametersAreNonnullByDefault Throwable t) {
+                String aux = " Erro: " + t.getMessage();
+                Log.e("ChatActivity", aux);
+                Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }

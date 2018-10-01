@@ -10,20 +10,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <view
-                android:id="@+id/view2"
-                class="android.support.v7.widget.ActionMenuView"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/actionBarHeight" />
-
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/activity_horizontal_margin"
                 android:layout_marginLeft="@dimen/activity_vertical_margin"
                 android:layout_marginRight="@dimen/activity_vertical_margin"
@@ -65,15 +54,13 @@
                 <Button
                     android:id="@+id/buttonSave"
                     android:layout_weight="1"
-                    android:layout_height="0dp"
+                    android:layout_height="wrap_content"
                     android:background="@drawable/selector_button"
                     android:text="@string/save"
                     style="@style/patternButton"
                     android:layout_marginTop="25dp"
                     android:layout_marginBottom="10dp"
                     android:layout_gravity="end"/>
-
             </LinearLayout>
-        </LinearLayout>
     </ScrollView>
 </RelativeLayout>

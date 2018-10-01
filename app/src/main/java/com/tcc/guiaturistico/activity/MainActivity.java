@@ -13,12 +13,19 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.gson.Gson;
 import com.tcc.guiaturistico.R;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import model.Language;
 
 public class MainActivity extends AppCompatActivity {
 
     private Button buttonSignUp, buttonSignIn;
     private static final String TAG = "MainActivity";
+    private List<Language> languages;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,12 +54,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void openLogin(){
-        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+        Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
     }
 
     public void openRegister(){
-        Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
+        Intent intent = new Intent(this, RegisterActivity.class);
         startActivity(intent);
     }
 }

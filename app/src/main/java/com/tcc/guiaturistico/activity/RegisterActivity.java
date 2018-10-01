@@ -6,6 +6,7 @@ package com.tcc.guiaturistico.activity;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -17,6 +18,7 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -26,19 +28,28 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.tcc.guiaturistico.R;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import me.drakeet.materialdialog.MaterialDialog;
+import model.Language;
+import model.LanguageDeserializer;
 import model.Localization;
 import model.LocalizationDeserializer;
+import model.Translate;
 import model.User;
 import model.UserDeserializer;
 import retrofit2.Call;
@@ -47,6 +58,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import service.LocalizationService;
+import service.TranslationService;
 import service.UserService;
 import util.DBController;
 import util.Mask;
@@ -58,7 +70,8 @@ import util.StatusUser;
  */
 
 public class RegisterActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener{
-    private static final String TAG = "Error";
+    private static final String TAG = "RegisterActivity";
+    private static final int ERROR_DIALOG_REQUEST = 9001;
     private EditText editTextName, editTextDateOfBirth, editTextUserEmail, editTextPassword, editTextLocalization;
     private Spinner spinnerLanguage;
     private Button buttonRegister;
@@ -70,6 +83,9 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
     private Location location;
     private MaterialDialog mMaterialDialog;
     private static final int REQUEST_PERMISSIONS_CODE = 128;
+    List<String> list_languages;
+    List<Language> languages;
+    String language;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,15 +104,22 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
         editTextUserEmail = findViewById(R.id.editTextUserEmail);
         editTextPassword = findViewById(R.id.editTextPassword);
 
-        //String[] list_languages = getResources().getStringArray(R.array.list_languages);
-
         spinnerLanguage = findViewById(R.id.spinnerLanguage);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.list_languages, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerLanguage.setAdapter(adapter);
+        //pegar o idioma do celular spinnerLanguage.setSelection()
+        spinnerLanguage.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
-        //pegar o idioma do celular spinnerLanguage.setSelection();
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View v, int position, long id) {
+                //pega nome pela posição
+                Log.d(TAG, "Nome Selecionado: " + selectLanguage(position));
+            }
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                //return;
+            }
+        });
+
+        if(isServicesOK())
+            listLanguages();
 
         editTextLocalization = findViewById(R.id.editTextLocalization);
 
@@ -114,6 +137,92 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
                     spinner.setVisibility(View.VISIBLE);
                     registerLocalization();
                 }
+            }
+        });
+    }
+
+    public boolean isServicesOK() {
+        Log.d(TAG, "isServicesOK: checking google services version");
+        int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(RegisterActivity.this);
+        if(available == ConnectionResult.SUCCESS) {
+            Log.d(TAG, "isServicesOK: Google Play services is working");
+            return true;
+        } else if(GoogleApiAvailability.getInstance()
+                .isUserResolvableError(available)) {
+            Log.d(TAG, "isSErvicesOK: an error occured but we can fix it");
+            Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(RegisterActivity.this, available, ERROR_DIALOG_REQUEST);
+            dialog.show();
+        } else {
+            Toast.makeText(this, "You can't connect", Toast.LENGTH_LONG).show();
+        }
+        return false;
+    }
+
+    private void listLang(List<Language> output) {
+        this.languages = output;
+
+        System.out.println("Dentro do listLanguages(list), output: " + languages.toString());
+
+        list_languages = new ArrayList<String>();
+
+        if(languages.size() > 0) {
+            int i=0;
+            do {
+                list_languages.add(languages.get(i).getName());
+                i++;
+            } while(i<languages.size());
+        }
+
+        //ArrayAdapter<String> adapter =
+        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item,
+                list_languages);;
+        spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
+        spinnerLanguage.setAdapter(spinnerArrayAdapter);
+    }
+
+    public void listLanguages() {
+
+        Gson g = new GsonBuilder().registerTypeAdapter(Language.class, new LanguageDeserializer())
+                .setLenient()
+                .create();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(TranslationService.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create(g))
+                .build();
+
+        TranslationService service = retrofit.create((TranslationService.class));
+
+        final Translate t = new Translate("", "", "pt", "text");
+        //String auth = "Bearer ya29.c.El8oBoSONE0l9nkPrrPhQ2-12Az3Mrvwr3JEk_CCNuT6NpZlhwVuxTtkcfjpTzlopqGMjF3XcGEB5lHaMFVdOehpCaPQVU8IufLyDuXF8saPMu9PoSosOvAeNkFrMQkTbw";
+        String API_KEY = "AIzaSyByLqEvttULJFQRbNxpPqa4dxETVOgP_e8";
+
+        Call<JsonObject> request = service.listLanguages(/*auth,*/ t, API_KEY);
+
+        request.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(@ParametersAreNonnullByDefault Call<JsonObject> call, @ParametersAreNonnullByDefault Response<JsonObject> response) {
+                if (response.isSuccessful()) {
+                    JsonObject body = response.body();
+                    JsonArray langItens = body.get("data").getAsJsonObject().get("languages").getAsJsonArray();
+                    List<Language> output = new ArrayList<Language>();
+
+                    for (int i = 0; i < langItens.size(); i++) {
+                        Language lang = new Language();
+                        lang.setName(langItens.get(i).getAsJsonObject().get("name").getAsString());
+                        lang.setLanguage(langItens.get(i).getAsJsonObject().get("language").getAsString());
+                        output.add(lang);
+                        //System.out.println("Indice: " + i + " ---> " + languages.get(i).toString());
+                    }
+                    System.out.println("Dentro do listLanguages ---> " + output.toString());
+
+                    listLang(output);
+                }
+            }
+            @Override
+            public void onFailure(@ParametersAreNonnullByDefault Call<JsonObject> call, @ParametersAreNonnullByDefault Throwable t) {
+                String aux = " Erro: " + t.getMessage();
+                Log.e("listLanguages", aux);
             }
         });
     }
@@ -143,8 +252,9 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
         }
     }
 
-    public String selectLanguage() {
-        return (String) spinnerLanguage.getSelectedItem();
+    public String selectLanguage(int position) {
+        language = languages.get(position).getLanguage();
+        return language;
     }
 
     public void registerLocalization() {
@@ -165,7 +275,7 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
 
         requestLocalization.enqueue(new Callback<Integer>() {
             @Override
-            public void onResponse(Call<Integer> call, Response<Integer> response) {
+            public void onResponse(@ParametersAreNonnullByDefault Call<Integer> call, @ParametersAreNonnullByDefault Response<Integer> response) {
                 String aux;
                 if(!response.isSuccessful()) {
                     aux = "Erro: " + (response.code());
@@ -179,7 +289,7 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
             }
 
             @Override
-            public void onFailure(Call<Integer> call, Throwable t) {
+            public void onFailure(@ParametersAreNonnullByDefault Call<Integer> call, @ParametersAreNonnullByDefault Throwable t) {
                 String aux = " Erro: " + t.getMessage();
                 Log.e(TAG, aux);
                 Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
@@ -210,7 +320,7 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
         u.setEmail(editTextUserEmail.getText().toString());
         u.setPassword(editTextPassword.getText().toString());
 
-        u.setLanguage(selectLanguage());
+        u.setLanguage(language);
 
         //setar o id da localização após cadastrar
         u.setIdLocalization(idLocalization);
@@ -220,7 +330,7 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
 
         requestUser.enqueue(new Callback<Integer>() {
             @Override
-            public void onResponse(Call<Integer> call, Response<Integer> response) {
+            public void onResponse(@ParametersAreNonnullByDefault Call<Integer> call, @ParametersAreNonnullByDefault Response<Integer> response) {
                 String aux;
                 if(!response.isSuccessful()) {
                     aux = "Erro: " + (response.code());
@@ -237,7 +347,7 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
             }
 
             @Override
-            public void onFailure(Call<Integer> call, Throwable t) {
+            public void onFailure(@ParametersAreNonnullByDefault Call<Integer> call, @ParametersAreNonnullByDefault Throwable t) {
                 String aux = " Erro: " + t.getMessage();
                 Log.e(TAG, aux);
                 Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();

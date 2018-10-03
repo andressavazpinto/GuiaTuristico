@@ -36,6 +36,16 @@
             android:textSize="@dimen/text_size_chat" />
 
         <TextView
+            android:id="@+id/textViewTranslation"
+            android:autoLink="web"
+            android:linksClickable="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorPrimaryDark"
+            android:visibility="gone"
+            android:textSize="@dimen/text_size_chat" />
+
+        <TextView
             android:id="@+id/textViewDateTime"
             style="@style/Base.TextAppearance.AppCompat.Small"
             android:layout_width="wrap_content"

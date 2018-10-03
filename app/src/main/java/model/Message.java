@@ -8,17 +8,18 @@ import java.util.Map;
 
 public class Message {
     private int idMessage, idUser;
-    private String content;
+    private String content, translation;
     private long dateTime;
     private String type;
 
     public Message() {
     }
 
-    public Message(int idMessage, int idUser, String content, String type) {
+    public Message(int idMessage, int idUser, String content, String translation, String type) {
         this.idUser = idUser;
         this.idMessage = idMessage;
         this.content = content;
+        this.translation = translation;
         this.type = type;
         dateTime = new Date().getTime();
     }
@@ -43,6 +44,14 @@ public class Message {
         this.content = content;
     }
 
+    public String getTranslation() {
+        return translation;
+    }
+
+    public void setTranslation(String translation) {
+        this.translation = translation;
+    }
+
     public String getType() {
         return type;
     }
@@ -65,6 +74,7 @@ public class Message {
         result.put("idMessage", idMessage);
         result.put("idUser", idUser);
         result.put("content", content);
+        result.put("translation", translation);
         result.put("dateTime", dateTime);
         result.put("type", type);
 

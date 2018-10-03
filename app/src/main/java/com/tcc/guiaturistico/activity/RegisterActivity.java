@@ -13,6 +13,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -41,8 +42,6 @@ import com.tcc.guiaturistico.R;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.annotation.ParametersAreNonnullByDefault;
 
 import me.drakeet.materialdialog.MaterialDialog;
 import model.Language;
@@ -74,7 +73,6 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
     private static final int ERROR_DIALOG_REQUEST = 9001;
     private EditText editTextName, editTextDateOfBirth, editTextUserEmail, editTextPassword, editTextLocalization;
     private Spinner spinnerLanguage;
-    private Button buttonRegister;
     private ProgressBar spinner;
     private DBController crud;
     private GoogleApiClient mGoogleApiClient;
@@ -105,7 +103,7 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
         editTextPassword = findViewById(R.id.editTextPassword);
 
         spinnerLanguage = findViewById(R.id.spinnerLanguage);
-        //pegar o idioma do celular spinnerLanguage.setSelection()
+
         spinnerLanguage.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
             @Override
@@ -124,8 +122,9 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
         editTextLocalization = findViewById(R.id.editTextLocalization);
 
         spinner = findViewById(R.id.progressBar);
+        spinner.setVisibility(View.VISIBLE);
 
-        buttonRegister = findViewById(R.id.buttonContinue);
+        Button buttonRegister = findViewById(R.id.buttonContinue);
         buttonRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -160,24 +159,26 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
 
     private void listLang(List<Language> output) {
         this.languages = output;
-
-        System.out.println("Dentro do listLanguages(list), output: " + languages.toString());
-
+        int systemLanguage = 0;
         list_languages = new ArrayList<String>();
 
         if(languages.size() > 0) {
             int i=0;
             do {
+                if(languages.get(i).getLanguage().equals(System.getProperty("user.language")))
+                    systemLanguage = i;
+
                 list_languages.add(languages.get(i).getName());
                 i++;
             } while(i<languages.size());
         }
 
-        //ArrayAdapter<String> adapter =
         ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item,
-                list_languages);;
+                list_languages);
         spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
         spinnerLanguage.setAdapter(spinnerArrayAdapter);
+        spinnerLanguage.setSelection(systemLanguage);
+        spinner.setVisibility(View.GONE);
     }
 
     public void listLanguages() {
@@ -194,14 +195,13 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
         TranslationService service = retrofit.create((TranslationService.class));
 
         final Translate t = new Translate("", "", "pt", "text");
-        //String auth = "Bearer ya29.c.El8oBoSONE0l9nkPrrPhQ2-12Az3Mrvwr3JEk_CCNuT6NpZlhwVuxTtkcfjpTzlopqGMjF3XcGEB5lHaMFVdOehpCaPQVU8IufLyDuXF8saPMu9PoSosOvAeNkFrMQkTbw";
         String API_KEY = "AIzaSyByLqEvttULJFQRbNxpPqa4dxETVOgP_e8";
 
-        Call<JsonObject> request = service.listLanguages(/*auth,*/ t, API_KEY);
+        Call<JsonObject> request = service.listLanguages(t, API_KEY);
 
         request.enqueue(new Callback<JsonObject>() {
             @Override
-            public void onResponse(@ParametersAreNonnullByDefault Call<JsonObject> call, @ParametersAreNonnullByDefault Response<JsonObject> response) {
+            public void onResponse(@NonNull Call<JsonObject> call, @NonNull Response<JsonObject> response) {
                 if (response.isSuccessful()) {
                     JsonObject body = response.body();
                     JsonArray langItens = body.get("data").getAsJsonObject().get("languages").getAsJsonArray();
@@ -220,7 +220,7 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
                 }
             }
             @Override
-            public void onFailure(@ParametersAreNonnullByDefault Call<JsonObject> call, @ParametersAreNonnullByDefault Throwable t) {
+            public void onFailure(@NonNull Call<JsonObject> call, @NonNull Throwable t) {
                 String aux = " Erro: " + t.getMessage();
                 Log.e("listLanguages", aux);
             }
@@ -275,7 +275,7 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
 
         requestLocalization.enqueue(new Callback<Integer>() {
             @Override
-            public void onResponse(@ParametersAreNonnullByDefault Call<Integer> call, @ParametersAreNonnullByDefault Response<Integer> response) {
+            public void onResponse(@NonNull Call<Integer> call, @NonNull Response<Integer> response) {
                 String aux;
                 if(!response.isSuccessful()) {
                     aux = "Erro: " + (response.code());
@@ -289,7 +289,7 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
             }
 
             @Override
-            public void onFailure(@ParametersAreNonnullByDefault Call<Integer> call, @ParametersAreNonnullByDefault Throwable t) {
+            public void onFailure(@NonNull Call<Integer> call, @NonNull Throwable t) {
                 String aux = " Erro: " + t.getMessage();
                 Log.e(TAG, aux);
                 Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
@@ -330,7 +330,7 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
 
         requestUser.enqueue(new Callback<Integer>() {
             @Override
-            public void onResponse(@ParametersAreNonnullByDefault Call<Integer> call, @ParametersAreNonnullByDefault Response<Integer> response) {
+            public void onResponse(@NonNull Call<Integer> call, @NonNull Response<Integer> response) {
                 String aux;
                 if(!response.isSuccessful()) {
                     aux = "Erro: " + (response.code());
@@ -347,7 +347,7 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
             }
 
             @Override
-            public void onFailure(@ParametersAreNonnullByDefault Call<Integer> call, @ParametersAreNonnullByDefault Throwable t) {
+            public void onFailure(@NonNull Call<Integer> call, @NonNull Throwable t) {
                 String aux = " Erro: " + t.getMessage();
                 Log.e(TAG, aux);
                 Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
@@ -487,7 +487,7 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
     }
 
     @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
     }
 
@@ -499,7 +499,8 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
         } catch (Exception e) {
             e.getMessage();
         }
-        editTextLocalization.setText(localization.getCity() + ", " + localization.getUf());
+        String aux = localization.getCity() + ", " + localization.getUf();
+        editTextLocalization.setText(aux);
     }
 
     public void callAccessLocation(View view) {
@@ -563,7 +564,7 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         Log.i(TAG, "test");
         switch( requestCode ){
             case REQUEST_PERMISSIONS_CODE:

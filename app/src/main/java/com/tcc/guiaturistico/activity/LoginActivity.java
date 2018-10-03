@@ -18,6 +18,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -39,6 +40,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.List;
+
+import javax.annotation.ParametersAreNonnullByDefault;
 
 import me.drakeet.materialdialog.MaterialDialog;
 import model.Localization;
@@ -63,7 +66,7 @@ import util.StatusUser;
  */
 
 public class LoginActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
-    private static final String TAG = "Error";
+    private static final String TAG = "LoginActivity";
     private EditText editTextUserEmail, editTextPassword;
     private TextView textForgetPass;
     private ProgressBar spinner;
@@ -98,15 +101,14 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         buttonLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                spinner.setVisibility(View.VISIBLE);
 
                 InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
                 if (imm.isActive())
                     hideSoftKeyboard();
 
-                if(validateFields()) {
-                    spinner.setVisibility(View.VISIBLE);
+                if(validateFields())
                     login();
-                }
                 else
                     spinner.setVisibility(View.GONE);
             }
@@ -156,14 +158,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
         requestUser.enqueue(new Callback<User>() {
             @Override
-            public void onResponse(Call<User> call, Response<User> response) {
+            public void onResponse(@ParametersAreNonnullByDefault Call<User> call, @ParametersAreNonnullByDefault Response<User> response) {
                 String aux;
-                if(!response.isSuccessful()) {
-                    aux = "Deu falha aqui no sucesso: " + (response.code());
-                    Log.i(TAG, aux);
-                    Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
-                }
-                else if(response.isSuccessful()) {
+                if(response.isSuccessful()) {
                     try {
                         JSONObject jsonUser = new JSONObject(new Gson().toJson(response.body()));
 
@@ -196,10 +193,10 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             }
 
             @Override
-            public void onFailure(Call<User> call, Throwable t) {
+            public void onFailure(@ParametersAreNonnullByDefault Call<User> call, @ParametersAreNonnullByDefault Throwable t) {
                 String aux = " Deu falha no login: " + t.getMessage();
                 Log.e(TAG, aux);
-                //Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
             }
         });
         spinner.setVisibility(View.GONE);
@@ -345,7 +342,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     }
 
     @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
     }
 
@@ -421,7 +418,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         Log.i(TAG, "test");
         switch( requestCode ){
             case REQUEST_PERMISSIONS_CODE:
@@ -455,7 +452,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
         requestSearch.enqueue(new Callback<Search>() {
             @Override
-            public void onResponse(Call<Search> call, Response<Search> response) {
+            public void onResponse(@ParametersAreNonnullByDefault Call<Search> call, @ParametersAreNonnullByDefault Response<Search> response) {
                 String aux;
                 if(!response.isSuccessful()) {
                     aux = "Deu falha no sucesso: " + (response.code());
@@ -469,8 +466,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                         s.setIdSearch(jsonSearch.getInt("idSearch"));
                         s.setStatus(Enum.valueOf(StatusSearch.class, jsonSearch.getString("status")));
 
-                        System.out.println("Resultado do status na LoginActivity: " + s.getStatus());
-
                         openHome(s);
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -479,7 +474,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             }
 
             @Override
-            public void onFailure(Call<Search> call, Throwable t) {
+            public void onFailure(@ParametersAreNonnullByDefault Call<Search> call, @ParametersAreNonnullByDefault Throwable t) {
                 String aux = " Deu falha no login: " + t.getMessage();
                 Log.e("TAG", aux);
                 Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();

@@ -39,6 +39,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -76,6 +77,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.POST;
 import service.LocalizationService;
 import service.TranslationService;
+import util.DBController;
 
 public class ChatActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private final int GALERY_IMAGE = 1;
@@ -88,7 +90,9 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
     private ConstraintLayout contentMain;
     private List<Message> list;
     private ListView chat;
-    private FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private DBController crud;
+
+    private FirebaseDatabase database;
     private EditText message;
     private BottomSheetDialog mBottomSheetDialog;
     private View sheetView;
@@ -98,6 +102,13 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        try {
+            FirebaseApp.initializeApp(this);
+        } catch(Exception e) {
+
+        }
+        crud = new DBController(this);
+        database = FirebaseDatabase.getInstance();
         list = new ArrayList<Message>();
         setupComponents();
     }
@@ -304,7 +315,8 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
 
     private void listMessages() {
         spinner.setVisibility(View.GONE);
-        final ChatAdapter adapter = new ChatAdapter(list, this, this);
+        //SETAR AQUI SE O USUÁRIO PEDIU TRADUÇÃO
+        final ChatAdapter adapter = new ChatAdapter(list, true, this, this);
         chat.setAdapter(adapter);
         chat.setStackFromBottom(true);
     }
@@ -331,8 +343,6 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
                 Log.w("ChatActivity", "Failed to read value.", error.toException());
             }
         });
-
-
     }
 
     public void sendMessage(String text, String type, int idChat) {
@@ -340,7 +350,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
             DatabaseReference myRef = database.getReference();
 
             String key = myRef.child("messages").push().getKey();
-            final Message m2 = new Message(1, 3, text, type);
+            final Message m2 = new Message(1, crud.getUser().getIdUser(), text, null, type);
 
             Map<String, Object> postValues = m2.toMap();
             Map<String, Object> childUpdates = new HashMap();
@@ -436,9 +446,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
         TranslationService service = retrofit.create((TranslationService.class));
 
         final Translate t = new Translate(message.getText().toString(), "en", "es", "text");
-        //String auth = "Bearer ya29.c.El8nBvUbV4IFlWWxvYGa9TdHMYtS2m7WPIduTTZZW85QmDMIvPayH4-TPEAP-fRddti62lcmMboePDZ1BW7tIAbwaUzZeANU5pYRa9K1iNKznrR555bdmjHMXFkCJtGZ7g" ;
         String API_KEY = "AIzaSyByLqEvttULJFQRbNxpPqa4dxETVOgP_e8";
-        Log.i("ChatActivity", t.toString());
 
         Call<Object> request = service.translate(t, API_KEY);
 
@@ -448,7 +456,6 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
                 String aux;
                 if(!response.isSuccessful()) {
                     aux = "Erro: " + (response.code());
-                    Log.i("ChatActivity", aux);
                     Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
                 }
                 else {

@@ -22,11 +22,13 @@ import util.DBController;
 
 public class ChatAdapter extends BaseAdapter {
     private final List<Message> messages;
+    private boolean translate;
     private final Activity activity;
     private DBController crud;
 
-    public ChatAdapter(List<Message> messages, Activity activity, Context context) {
+    public ChatAdapter(List<Message> messages, Boolean translate,  Activity activity, Context context) {
         this.messages = messages;
+        this.translate = translate;
         this.activity = activity;
         crud = new DBController(context);
     }
@@ -58,8 +60,14 @@ public class ChatAdapter extends BaseAdapter {
             view = activity.getLayoutInflater().inflate(R.layout.balloon_left, parent, false);
 
         TextView textViewContent = view.findViewById(R.id.textViewContent);
+        TextView textViewTranslation = view.findViewById(R.id.textViewTranslation);
         if(message.getType().equals("String")) {
             textViewContent.setText(message.getContent());
+            if(translate & message.getTranslation() != null) {
+                textViewTranslation.setVisibility(View.VISIBLE);
+                //COLOCAR AQUI A TRADUÇÃO
+                textViewTranslation.setText(message.getTranslation());
+            }
         }
         else if(message.getType().equals("Image")) {
             textViewContent.setVisibility(View.GONE);

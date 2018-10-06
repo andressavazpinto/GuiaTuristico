@@ -60,26 +60,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
 import adapter.ChatAdapter;
-import model.Localization;
-import model.LocalizationDeserializer;
 import model.Message;
 import model.Translate;
 import model.TranslateDeserializer;
-import okio.ByteString;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.http.POST;
-import service.LocalizationService;
 import service.TranslationService;
 import util.DBController;
 
 public class ChatActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    private static final String TAG = "ChatActivity";
     private final int GALERY_IMAGE = 1;
     private final int TAKE_PICTURE = 3;
     private final int CAMERA = 4;
@@ -96,6 +90,8 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
     private EditText message;
     private BottomSheetDialog mBottomSheetDialog;
     private View sheetView;
+
+    private boolean translate = true;
     //private String suggestion;
 
     @Override
@@ -105,7 +101,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
         try {
             FirebaseApp.initializeApp(this);
         } catch(Exception e) {
-
+            e.printStackTrace();
         }
         crud = new DBController(this);
         database = FirebaseDatabase.getInstance();
@@ -168,7 +164,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
             public void onClick(View v) {
                 Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 if(takePicture.resolveActivity(getPackageManager()) != null) {
-                   //startActivityForResult(takePicture, TAKE_PICTURE);
+                    //startActivityForResult(takePicture, TAKE_PICTURE);
                     try {
                         fileImage = createFile();
                     } catch (IOException ex) {
@@ -247,8 +243,6 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
             case R.id.nav_profile:
                 openProfile();
                 break;
-            case R.id.nav_guide:
-                break;
             case R.id.nav_settings:
                 break;
             case R.id.nav_changeInterests:
@@ -256,6 +250,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.nav_logout:
                 //fechar sessão
+                try {crud.deleteUser(crud.getUser());} catch (Exception e) {e.printStackTrace();}
                 startActivity(new Intent(this, LoginActivity.class));  //O efeito ao ser pressionado do botão (no caso abre a activity)
                 finishAffinity();
         }
@@ -276,6 +271,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
         switch (id) {
             case R.id.automaticTranslation:
+                translate = true;
                 break;
             case R.id.suggestions:
                 break;
@@ -316,7 +312,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
     private void listMessages() {
         spinner.setVisibility(View.GONE);
         //SETAR AQUI SE O USUÁRIO PEDIU TRADUÇÃO
-        final ChatAdapter adapter = new ChatAdapter(list, true, this, this);
+        final ChatAdapter adapter = new ChatAdapter(list, translate, this, this);
         chat.setAdapter(adapter);
         chat.setStackFromBottom(true);
     }
@@ -340,7 +336,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Log.w("ChatActivity", "Failed to read value.", error.toException());
+                Log.w(TAG, "Failed to read value.", error.toException());
             }
         });
     }
@@ -452,21 +448,21 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
 
         request.enqueue(new Callback<Object>() {
             @Override
-            public void onResponse(@ParametersAreNonnullByDefault Call<Object> call, @ParametersAreNonnullByDefault Response<Object> response) {
+            public void onResponse(@NonNull Call<Object> call, @NonNull Response<Object> response) {
                 String aux;
                 if(!response.isSuccessful()) {
                     aux = "Erro: " + (response.code());
                     Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
                 }
                 else {
-                    Log.i("ChatActivity", (response.body().toString()));
+                    Log.i(TAG, (response.body().toString()));
                 }
             }
 
             @Override
-            public void onFailure(@ParametersAreNonnullByDefault Call<Object> call, @ParametersAreNonnullByDefault Throwable t) {
+            public void onFailure(@NonNull Call<Object> call, @NonNull Throwable t) {
                 String aux = " Erro: " + t.getMessage();
-                Log.e("ChatActivity", aux);
+                Log.e(TAG, aux);
                 Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
             }
         });

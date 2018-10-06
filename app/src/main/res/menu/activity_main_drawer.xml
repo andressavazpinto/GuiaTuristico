@@ -10,9 +10,6 @@
             android:id="@+id/nav_profile"
             android:title="@string/profile" />
         <item
-            android:id="@+id/nav_guide"
-            android:title="@string/guide" />
-        <item
             android:id="@+id/nav_settings"
             android:title="@string/settings" />
         <item

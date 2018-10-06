@@ -31,6 +31,7 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.gson.Gson;
@@ -84,11 +85,13 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
     List<String> list_languages;
     List<Language> languages;
     String language;
+    private FusedLocationProviderClient mFusedLocationClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         crud = new DBController(this);
         localization = new Localization();
@@ -432,7 +435,7 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_CODE);
             }
         } else {
-            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+            LocationServices.getFusedLocationProviderClient(this);
 
             if(location != null) {
                 try {

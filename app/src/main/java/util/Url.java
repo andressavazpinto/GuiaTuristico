@@ -12,8 +12,9 @@ public class Url {
     //public static String BASE_URL = "http://172.20.10.12:8089/GuiaWSMaven/rest/";
     //public static String BASE_URL = "http://127.0.0.1:8089/GuiaWSMaven/rest/";
     //public static String BASE_URL = "http://192.168.137.72:8089/GuiaWSMaven/rest/";
+    public static String BASE_URL = "http://192.168.0.103:8089/GuiaWSMaven/rest/";
 
     //SP
-    public static String BASE_URL = "http://192.168.0.3:8089/GuiaWSMaven/rest/";
+    //public static String BASE_URL = "http://192.168.0.3:8089/GuiaWSMaven/rest/";
     //public static String BASE_URL = "http://192.168.43.48:8089/GuiaWSMaven/rest/";
 }

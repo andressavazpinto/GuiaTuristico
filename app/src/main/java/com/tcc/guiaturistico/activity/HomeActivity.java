@@ -7,6 +7,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.ActivityCompat;
@@ -25,6 +26,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.gson.Gson;
@@ -69,19 +71,20 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private LocationRequest mLocationRequest;
     private Localization localization;
     private Location location;
+    private FusedLocationProviderClient mFusedLocationClient;
     private MaterialDialog mMaterialDialog;
     private static final int REQUEST_PERMISSIONS_CODE = 128;
     private DBController crud;
-    private StatusSearch status;
     private ConstraintLayout layout;
     private ConstraintLayout contentMain;
-    private CoordinatorLayout appBar;
     private ProgressBar spinner;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
         crud = new DBController(this);
         setupComponents();
     }
@@ -104,7 +107,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         requestSearch.enqueue(new Callback<Search>() {
             @Override
-            public void onResponse(Call<Search> call, Response<Search> response) {
+            public void onResponse(@NonNull Call<Search> call, @NonNull Response<Search> response) {
                 String aux;
                 if(!response.isSuccessful()) {
                     aux = "Deu falha no sucesso: " + (response.code());
@@ -127,7 +130,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             }
 
             @Override
-            public void onFailure(Call<Search> call, Throwable t) {
+            public void onFailure(@NonNull Call<Search> call, @NonNull Throwable t) {
                 String aux = " Deu falha no login: " + t.getMessage();
                 Log.e("TAG", aux);
                 Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
@@ -136,6 +139,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void setMiddle(Search sea) {
+        StatusSearch status;
         status = (Enum.valueOf(StatusSearch.class, sea.getStatus().toString()));
 
         switch (status) {
@@ -201,7 +205,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        appBar = findViewById(R.id.appbarlayout);
+        CoordinatorLayout appBar = findViewById(R.id.appbarlayout);
         contentMain = appBar.findViewById(R.id.contentMain);
         contentMain.setVisibility(View.VISIBLE);
         layout = contentMain.findViewById(R.id.fragHome);
@@ -222,20 +226,18 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
 
         if (id == R.id.nav_profile) {
             openProfile();
-        } else if (id == R.id.nav_guide) {
-
         } else if (id == R.id.nav_settings) {
 
         } else if (id == R.id.nav_changeInterests) {
             openChangeInterests();
         } else if (id == R.id.nav_logout) {
             //fechar sessão
+            try {crud.deleteUser(crud.getUser());} catch (Exception e) {e.printStackTrace();}
             startActivity(new Intent(this, LoginActivity.class));  //O efeito ao ser pressionado do botão (no caso abre a activity)
             finishAffinity();
         }
@@ -254,7 +256,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         Intent intent = new Intent(this, InterestsActivity.class);
         startActivity(intent);
     }
-
 
     @Override
     public void onResume() {
@@ -305,7 +306,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_CODE);
             }
         } else {
-            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+            //mFusedLocationClient =
+            LocationServices.getFusedLocationProviderClient(this);
+            //LocationServices.FusedLocationProviderClient.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
 
             if(location != null) {
                 try {
@@ -314,7 +317,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 } catch (Exception e) {
                     e.getMessage();
                 }
-                localizationNavHeader.setText(localization.getCity() + ", " + localization.getUf());
+                String aux = localization.getCity() + ", " + localization.getUf();
+                localizationNavHeader.setText(aux);
             }
         }
     }
@@ -349,7 +353,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             } catch (Exception e) {
                 e.getMessage();
             }
-            localizationNavHeader.setText(localization.getCity() + ", " + localization.getUf());
+            String aux = localization.getCity() + ", " + localization.getUf();
+            localizationNavHeader.setText(aux);
         }
         startLocationUpdate();
     }
@@ -360,7 +365,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
     }
 
@@ -372,8 +377,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         } catch (Exception e) {
             e.getMessage();
         }
-
-        localizationNavHeader.setText(localization.getCity() + ", " + localization.getUf());
+        String aux = localization.getCity() + ", " + localization.getUf();
+        localizationNavHeader.setText(aux);
         updateLocalization(localization);
     }
 
@@ -438,7 +443,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         Log.i("", "test");
         switch( requestCode ){
             case REQUEST_PERMISSIONS_CODE:
@@ -470,7 +475,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         requestLocalization.enqueue(new Callback<Void>() {
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 String aux;
                 if(!response.isSuccessful()) {
                     aux = "Erro: " + (response.code());
@@ -483,7 +488,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             }
 
             @Override
-            public void onFailure(Call<Void> call, Throwable t) {
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
                 String aux = " Erro: " + t.getMessage();
                 Log.e("erro", aux);
                 Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();

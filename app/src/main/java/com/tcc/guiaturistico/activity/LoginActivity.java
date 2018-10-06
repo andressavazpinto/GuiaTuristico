@@ -158,8 +158,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
         requestUser.enqueue(new Callback<User>() {
             @Override
-            public void onResponse(@ParametersAreNonnullByDefault Call<User> call, @ParametersAreNonnullByDefault Response<User> response) {
-                String aux;
+            public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
                 if(response.isSuccessful()) {
                     try {
                         JSONObject jsonUser = new JSONObject(new Gson().toJson(response.body()));
@@ -193,7 +192,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             }
 
             @Override
-            public void onFailure(@ParametersAreNonnullByDefault Call<User> call, @ParametersAreNonnullByDefault Throwable t) {
+            public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
                 String aux = " Deu falha no login: " + t.getMessage();
                 Log.e(TAG, aux);
                 Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
@@ -452,7 +451,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
         requestSearch.enqueue(new Callback<Search>() {
             @Override
-            public void onResponse(@ParametersAreNonnullByDefault Call<Search> call, @ParametersAreNonnullByDefault Response<Search> response) {
+            public void onResponse(@NonNull Call<Search> call, @NonNull Response<Search> response) {
                 String aux;
                 if(!response.isSuccessful()) {
                     aux = "Deu falha no sucesso: " + (response.code());

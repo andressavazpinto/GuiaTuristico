@@ -94,7 +94,7 @@ public class SplashActivity extends Activity implements Runnable {
         }
     }
 
-    public void login(String email, String password) {
+    public void login(String email, final String password) {
         Gson g = new GsonBuilder().registerTypeAdapter(User.class, new UserDeserializer())
                 .setLenient()
                 .create();
@@ -151,6 +151,7 @@ public class SplashActivity extends Activity implements Runnable {
                 String aux = " Deu falha no login: " + t.getMessage();
                 Log.e(TAG, aux);
                 Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
+                login(u.getEmail(), u.getPassword());
             }
         });
     }

@@ -80,4 +80,16 @@ public class Message {
 
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "Message{" +
+                "idMessage=" + idMessage +
+                ", idUser=" + idUser +
+                ", content='" + content + '\'' +
+                ", translation='" + translation + '\'' +
+                ", dateTime=" + dateTime +
+                ", type='" + type + '\'' +
+                '}';
+    }
 }

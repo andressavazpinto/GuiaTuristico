@@ -41,7 +41,7 @@
             android:linksClickable="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/colorPrimaryDark"
+            android:textColor="@color/textTranslation"
             android:visibility="gone"
             android:textSize="@dimen/text_size_chat" />
 

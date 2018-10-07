@@ -98,15 +98,12 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
         callAccessLocation(super.getCurrentFocus());
 
         editTextName = findViewById(R.id.editTextName);
-
         editTextDateOfBirth = findViewById(R.id.editTextDateOfBirth);
         editTextDateOfBirth.addTextChangedListener(Mask.insert(Mask.FORMAT_DATE, editTextDateOfBirth));
-
         editTextUserEmail = findViewById(R.id.editTextUserEmail);
         editTextPassword = findViewById(R.id.editTextPassword);
 
         spinnerLanguage = findViewById(R.id.spinnerLanguage);
-
         spinnerLanguage.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
             @Override
@@ -215,10 +212,7 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
                         lang.setName(langItens.get(i).getAsJsonObject().get("name").getAsString());
                         lang.setLanguage(langItens.get(i).getAsJsonObject().get("language").getAsString());
                         output.add(lang);
-                        //System.out.println("Indice: " + i + " ---> " + languages.get(i).toString());
                     }
-                    System.out.println("Dentro do listLanguages ---> " + output.toString());
-
                     listLang(output);
                 }
             }

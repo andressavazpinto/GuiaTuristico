@@ -3,6 +3,9 @@ package model;
 public class Translate {
     private String q, source, target, format;
 
+    public Translate() {
+    }
+
     public Translate(String q, String source, String target, String format) {
         this.q = q;
         this.source = source;

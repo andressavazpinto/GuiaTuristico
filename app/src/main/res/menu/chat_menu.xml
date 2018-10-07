@@ -11,7 +11,8 @@
         android:id="@+id/suggestions"
         android:title="@string/suggestions">
         <menu >
-            <item android:id="@+id/submenu_cooking"
+            <item
+                android:id="@+id/submenu_cooking"
                 android:title="@string/cooking"
                 app:showAsAction="ifRoom|withText" >
                 <menu>

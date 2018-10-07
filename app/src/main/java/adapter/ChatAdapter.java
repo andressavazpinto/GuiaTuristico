@@ -54,20 +54,23 @@ public class ChatAdapter extends BaseAdapter {
 
         @SuppressLint("ViewHolder")
         View view;
+
         if (message.getIdUser() == crud.getUser().getIdUser())
             view = activity.getLayoutInflater().inflate(R.layout.balloon_right, parent, false);
-        else
+        else {
             view = activity.getLayoutInflater().inflate(R.layout.balloon_left, parent, false);
+            TextView textViewTranslation = view.findViewById(R.id.textViewTranslation);
 
-        TextView textViewContent = view.findViewById(R.id.textViewContent);
-        TextView textViewTranslation = view.findViewById(R.id.textViewTranslation);
-        if(message.getType().equals("String")) {
-            textViewContent.setText(message.getContent());
             if(translate & message.getTranslation() != null) {
                 textViewTranslation.setVisibility(View.VISIBLE);
-                //COLOCAR AQUI A TRADUÇÃO
                 textViewTranslation.setText(message.getTranslation());
             }
+        }
+
+        TextView textViewContent = view.findViewById(R.id.textViewContent);
+
+        if(message.getType().equals("String")) {
+            textViewContent.setText(message.getContent());
         }
         else if(message.getType().equals("Image")) {
             textViewContent.setVisibility(View.GONE);

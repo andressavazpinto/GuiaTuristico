@@ -48,11 +48,14 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.tcc.guiaturistico.R;
+
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -91,13 +94,16 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
     private BottomSheetDialog mBottomSheetDialog;
     private View sheetView;
 
-    private boolean translate = true;
+    private boolean translate;
+    private String translation, source;
+    private Message m2 = new Message(1, 0, null, null, null);
     //private String suggestion;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
         try {
             FirebaseApp.initializeApp(this);
         } catch(Exception e) {
@@ -105,6 +111,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
         }
         crud = new DBController(this);
         database = FirebaseDatabase.getInstance();
+        getTranslate(1);
         list = new ArrayList<Message>();
         setupComponents();
     }
@@ -149,7 +156,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onClick(View view) {
                 String text = message.getText().toString();
-                sendMessage(text, "String", 1);
+                preSendMessage(text, "String");
             }
         });
 
@@ -165,11 +172,8 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
                 Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 if(takePicture.resolveActivity(getPackageManager()) != null) {
                     //startActivityForResult(takePicture, TAKE_PICTURE);
-                    try {
-                        fileImage = createFile();
-                    } catch (IOException ex) {
-                        //Manipulação em caso de falha
-                    }
+                    fileImage = createFile();
+
                     if(fileImage != null) {
                         Uri photoURI = FileProvider.getUriForFile(getBaseContext(), getBaseContext().getApplicationContext().getPackageName() + ".provider", fileImage);
                         takePicture.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
@@ -220,7 +224,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-        //no lugar do 1, passar o id do chat atual deste usuário
+        //IDCHAT no lugar do 1, passar o id do chat atual deste usuário
         getMessages(1);
     }
 
@@ -271,7 +275,11 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
         switch (id) {
             case R.id.automaticTranslation:
-                translate = true;
+                if(!translate)
+                    translate = true;
+                else
+                    translate = false;
+                setTranslate();
                 break;
             case R.id.suggestions:
                 break;
@@ -288,7 +296,6 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
             case R.id.submenu_others:
                 break;
             default:
-
                 Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 if(takePicture.resolveActivity(getPackageManager()) != null) {
                     //texto da sugestão
@@ -297,6 +304,33 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
                 }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void setTranslate() {
+        DatabaseReference myRef = database.getReference();
+        int idChat = 1;
+        myRef.child("chat/"+idChat).child("translate").child(""+crud.getUser().getIdUser()).setValue(translate);
+    }
+
+    public void getTranslate(int idChat) {
+        final DatabaseReference myRef = database.getReference("/chat/"+ idChat +"/translate/" + crud.getUser().getIdUser());
+
+        ValueEventListener postListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.getValue(boolean.class) == null)
+                    translate = false;
+                else
+                    translate = dataSnapshot.getValue(boolean.class);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+                // ...
+            }
+        };
+        myRef.addValueEventListener(postListener);
     }
 
     public void openProfile(){
@@ -311,21 +345,18 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
 
     private void listMessages() {
         spinner.setVisibility(View.GONE);
-        //SETAR AQUI SE O USUÁRIO PEDIU TRADUÇÃO
         final ChatAdapter adapter = new ChatAdapter(list, translate, this, this);
         chat.setAdapter(adapter);
         chat.setStackFromBottom(true);
     }
 
     private void getMessages(int idChat) {
-        Log.d("ChatActivity", "Inside of getMessages(): " + list.toString());
         final DatabaseReference myRef = database.getReference("/chat/"+ idChat +"/messages/");
         Query recentMessagesQuery = myRef.limitToLast(10);
 
         recentMessagesQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
                 list.clear();
                 for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
                     Message a = postSnapshot.getValue(Message.class);
@@ -341,25 +372,36 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
-    public void sendMessage(String text, String type, int idChat) {
-        if(text != null & ! text.equals("") & ! text.matches(" ")) {
-            DatabaseReference myRef = database.getReference();
-
-            String key = myRef.child("messages").push().getKey();
-            final Message m2 = new Message(1, crud.getUser().getIdUser(), text, null, type);
-
-            Map<String, Object> postValues = m2.toMap();
-            Map<String, Object> childUpdates = new HashMap();
-            childUpdates.put("/chat/" + idChat + "/messages/" + key, postValues);
-
-            myRef.updateChildren(childUpdates);
-        }
-        translate();
+    public void preSendMessage(String text, String type) {
         message.setText("");
+        if(text != null & ! text.equals("") & ! text.matches(" ")) {
+            m2.setContent(text);
+            m2.setIdUser(crud.getUser().getIdUser());
+            m2.setType(type);
+            m2.setTranslation(null);
+            Translate t = new Translate();
+
+            t.setTarget(crud.getUser().getLanguage());
+            t.setQ(text);
+            detect(t);
+        }
+    }
+
+    public void sendMessage(Message m) {
+        DatabaseReference myRef = database.getReference();
+        String key = myRef.child("messages").push().getKey();
+        Map<String, Object> postValues = m.toMap();
+        Map<String, Object> childUpdates = new HashMap();
+        int idChat = 1;
+        childUpdates.put("/chat/" + idChat + "/messages/" + key, postValues);
+        Log.d(TAG, "Message dentro do sendMessage: " + m.toString());
+        myRef.updateChildren(childUpdates);
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        m2.setType("Image");
+
         if(resultCode == RESULT_OK && requestCode == 1) {
             Uri selectedImage = data.getData();
             String[] filePath = { MediaStore.Images.Media.DATA };
@@ -376,7 +418,8 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
             String encodedImage = Base64.encodeToString(b, Base64.DEFAULT);
             Log.w("ChatActivity", "Encode image: " + encodedImage);
 
-            sendMessage(encodedImage, "Image", 1);
+            m2.setContent(encodedImage);
+            sendMessage(m2);
         }
         if(requestCode == TAKE_PICTURE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
@@ -390,7 +433,8 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
             Log.w("ChatActivity", "Encode image: " + encodedImage);
 
             //sendMessage(suggestion, "String", 1);
-            sendMessage(encodedImage, "Image", 1);
+            m2.setContent(encodedImage);
+            sendMessage(m2);
         }
         if(requestCode == CAMERA && resultCode == RESULT_OK) {
             sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(fileImage)));
@@ -405,7 +449,8 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
             String encodedImage = Base64.encodeToString(b, Base64.DEFAULT);
 
             //sendMessage(suggestion, "String", 1);
-            sendMessage(encodedImage, "Image", 1);
+            m2.setContent(encodedImage);
+            sendMessage(m2);
         }
 
         mBottomSheetDialog.dismiss();
@@ -423,13 +468,15 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    private File createFile() throws IOException {
+    private File createFile() {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         File directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
         return new File(directory.getPath() + File.separator + "Guia_" + timeStamp + ".jpg");
     }
 
-    private void translate() {
+    private void translate(Translate t) {
+        Log.d(TAG, "t dentro do translate: " + t.toString());
+
         Gson g = new GsonBuilder().registerTypeAdapter(Translate.class, new TranslateDeserializer())
                 .setLenient()
                 .create();
@@ -441,26 +488,79 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
 
         TranslationService service = retrofit.create((TranslationService.class));
 
-        final Translate t = new Translate(message.getText().toString(), "en", "es", "text");
         String API_KEY = "AIzaSyByLqEvttULJFQRbNxpPqa4dxETVOgP_e8";
 
-        Call<Object> request = service.translate(t, API_KEY);
+        Call<JsonObject> request = service.translate(t, API_KEY);
 
-        request.enqueue(new Callback<Object>() {
+        request.enqueue(new Callback<JsonObject>() {
             @Override
-            public void onResponse(@NonNull Call<Object> call, @NonNull Response<Object> response) {
-                String aux;
-                if(!response.isSuccessful()) {
-                    aux = "Erro: " + (response.code());
-                    Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
-                }
-                else {
-                    Log.i(TAG, (response.body().toString()));
+            public void onResponse(@NonNull Call<JsonObject> call, @NonNull Response<JsonObject> response) {
+                if(response.isSuccessful()) {
+                    try {
+                        JsonElement jo = response.body().get("data").getAsJsonObject().get("translations").getAsJsonArray().get(0);
+                        JSONObject detection = new JSONObject(new Gson().toJson(jo));
+
+                        translation = detection.getString("translatedText");
+                        Log.d(TAG, "translation: " + translation);
+
+                        m2.setTranslation(translation);
+                        Log.d(TAG, "m2: " + m2.toString());
+                        sendMessage(m2);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else if (response.code() == 400) {
+                    sendMessage(m2);
                 }
             }
 
             @Override
-            public void onFailure(@NonNull Call<Object> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<JsonObject> call, @NonNull Throwable t) {
+                String aux = " Erro: " + t.getMessage();
+                Log.e(TAG, aux);
+                Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void detect(Translate t) {
+        final Translate tt = new Translate();
+        tt.setQ(t.getQ());
+        tt.setTarget(t.getTarget());
+
+        Gson g = new GsonBuilder().registerTypeAdapter(Translate.class, new TranslateDeserializer())
+                .setLenient()
+                .create();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(TranslationService.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create(g))
+                .build();
+
+        TranslationService service = retrofit.create((TranslationService.class));
+
+        String API_KEY = "AIzaSyByLqEvttULJFQRbNxpPqa4dxETVOgP_e8";
+        Call<JsonObject> request = service.detect(t, API_KEY);
+
+        request.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(@NonNull Call<JsonObject> call, @NonNull Response<JsonObject> response) {
+                if(response.isSuccessful()) {
+                    try {
+                        JsonElement jo = response.body().get("data").getAsJsonObject().get("detections").getAsJsonArray().get(0).getAsJsonArray().get(0);
+                        JSONObject detection = new JSONObject(new Gson().toJson(jo));
+                        source = detection.getString("language");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    tt.setSource(source);
+                    Log.d(TAG, "tt dentro do try: " + tt.toString());
+                    translate(tt);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<JsonObject> call, @NonNull Throwable t) {
                 String aux = " Erro: " + t.getMessage();
                 Log.e(TAG, aux);
                 Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();

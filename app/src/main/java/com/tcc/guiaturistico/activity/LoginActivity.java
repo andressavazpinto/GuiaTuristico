@@ -473,7 +473,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             }
 
             @Override
-            public void onFailure(@ParametersAreNonnullByDefault Call<Search> call, @ParametersAreNonnullByDefault Throwable t) {
+            public void onFailure(@NonNull Call<Search> call, @NonNull Throwable t) {
                 String aux = " Deu falha no login: " + t.getMessage();
                 Log.e("TAG", aux);
                 Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();

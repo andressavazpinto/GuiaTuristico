@@ -40,6 +40,8 @@ import java.io.IOException;
 import java.util.List;
 
 import me.drakeet.materialdialog.MaterialDialog;
+import model.Chat;
+import model.ChatDeserializer;
 import model.Localization;
 import model.LocalizationDeserializer;
 import model.Search;
@@ -49,11 +51,13 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import service.ChatService;
 import service.LocalizationService;
 import service.SearchService;
 import service.UserService;
 import util.DBController;
 import util.Message;
+import util.StatusChat;
 import util.StatusSearch;
 
 /**
@@ -61,7 +65,7 @@ import util.StatusSearch;
  */
 
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
-
+    private static final String TAG = "HomeActivity";
     public TextView nameNavHeader, localizationNavHeader;
     private View headerView;
     private NavigationView navigationView;
@@ -90,7 +94,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void verifyStatusSearch() {
-        final Search s = new Search(1, Enum.valueOf(StatusSearch.class,"Initial"), 3);
+        final Search s = new Search(1, Enum.valueOf(StatusSearch.class,"Initial"), crud.getUser().getIdUser());
 
         Gson g = new GsonBuilder().registerTypeAdapter(Search.class, new SearchDeserializer())
                 .setLenient()
@@ -146,7 +150,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             case Accepted:
                 Intent intent = new Intent(this, ChatActivity.class);
                 startActivity(intent);
-                //finishAffinity();
                 finish();
                 break;
             case Initial:
@@ -306,9 +309,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_CODE);
             }
         } else {
-            //mFusedLocationClient =
             LocationServices.getFusedLocationProviderClient(this);
-            //LocationServices.FusedLocationProviderClient.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
 
             if(location != null) {
                 try {

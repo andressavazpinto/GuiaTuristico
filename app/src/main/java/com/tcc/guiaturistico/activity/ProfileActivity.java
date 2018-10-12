@@ -51,7 +51,6 @@ import util.Message;
 public class ProfileActivity extends AppCompatActivity {
     private static final String TAG = "ProfileActivity";
     private static final int ERROR_DIALOG_REQUEST = 9001;
-    private Button buttonSave;
     private Spinner spinnerLanguage;
     private EditText editTextName, editTextDateOfBirth, editTextUserEmail, editTextPassword;
     private ProgressBar spinner;
@@ -82,11 +81,9 @@ public class ProfileActivity extends AppCompatActivity {
 
             @Override
             public void onItemSelected(AdapterView<?> parent, View v, int position, long id) {
-                //pega nome pela posição
-                Log.d(TAG, "Nome Selecionado: " + selectLanguage(position));
+                selectLanguage(position);
             }
             public void onNothingSelected(AdapterView<?> adapterView) {
-                //return;
             }
         });
 
@@ -98,7 +95,7 @@ public class ProfileActivity extends AppCompatActivity {
         editTextUserEmail = findViewById(R.id.editTextUserEmail);
         editTextPassword = findViewById(R.id.editTextPassword);
 
-        buttonSave = findViewById(R.id.buttonSave);
+        Button buttonSave = findViewById(R.id.buttonSave);
         buttonSave.setVisibility(View.VISIBLE);
         buttonSave.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -202,7 +199,6 @@ public class ProfileActivity extends AppCompatActivity {
         u.setEmail(editTextUserEmail.getText().toString());
         u.setPassword(editTextPassword.getText().toString());
         u.setLanguage(language);
-        Log.d(TAG, "pass: " + u.getPassword() + "lang: " + language);
 
         Call<User> requestUser = service.update(u);
 

@@ -64,6 +64,8 @@ import java.util.List;
 import java.util.Map;
 
 import adapter.ChatAdapter;
+import model.Chat;
+import model.ChatDeserializer;
 import model.Message;
 import model.Translate;
 import model.TranslateDeserializer;
@@ -72,7 +74,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import service.ChatService;
 import service.TranslationService;
+import service.UserService;
 import util.DBController;
 
 public class ChatActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -92,11 +96,11 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
     private FirebaseDatabase database;
     private EditText message;
     private BottomSheetDialog mBottomSheetDialog;
-    private View sheetView;
 
     private boolean translate;
     private String translation, source;
     private Message m2 = new Message(1, 0, null, null, null);
+    private int idChat;
     //private String suggestion;
 
     @Override
@@ -110,8 +114,25 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
             e.printStackTrace();
         }
         crud = new DBController(this);
+        idChat = crud.getChat();
+        Log.d(TAG, "idChat: " + idChat);
         database = FirebaseDatabase.getInstance();
-        getTranslate(1);
+
+        /*if (crud.getChat() == 0) {
+            read();
+            Log.d(TAG, "idChat: " + idChat);
+            //getTranslate(idChat);
+            //Log.d(TAG, "idChat getTranslate: " + idChat);
+        }
+        else {
+//            idChat = crud.getChat();
+            Log.d(TAG, "idChat quando não zero: " + idChat);
+            getTranslate(idChat);
+        }*/
+        idChat = 1;
+
+        getTranslate(idChat);
+//        Log.d(TAG, "idChat getTranslate: " + idChat);
         list = new ArrayList<Message>();
         setupComponents();
     }
@@ -161,7 +182,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
         });
 
         mBottomSheetDialog = new BottomSheetDialog(this);
-        sheetView = this.getLayoutInflater().inflate(R.layout.cam_bottom_sheet, null);
+        View sheetView = this.getLayoutInflater().inflate(R.layout.cam_bottom_sheet, null);
         mBottomSheetDialog.setContentView(sheetView);
         LinearLayout cam = sheetView.findViewById(R.id.fragment_history_bottom_sheet_cam);
         LinearLayout photoLibrary = sheetView.findViewById(R.id.fragment_history_bottom_sheet_photo_library);
@@ -174,11 +195,9 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
                     //startActivityForResult(takePicture, TAKE_PICTURE);
                     fileImage = createFile();
 
-                    if(fileImage != null) {
-                        Uri photoURI = FileProvider.getUriForFile(getBaseContext(), getBaseContext().getApplicationContext().getPackageName() + ".provider", fileImage);
-                        takePicture.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                        startActivityForResult(takePicture, TAKE_PICTURE);
-                    }
+                    Uri photoURI = FileProvider.getUriForFile(getBaseContext(), getBaseContext().getApplicationContext().getPackageName() + ".provider", fileImage);
+                    takePicture.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                    startActivityForResult(takePicture, TAKE_PICTURE);
                 }
             }
         });
@@ -224,8 +243,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-        //IDCHAT no lugar do 1, passar o id do chat atual deste usuário
-        getMessages(1);
+        getMessages(idChat);
     }
 
     @Override
@@ -275,10 +293,10 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
         switch (id) {
             case R.id.automaticTranslation:
-                if(!translate)
-                    translate = true;
-                else
+                if(translate)
                     translate = false;
+                else
+                    translate = true;
                 setTranslate();
                 break;
             case R.id.suggestions:
@@ -308,7 +326,6 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
 
     public void setTranslate() {
         DatabaseReference myRef = database.getReference();
-        int idChat = 1;
         myRef.child("chat/"+idChat).child("translate").child(""+crud.getUser().getIdUser()).setValue(translate);
     }
 
@@ -327,7 +344,6 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
-                // ...
             }
         };
         myRef.addValueEventListener(postListener);
@@ -392,7 +408,6 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
         String key = myRef.child("messages").push().getKey();
         Map<String, Object> postValues = m.toMap();
         Map<String, Object> childUpdates = new HashMap();
-        int idChat = 1;
         childUpdates.put("/chat/" + idChat + "/messages/" + key, postValues);
         Log.d(TAG, "Message dentro do sendMessage: " + m.toString());
         myRef.updateChildren(childUpdates);
@@ -564,6 +579,39 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
                 String aux = " Erro: " + t.getMessage();
                 Log.e(TAG, aux);
                 Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    public void read() {
+        Gson g = new GsonBuilder().registerTypeAdapter(Chat.class, new ChatDeserializer())
+                .setLenient()
+                .create();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(UserService.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create(g))
+                .build();
+
+        ChatService service = retrofit.create(ChatService.class);
+
+        Call<Chat> requestUser = service.read(crud.getUser().getIdUser());
+        requestUser.enqueue(new Callback<Chat>() {
+            @Override
+            public void onResponse(@NonNull Call<Chat> call, @NonNull Response<Chat> response) {
+                if(response.isSuccessful()) {
+                    Chat c = response.body();
+                    Log.d(TAG, "id chat no read: " + c.getIdChat());
+                    idChat = c.getIdChat();
+                    try{ crud.deleteChat(c.getIdChat());} catch (Exception e) { e.printStackTrace(); }
+                    crud.insertChat(c.getIdChat());
+                    getTranslate(c.getIdChat());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Chat> call, @NonNull Throwable t) {
+                Log.e("erro", "Deu ruim: " + t.getMessage());
             }
         });
     }

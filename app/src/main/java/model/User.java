@@ -18,6 +18,7 @@ public class User implements Serializable {
     private String password;
     private int idLocalization;
     private StatusUser statusAccount;
+    //private int idChat;
 
     public User() {
 
@@ -28,7 +29,7 @@ public class User implements Serializable {
     }
 
     public User(int idUser, String name, String dateOfBirth, String language,
-                String email, String password, int idLocalization, StatusUser statusAccount) {
+                String email, String password, int idLocalization, StatusUser statusAccount) {//}, int idChat) {
         this.idUser = idUser;
         this.name = name;
         this.dateOfBirth = dateOfBirth;
@@ -37,6 +38,7 @@ public class User implements Serializable {
         this.password = password;
         this.idLocalization = idLocalization;
         this.statusAccount = statusAccount;
+        //this.idChat = idChat;
     }
 
     public int getIdUser() {
@@ -103,6 +105,14 @@ public class User implements Serializable {
         this.statusAccount = statusAccount;
     }
 
+/*    public int getIdChat() {
+        return idChat;
+    }
+
+    public void setIdChat(int idChat) {
+        this.idChat = idChat;
+    }*/
+
     @Override
     public String toString() {
         return "User{" +
@@ -114,6 +124,7 @@ public class User implements Serializable {
                 ", password='" + password + '\'' +
                 ", idLocalization=" + idLocalization +
                 ", statusAccount=" + statusAccount +
+                //", idChat=" + idChat +
                 '}';
     }
 }

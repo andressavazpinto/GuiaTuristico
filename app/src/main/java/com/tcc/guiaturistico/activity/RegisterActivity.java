@@ -31,7 +31,6 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.gson.Gson;
@@ -85,13 +84,12 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
     List<String> list_languages;
     List<Language> languages;
     String language;
-    private FusedLocationProviderClient mFusedLocationClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        LocationServices.getFusedLocationProviderClient(this);
 
         crud = new DBController(this);
         localization = new Localization();
@@ -108,11 +106,9 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
 
             @Override
             public void onItemSelected(AdapterView<?> parent, View v, int position, long id) {
-                //pega nome pela posição
-                Log.d(TAG, "Nome Selecionado: " + selectLanguage(position));
+                selectLanguage(position);
             }
             public void onNothingSelected(AdapterView<?> adapterView) {
-                //return;
             }
         });
 
@@ -327,19 +323,19 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
 
         requestUser.enqueue(new Callback<Integer>() {
             @Override
-            public void onResponse(@NonNull Call<Integer> call, @NonNull Response<Integer> response) {
-                String aux;
-                if(!response.isSuccessful()) {
-                    aux = "Erro: " + (response.code());
-                    Log.i(TAG, aux);
-                    Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
-                }
-                else {
+            public void onResponse(Call<Integer> call, Response<Integer> response) {
+                if(response.isSuccessful()) {
                     u.setIdUser(Integer.parseInt(response.body().toString()));
                     System.out.print("Id: " + u.getIdUser() + "\n");
                     crud.insertUser(u);
                     finishAffinity();
                     openInterests();
+                }
+                else {
+                    String aux = " Erro: " + response.body();
+                    Log.e(TAG, aux);
+                    Log.e(TAG, "u:" + u.toString());
+                    Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
                 }
             }
 
@@ -347,6 +343,7 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
             public void onFailure(@NonNull Call<Integer> call, @NonNull Throwable t) {
                 String aux = " Erro: " + t.getMessage();
                 Log.e(TAG, aux);
+                Log.e(TAG, "u:" + u.toString());
                 Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
             }
         });
@@ -438,7 +435,8 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
                 } catch (Exception e) {
                     e.getMessage();
                 }
-                editTextLocalization.setText(localization.getCity() + ", " + localization.getUf());
+                String aux = localization.getCity() + ", " + localization.getUf();
+                editTextLocalization.setText(aux);
             }
         }
     }
@@ -473,7 +471,8 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
             } catch (Exception e) {
                 e.getMessage();
             }
-            editTextLocalization.setText(localization.getCity() + ", " + localization.getUf());
+            String aux = localization.getCity() + ", " + localization.getUf();
+            editTextLocalization.setText(aux);
         }
         startLocationUpdate();
     }

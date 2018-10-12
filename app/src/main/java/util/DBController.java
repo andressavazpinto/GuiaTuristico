@@ -36,14 +36,13 @@ public class DBController {
         db.close();
     }
 
-    /*public void insertSearch(Search s) {
+    public void insertChat(int idChat) {
         ContentValues cv = new ContentValues();
-        cv.put("idUser", s.getIdUser());
-        cv.put("status", s.getStatus().toString());
+        cv.put("idChat", idChat);
 
-        db.insert("search", null, cv);
+        db.insert("chat", null, cv);
         db.close();
-    }*/
+    }
 
     public void updateUser(User u) {
         ContentValues cv = new ContentValues();
@@ -59,11 +58,11 @@ public class DBController {
         db.close();
     }
 
-    /*public void updateSearch(Search s) {
+    /*public void updateChat(int idChat) {
         ContentValues cv = new ContentValues();
-        cv.put("status", s.getStatus().toString());
+        cv.put("idChat", idChat);
 
-        db.update("search", cv, "idUser = ?", new String[]{""+s.getIdUser()});
+        db.update("chat", cv, "idChat = ?", new String[]{""+s.getIdUser()});
         db.close();
     }*/
 
@@ -71,13 +70,13 @@ public class DBController {
         db.delete("user", "idUser = " + u.getIdUser(), null);
     }
 
-    /*public void deleteSearch(Search s) {
-        db.delete("search", "idUser = " + s.getIdUser(), null);
-    }*/
+    public void deleteChat(int idChat) {
+        db.delete("chat", "idChat = " +idChat, null);
+    }
 
     public User getUser() {
         User u = new User();
-        String[] colums = new String[]{"idUser", "name", "dateOfBirth", "language", "email", "password", "idLocalization", "statusAccount"};
+        String[] colums = new String[]{"idUser", "name", "dateOfBirth", "language", "email", "password", "idLocalization", "statusAccount"};//, "idChat"};
         Cursor cursor = db.query("user", colums, null, null, null, null, null);
 
         if(cursor.getCount() > 0) {
@@ -103,20 +102,18 @@ public class DBController {
         return u;
     }
 
-    /*public Search getSearch() {
-        Search s = new Search();
-        String[] colums = new String[]{"idUser", "status"};
-        Cursor cursor = db.query("search", colums, null, null, null, null, null);
+    public int getChat() {
+        int idChat = 0;
+        String[] colums = new String[]{"idChat"};
+        Cursor cursor = db.query("chat", colums, null, null, null, null, null);
 
         if(cursor.getCount() > 0) {
             cursor.moveToNext();
-
             do {
-                s.setIdUser(cursor.getInt(0));
-                s.setStatus(Enum.valueOf(StatusSearch.class, cursor.getString(1)));
+                idChat = cursor.getInt(0);
             } while(cursor.moveToNext());
         }
         cursor.close();
-        return s;
-    }*/
+        return idChat;
+    }
 }

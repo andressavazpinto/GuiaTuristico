@@ -1,5 +1,6 @@
 package fragment;
 
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -8,11 +9,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.tcc.guiaturistico.R;
 
+import model.Chat;
+import model.ChatDeserializer;
 import model.ConnectGuides;
 import model.ConnectGuidesDeserializer;
 import model.Search;
@@ -24,26 +28,30 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import service.ChatService;
 import service.ConnectGuidesService;
 import service.SearchService;
 import service.UserService;
 import util.DBController;
+import util.StatusChat;
 import util.StatusSearch;
 
 public class FoundGuideFragment extends Fragment {
-
+    private static final String TAG = "FoundGuideFragment";
     public Button buttonAccept, buttonReject;
     public TextView textViewName;
     private DBController crud;
     private Search search1, search2;
     private ConnectGuides connectGuides;
     private User guide;
+    private int idChat;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup v, Bundle b) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup v, Bundle b) {
         View view = inflater.inflate(R.layout.middle_found_guide, v, false);
         crud = new DBController(getContext());
         search1 = new Search(1, Enum.valueOf(StatusSearch.class,"Initial"), crud.getUser().getIdUser());
+        idChat = 0;
 
         setupComponents(view);
         readConnectGuides(crud.getUser().getIdUser());
@@ -81,6 +89,9 @@ public class FoundGuideFragment extends Fragment {
             search2.setStatus(Enum.valueOf(StatusSearch.class, "Accepted"));
             setStatusSearch(search1);
             setStatusSearch(search2);
+
+            registerChat();
+
             getActivity().recreate();
         }
     }
@@ -108,7 +119,7 @@ public class FoundGuideFragment extends Fragment {
         Call<ConnectGuides> requestUser = service.read(id);
         requestUser.enqueue(new Callback<ConnectGuides>() {
             @Override
-            public void onResponse(Call<ConnectGuides> call, Response<ConnectGuides> response) {
+            public void onResponse(@NonNull Call<ConnectGuides> call, @NonNull Response<ConnectGuides> response) {
                 if(!response.isSuccessful())
                     Log.i("erro", "Deu erro: " + response.code());
                 else {
@@ -128,7 +139,7 @@ public class FoundGuideFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<ConnectGuides> call, Throwable t) {
+            public void onFailure(@NonNull Call<ConnectGuides> call, @NonNull Throwable t) {
                 Log.e("erro", "Deu ruim: " + t.getMessage());
             }
         });
@@ -151,7 +162,7 @@ public class FoundGuideFragment extends Fragment {
 
         requestSearch.enqueue(new Callback<Search>() {
             @Override
-            public void onResponse(Call<Search> call, Response<Search> response) {
+            public void onResponse(@NonNull Call<Search> call, @NonNull Response<Search> response) {
                 String aux;
                 if(!response.isSuccessful()) {
                     aux = "Deu falha no sucesso: " + (response.code());
@@ -165,7 +176,7 @@ public class FoundGuideFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<Search> call, Throwable t) {
+            public void onFailure(@NonNull Call<Search> call, @NonNull Throwable t) {
                 String aux = " Deu falha no login: " + t.getMessage();
                 Log.e("TAG", aux);
             }
@@ -188,7 +199,7 @@ public class FoundGuideFragment extends Fragment {
 
         requestSearch.enqueue(new Callback<Void>() {
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 String aux;
                 if(!response.isSuccessful()) {
                     aux = "Deu falha no sucesso: " + (response.code());
@@ -200,7 +211,7 @@ public class FoundGuideFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<Void> call, Throwable t) {
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
                 String aux = " Deu falha: " + t.getMessage();
                 Log.e("TAG", aux);
             }
@@ -222,19 +233,55 @@ public class FoundGuideFragment extends Fragment {
         Call<User> requestUser = service.read(id);
         requestUser.enqueue(new Callback<User>() {
             @Override
-            public void onResponse(Call<User> call, Response<User> response) {
+            public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
                 if(!response.isSuccessful())
                     Log.i("erro", "Deu erro: " + response.code());
                 else {
                     guide = response.body();
                     textViewName.setText(guide.getName());
-                    //System.out.println("Resultado do Guide.toString: " + response.body().toString());
                 }
             }
 
             @Override
-            public void onFailure(Call<User> call, Throwable t) {
+            public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
                 Log.e("erro", "Deu ruim: " + t.getMessage());
+            }
+        });
+    }
+
+    public void registerChat() {
+        Gson g = new GsonBuilder().registerTypeAdapter(Chat.class, new ChatDeserializer())
+                .setLenient()
+                .create();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(ChatService.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create(g))
+                .build();
+
+        ChatService service = retrofit.create(ChatService.class);
+
+        final Chat c = new Chat();
+
+        c.setIdUser1(connectGuides.getIdUser1());
+        c.setIdChat(connectGuides.getIdUser2());
+        c.setStatus(StatusChat.Active);
+
+        Call<Integer> requestChat = service.register(c);
+
+        requestChat.enqueue(new Callback<Integer>() {
+            @Override
+            public void onResponse(@NonNull Call<Integer> call, @NonNull Response<Integer> response) {
+                if(response.isSuccessful()) {
+                    idChat = (Integer.parseInt(response.body().toString()));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Integer> call, @NonNull Throwable t) {
+                String aux = " Erro: " + t.getMessage();
+                Log.e(TAG, aux);
+                Toast.makeText(getContext(), aux, Toast.LENGTH_LONG).show();
             }
         });
     }

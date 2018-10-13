@@ -26,7 +26,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.gson.Gson;
@@ -38,10 +37,10 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import me.drakeet.materialdialog.MaterialDialog;
-import model.Chat;
-import model.ChatDeserializer;
 import model.Localization;
 import model.LocalizationDeserializer;
 import model.Search;
@@ -51,13 +50,11 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import service.ChatService;
 import service.LocalizationService;
 import service.SearchService;
 import service.UserService;
 import util.DBController;
 import util.Message;
-import util.StatusChat;
 import util.StatusSearch;
 
 /**
@@ -67,34 +64,51 @@ import util.StatusSearch;
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
     private static final String TAG = "HomeActivity";
     public TextView nameNavHeader, localizationNavHeader;
-    private View headerView;
-    private NavigationView navigationView;
-    private Toolbar toolbar;
-    private DrawerLayout drawer;
     private GoogleApiClient mGoogleApiClient;
-    private LocationRequest mLocationRequest;
     private Localization localization;
     private Location location;
-    private FusedLocationProviderClient mFusedLocationClient;
     private MaterialDialog mMaterialDialog;
     private static final int REQUEST_PERMISSIONS_CODE = 128;
+    private static final long TIME = (1000*5);
     private DBController crud;
     private ConstraintLayout layout;
     private ConstraintLayout contentMain;
     private ProgressBar spinner;
+    private Timer timer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        LocationServices.getFusedLocationProviderClient(this);
 
         crud = new DBController(this);
         setupComponents();
+
+        verifyStatusSearch();
+
+        //verifica de tempos em tempos o estado da busca
+        if(timer == null) {
+            timer = new Timer();
+            TimerTask tarefa = new TimerTask() {
+                @Override
+                public void run() {
+                    try {
+                        verifyStatusSearch();
+                    } catch (Exception e) {
+                        String aux = e.getMessage();
+                        Log.d(TAG, aux);
+                        Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            };
+            timer.scheduleAtFixedRate(tarefa, TIME, TIME);
+        }
     }
 
     public void verifyStatusSearch() {
-        final Search s = new Search(1, Enum.valueOf(StatusSearch.class,"Initial"), crud.getUser().getIdUser());
+        Log.d(TAG, "Entrou no verifyStatusSearch()");
+        final Search s = new Search(0, null, crud.getUser().getIdUser());
 
         Gson g = new GsonBuilder().registerTypeAdapter(Search.class, new SearchDeserializer())
                 .setLenient()
@@ -114,8 +128,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             public void onResponse(@NonNull Call<Search> call, @NonNull Response<Search> response) {
                 String aux;
                 if(!response.isSuccessful()) {
-                    aux = "Deu falha no sucesso: " + (response.code());
-                    Log.i("TAG", aux);
+                    aux = "Erro: " + (response.code());
+                    Log.i(TAG, aux);
                 }
                 else if(response.isSuccessful()) {
                     try {
@@ -125,7 +139,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         s.setIdSearch(jsonSearch.getInt("idSearch"));
                         s.setStatus(Enum.valueOf(StatusSearch.class, jsonSearch.getString("status")));
 
-                        System.out.println("Resultado do status na HomeActivity: " + s.getStatus());
+                        Log.d(TAG, "Resultado do status na HomeActivity: " + s.getStatus());
                         setMiddle(s);
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -135,14 +149,15 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
             @Override
             public void onFailure(@NonNull Call<Search> call, @NonNull Throwable t) {
-                String aux = " Deu falha no login: " + t.getMessage();
-                Log.e("TAG", aux);
+                String aux = " Erro: " + t.getMessage();
+                Log.e(TAG, aux);
                 Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
             }
         });
     }
 
     public void setMiddle(Search sea) {
+        Log.d(TAG, "Entrou no setMiddle()");
         StatusSearch status;
         status = (Enum.valueOf(StatusSearch.class, sea.getStatus().toString()));
 
@@ -150,7 +165,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             case Accepted:
                 Intent intent = new Intent(this, ChatActivity.class);
                 startActivity(intent);
-                finish();
+                finishAffinity();
                 break;
             case Initial:
                 layout.setVisibility(View.VISIBLE);
@@ -188,10 +203,10 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         spinner = findViewById(R.id.progressBar);
         spinner.setVisibility(View.VISIBLE);
 
-        navigationView = findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        headerView = navigationView.getHeaderView(0);
+        View headerView = navigationView.getHeaderView(0);
 
         nameNavHeader = headerView.findViewById(R.id.nameNavHeader);
         nameNavHeader.setText(getIntent().getStringExtra("name")); //pegando o que foi passado pela activity anterior
@@ -199,10 +214,10 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         localizationNavHeader = headerView.findViewById(R.id.localizationNavHeader);
         localizationNavHeader.setText(getIntent().getStringExtra("localization"));
 
-        toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        drawer = findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -213,7 +228,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         contentMain.setVisibility(View.VISIBLE);
         layout = contentMain.findViewById(R.id.fragHome);
 
-        verifyStatusSearch();
+//        verifyStatusSearch();
     }
 
     @Override
@@ -241,6 +256,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_logout) {
             //fechar sessão
             try {crud.deleteUser(crud.getUser());} catch (Exception e) {e.printStackTrace();}
+            try {crud.deleteChat(crud.getChat());} catch (Exception e) {e.printStackTrace();}
             startActivity(new Intent(this, LoginActivity.class));  //O efeito ao ser pressionado do botão (no caso abre a activity)
             finishAffinity();
         }
@@ -288,7 +304,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void initLocationRequest() {
-        mLocationRequest = new LocationRequest();
+        LocationRequest mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(5000); //de cinco em cinco
         mLocationRequest.setFastestInterval(2000); //no mínimo
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -304,7 +320,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
                 callDialog(Message.messageAskPermissionAgain, new String[]{Manifest.permission.ACCESS_FINE_LOCATION});
-                Log.i("TAG", "permissão negada");
+                Log.i(TAG, "permissão negada");
             } else {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_CODE);
             }
@@ -328,7 +344,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
     }
 
-    //listener
     @Override
     public void onConnected(Bundle bundle) {
         Log.i("LOG", "onConnected(" + bundle + ")");
@@ -338,7 +353,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
                 callDialog(Message.messageAskPermissionAgain, new String[]{Manifest.permission.ACCESS_FINE_LOCATION});
-                Log.i("TAG", "permissão negada");
+                Log.i(TAG, "permissão negada");
             } else {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_CODE);
             }
@@ -381,24 +396,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         String aux = localization.getCity() + ", " + localization.getUf();
         localizationNavHeader.setText(aux);
         updateLocalization(localization);
-    }
-
-    public void callAccessLocation(View view) {
-        Log.i("", "callAccessLocation()");
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            //solicitar novamente permissão ao usuário
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                callDialog(Message.messageAskPermissionAgain, new String[]{Manifest.permission.ACCESS_FINE_LOCATION});
-                Log.i("TAG", "permissão negada");
-            } else {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_CODE);
-            }
-        } else {
-            callConnection();
-        }
     }
 
     public Address getAddress(double latitude, double longitude) throws IOException {
@@ -461,6 +458,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void updateLocalization(Localization localization) {
+        Log.d(TAG, "Entrou no updateLocalization()");
         Gson g = new GsonBuilder().registerTypeAdapter(Localization.class, new LocalizationDeserializer())
                 .setLenient()
                 .create();
@@ -480,7 +478,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 String aux;
                 if(!response.isSuccessful()) {
                     aux = "Erro: " + (response.code());
-                    Log.i("erro", aux);
+                    Log.i(TAG, aux);
                     Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
                 }
                 else if(response.isSuccessful()) {
@@ -491,7 +489,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
                 String aux = " Erro: " + t.getMessage();
-                Log.e("erro", aux);
+                Log.e(TAG, aux);
                 Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
             }
         });

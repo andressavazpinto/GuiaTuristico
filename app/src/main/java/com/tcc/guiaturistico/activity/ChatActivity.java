@@ -12,6 +12,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -92,6 +93,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
     private List<Message> list;
     private ListView chat;
     private DBController crud;
+    private Thread thread;
 
     private FirebaseDatabase database;
     private EditText message;
@@ -115,24 +117,16 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
         }
         crud = new DBController(this);
         idChat = crud.getChat();
-        Log.d(TAG, "idChat: " + idChat);
         database = FirebaseDatabase.getInstance();
 
-        /*if (crud.getChat() == 0) {
-            read();
-            Log.d(TAG, "idChat: " + idChat);
-            //getTranslate(idChat);
-            //Log.d(TAG, "idChat getTranslate: " + idChat);
+        if (idChat == 0) {
+             read();
         }
         else {
-//            idChat = crud.getChat();
-            Log.d(TAG, "idChat quando não zero: " + idChat);
             getTranslate(idChat);
-        }*/
-        idChat = 1;
+            getMessages(idChat);
+        }
 
-        getTranslate(idChat);
-//        Log.d(TAG, "idChat getTranslate: " + idChat);
         list = new ArrayList<Message>();
         setupComponents();
     }
@@ -242,8 +236,6 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
                 mBottomSheetDialog.show();
             }
         });
-
-        getMessages(idChat);
     }
 
     @Override
@@ -272,7 +264,8 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.nav_logout:
                 //fechar sessão
-                try {crud.deleteUser(crud.getUser());} catch (Exception e) {e.printStackTrace();}
+                try {crud.deleteUser(crud.getUser());} catch (Exception e) {Log.d(TAG, e.getMessage());}
+                try {crud.deleteChat(crud.getChat());} catch (Exception e) {Log.d(TAG, e.getMessage());}
                 startActivity(new Intent(this, LoginActivity.class));  //O efeito ao ser pressionado do botão (no caso abre a activity)
                 finishAffinity();
         }
@@ -330,6 +323,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void getTranslate(int idChat) {
+        Log.d(TAG, "idChat getTranslate: " + idChat);
         final DatabaseReference myRef = database.getReference("/chat/"+ idChat +"/translate/" + crud.getUser().getIdUser());
 
         ValueEventListener postListener = new ValueEventListener() {
@@ -601,11 +595,16 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
             public void onResponse(@NonNull Call<Chat> call, @NonNull Response<Chat> response) {
                 if(response.isSuccessful()) {
                     Chat c = response.body();
-                    Log.d(TAG, "id chat no read: " + c.getIdChat());
-                    idChat = c.getIdChat();
-                    try{ crud.deleteChat(c.getIdChat());} catch (Exception e) { e.printStackTrace(); }
-                    crud.insertChat(c.getIdChat());
-                    getTranslate(c.getIdChat());
+                    if(c != null) {
+                        setIdChat(c.getIdChat());
+                        try {
+                            crud.deleteChat(c.getIdChat());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        crud.insertChat(c.getIdChat());
+                    }
+                    spinner.setVisibility(View.GONE);
                 }
             }
 
@@ -614,5 +613,15 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
                 Log.e("erro", "Deu ruim: " + t.getMessage());
             }
         });
+    }
+
+    public int getIdChat() {
+        return idChat;
+    }
+
+    public void setIdChat(int idChat) {
+        this.idChat = idChat;
+        getTranslate(idChat);
+        getMessages(idChat);
     }
 }

@@ -4,10 +4,6 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.cloud.storage.Bucket;
-import com.google.cloud.storage.BucketInfo;
-import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.StorageOptions;
 
 import android.Manifest;
 import android.app.Activity;
@@ -41,8 +37,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.List;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
 import me.drakeet.materialdialog.MaterialDialog;
 import model.Localization;
 import model.Search;
@@ -68,9 +62,7 @@ import util.StatusUser;
 public class LoginActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
     private static final String TAG = "LoginActivity";
     private EditText editTextUserEmail, editTextPassword;
-    private TextView textForgetPass;
     private ProgressBar spinner;
-    private Button buttonLogin;
     private DBController crud;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
@@ -97,7 +89,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         editTextUserEmail = findViewById(R.id.editTextUserEmail);
         editTextPassword = findViewById(R.id.editTextPassword);
 
-        buttonLogin = findViewById(R.id.buttonLogin);
+        Button buttonLogin = findViewById(R.id.buttonLogin);
         buttonLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -114,7 +106,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             }
         });
 
-        textForgetPass =  findViewById(R.id.textForgotPass);
+        TextView textForgetPass =  findViewById(R.id.textForgotPass);
         textForgetPass.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -177,7 +169,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                         System.out.println("Resultado do login: " + u.toString());
 
                         try {
-                            try {crud.deleteUser(crud.getUser());} catch (Exception e) {e.printStackTrace();}
+                            if(crud.getUser() != null)
+                                try {crud.deleteUser(crud.getUser());} catch (Exception e) {e.printStackTrace();}
+
                             crud.insertUser(u);
                             System.out.println("Resultado do crud: " + u.getIdUser());
                             verifyStatusSearch(u.getIdUser());

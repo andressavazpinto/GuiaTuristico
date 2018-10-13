@@ -2,6 +2,7 @@ package fragment;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,7 +16,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.tcc.guiaturistico.R;
 import com.tcc.guiaturistico.activity.ByRegionActivity;
-import com.tcc.guiaturistico.activity.HomeActivity;
 
 import model.ConnectGuides;
 import model.ConnectGuidesDeserializer;
@@ -29,23 +29,21 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import service.ConnectGuidesService;
 import service.SearchService;
 import util.DBController;
-import util.Message;
 import util.StatusSearch;
 
 public class HomeFragment extends Fragment {
-
+    private static final String TAG = "HomeFragment";
     public Button buttonRamdom, buttonByRegion;
     public ProgressDialog progress;
-    private DBController crud;
     private Search search;
     private Boolean found;
     private ConnectGuides connectGuides;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup v, Bundle b) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup v, Bundle b) {
         View view = inflater.inflate(R.layout.middle_home, v, false);
-        crud = new DBController(getContext());
-        search = new Search(1, Enum.valueOf(StatusSearch.class,"Initial"), crud.getUser().getIdUser());
+        DBController crud = new DBController(getContext());
+        search = new Search(0, null, crud.getUser().getIdUser());
         found = false;
         connectGuides = new ConnectGuides();
         setupComponents(view);
@@ -74,7 +72,7 @@ public class HomeFragment extends Fragment {
         });
 
         progress = new ProgressDialog(fragment.HomeFragment.this.getContext());
-        progress.setMessage(Message.searchingGuide);
+        progress.setMessage(getString(R.string.searchingGuide));
         progress.setIndeterminate(true);
     }
 
@@ -108,27 +106,28 @@ public class HomeFragment extends Fragment {
 
         requestSearch.enqueue(new Callback<Void>() {
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 String aux;
                 if(!response.isSuccessful()) {
-                    aux = "Deu falha no sucesso: " + (response.code());
-                    Log.i("TAG", aux);
+                    aux = "Erro: " + (response.code());
+                    Log.i(TAG, aux);
+                    Toast.makeText(getContext(), aux, Toast.LENGTH_LONG).show();
                 }
                 else if(response.isSuccessful()) {
-                    System.out.print("Entrou no sucesso");
+                    Log.d(TAG, "Status alterado para searching");
                 }
             }
 
             @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                String aux = " Deu falha: " + t.getMessage();
-                Log.e("TAG", aux);
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                String aux = "Erro: " + t.getMessage();
+                Log.e(TAG, aux);
             }
         });
     }
 
     public void searchRam(final Search search) {
-        System.out.println("Resultado: Entrou no searchRam + " + search.toString());
+        Log.d(TAG, "Resultado: Entrou no searchRam + " + search.toString());
 
         Gson g = new GsonBuilder().registerTypeAdapter(ConnectGuides.class, new ConnectGuidesDeserializer())
                 .setLenient()
@@ -145,38 +144,32 @@ public class HomeFragment extends Fragment {
 
         requestSearchRam.enqueue(new Callback<ConnectGuides>() {
             @Override
-            public void onResponse(Call<ConnectGuides> call, Response<ConnectGuides> response) {
-                if(!response.isSuccessful()) {
-                    Log.i("TAG", "Falhou no searchRam: " + response.code());
-                }
-                else if(response.isSuccessful()) {
+            public void onResponse(@NonNull Call<ConnectGuides> call, @NonNull Response<ConnectGuides> response) {
+                if(response.isSuccessful()) {
                     connectGuides = response.body();
-                    System.out.println("Resultado do connectguides " + connectGuides.toString());
-                    setFound(true);
-                    if(found) {
-                        search.setStatus(Enum.valueOf(StatusSearch.class, "Found"));
-                        setStatus(new Search(2, (Enum.valueOf(StatusSearch.class, "Found")), connectGuides.getIdUser1()));
-                        setStatus(new Search(2, (Enum.valueOf(StatusSearch.class, "Found")), connectGuides.getIdUser2()));
-                        //setConnectGuides(search);
-                        getActivity().recreate();
-                    }
-                    else if(found == false){
-                        progress.cancel();
-                        Toast.makeText(getContext(), Message.noneGuide, Toast.LENGTH_LONG).show();
-                    }
+                    search.setStatus(Enum.valueOf(StatusSearch.class, "Found"));
+                    setStatus(new Search(0, (Enum.valueOf(StatusSearch.class, "Found")), connectGuides.getIdUser1()));
+                    setStatus(new Search(0, (Enum.valueOf(StatusSearch.class, "Found")), connectGuides.getIdUser2()));
+                    //setConnectGuides(search);
+                    //getActivity().recreate();
+
                     System.out.println("Resultado da busca: " + response.body());
+                }
+                else {
+                    progress.cancel();
+                    Toast.makeText(getContext(), getString(R.string.noneGuide), Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
-            public void onFailure(Call<ConnectGuides> call, Throwable t) {
-                String aux = " Deu falha: " + t.getMessage();
+            public void onFailure(@NonNull Call<ConnectGuides> call, @NonNull Throwable t) {
+                String aux = "Erro: " + t.getMessage();
                 Log.e("TAG", aux);
                 Toast.makeText(getContext(), aux, Toast.LENGTH_LONG).show();
             }
         });
         System.out.println("Resultado do searchRam: " + found);
         progress.cancel();
-        //Toast.makeText(getContext(), Message.noneGuide, Toast.LENGTH_LONG).show();
+
     }
 }

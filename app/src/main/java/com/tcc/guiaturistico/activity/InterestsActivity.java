@@ -2,6 +2,7 @@ package com.tcc.guiaturistico.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -30,7 +31,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import service.InterestService;
 import service.UserInterestService;
 import util.DBController;
-import util.Message;
 
 /**
  * Created by Andressa on 27/05/2018.
@@ -41,7 +41,7 @@ public class InterestsActivity extends AppCompatActivity {
     private CheckBox[] checkBoxInterest;
     private Button buttonSave;
     private DBController crud;
-    private static final String TAG = "Error";
+    private static final String TAG = "InterestsActivity";
     private ArrayList<Interest> interests, selectedInterests;
     private LinearLayout linearLayout;
     private ProgressBar spinner;
@@ -55,7 +55,7 @@ public class InterestsActivity extends AppCompatActivity {
 
         crud = new DBController(this);
 
-        getSupportActionBar().setTitle(Message.interests);
+        getSupportActionBar().setTitle(getString(R.string.interests));
 
         linearLayout = findViewById(R.id.linearCheck);
 
@@ -102,8 +102,6 @@ public class InterestsActivity extends AppCompatActivity {
             } while(i<interests.size());
         }
 
-        //checa se o usuário possui interesses marcados
-        //fazer um if?
         readUserInterests();
 
         textViewCheckInterests.setVisibility(View.VISIBLE);
@@ -130,7 +128,7 @@ public class InterestsActivity extends AppCompatActivity {
 
         requestInterest.enqueue(new Callback<List<Interest>>() {
             @Override
-            public void onResponse(Call<List<Interest>> call, Response<List<Interest>> response) {
+            public void onResponse(@NonNull Call<List<Interest>> call, @NonNull Response<List<Interest>> response) {
                 String aux;
                 if(!response.isSuccessful()) {
                     aux = "Erro: " + (response.code());
@@ -146,7 +144,7 @@ public class InterestsActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<List<Interest>> call, Throwable t) {
+            public void onFailure(@NonNull Call<List<Interest>> call, @NonNull Throwable t) {
                 String aux = " Erro: " + t.getMessage();
                 Log.e(TAG, aux);
                 Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
@@ -181,7 +179,7 @@ public class InterestsActivity extends AppCompatActivity {
 
         requestUser.enqueue(new Callback<Integer>() {
             @Override
-            public void onResponse(Call<Integer> call, Response<Integer> response) {
+            public void onResponse(@NonNull Call<Integer> call, @NonNull Response<Integer> response) {
                 String aux;
                 if(!response.isSuccessful()) {
                     aux = "Erro: " + (response.code());
@@ -189,12 +187,12 @@ public class InterestsActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
                 }
                 else {
-                    Toast.makeText(getApplicationContext(), Message.successfulRegister, Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), getString(R.string.successfulRegister), Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
-            public void onFailure(Call<Integer> call, Throwable t) {
+            public void onFailure(@NonNull Call<Integer> call, @NonNull Throwable t) {
                 String aux = " Erro: " + t.getMessage();
                 Log.e(TAG, aux);
                 Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
@@ -236,7 +234,7 @@ public class InterestsActivity extends AppCompatActivity {
         System.out.println(selectedInterests.toString());
     }
 
-    public Boolean readUserInterests() {
+    public void readUserInterests() {
         Gson g = new GsonBuilder()
                 .setLenient()
                 .create();
@@ -252,13 +250,12 @@ public class InterestsActivity extends AppCompatActivity {
 
         requestInterest.enqueue(new Callback<List<UserInterest>>() {
             @Override
-            public void onResponse(Call<List<UserInterest>> call, Response<List<UserInterest>> response) {
+            public void onResponse(@NonNull Call<List<UserInterest>> call, @NonNull Response<List<UserInterest>> response) {
                 String aux;
                 if(!response.isSuccessful()) {
                     aux = "Erro: " + (response.code());
                     Log.i(TAG, aux);
-                    Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
-                    System.out.println("sem sucesso");
+                    hasInterests = false;
                 }
                 else {
                     List<UserInterest> output = response.body();
@@ -270,13 +267,12 @@ public class InterestsActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<List<UserInterest>> call, Throwable t) {
+            public void onFailure(@NonNull Call<List<UserInterest>> call, @NonNull Throwable t) {
                 String aux = " Erro: " + t.getMessage();
                 Log.e(TAG, aux);
                 Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
             }
         });
-        return hasInterests;
     }
 
     public void checkInterests(List<UserInterest> listUserInterests) {
@@ -315,7 +311,7 @@ public class InterestsActivity extends AppCompatActivity {
 
         requestInterest.enqueue(new Callback<Void>() {
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 String aux;
                 if(!response.isSuccessful()) {
                     aux = "Erro: " + (response.code());
@@ -324,12 +320,12 @@ public class InterestsActivity extends AppCompatActivity {
                     System.out.println("sem sucesso");
                 }
                 else {
-                    Toast.makeText(getApplicationContext(), Message.saveProfile, Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), getString(R.string.saveProfile), Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
-            public void onFailure(Call<Void> call, Throwable t) {
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
                 String aux = " Erro: " + t.getMessage();
                 Log.e(TAG, aux);
                 Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();

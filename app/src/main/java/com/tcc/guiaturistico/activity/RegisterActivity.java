@@ -76,7 +76,6 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
     private ProgressBar spinner;
     private DBController crud;
     private GoogleApiClient mGoogleApiClient;
-    private LocationRequest mLocationRequest;
     private Localization localization;
     private Location location;
     private MaterialDialog mMaterialDialog;
@@ -405,7 +404,7 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
     }
 
     private void initLocationRequest() {
-        mLocationRequest = new LocationRequest();
+        LocationRequest mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(5000); //de cinco em cinco
         mLocationRequest.setFastestInterval(2000); //no mínimo
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -508,7 +507,7 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
             //solicitar novamente permissão ao usuário
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
                 callDialog(Message.messageAskPermissionAgain, new String[]{Manifest.permission.ACCESS_FINE_LOCATION});
-                Log.i("TAG", "permissão negada");
+                Log.i(TAG, "permissão negada");
             } else {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_CODE);
             }

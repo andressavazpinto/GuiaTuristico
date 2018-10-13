@@ -76,7 +76,7 @@ public class DBController {
 
     public User getUser() {
         User u = new User();
-        String[] colums = new String[]{"idUser", "name", "dateOfBirth", "language", "email", "password", "idLocalization", "statusAccount"};//, "idChat"};
+        String[] colums = new String[]{"idUser", "name", "dateOfBirth", "language", "email", "password", "idLocalization", "statusAccount"};
         Cursor cursor = db.query("user", colums, null, null, null, null, null);
 
         if(cursor.getCount() > 0) {

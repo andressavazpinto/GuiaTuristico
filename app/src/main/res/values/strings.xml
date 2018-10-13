@@ -111,4 +111,10 @@
 
     <string name="camera">Câmera</string>
     <string name="photo_library">Galeria de fotos</string>
+
+    <string name="searchingGuide">Procurando...</string>
+    <string name="noneGuide">Nenhum guia disponível no momento, mas continuaremos a busca!</string>
+    <string name="interests">Interesses</string>
+    <string name="successfulRegister">Cadastrado com sucesso</string>
+    <string name="saveProfile">Atualizado com sucesso!</string>
 </resources>

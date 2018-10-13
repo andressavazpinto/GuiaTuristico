@@ -83,10 +83,10 @@ public class SplashActivity extends Activity implements Runnable {
         try {
             if (u.getIdUser() != 0) {
                 login(u.getEmail(), u.getPassword());
-                Log.i("TAG", "entrou na cond do login");
+                Log.i(TAG, "entrou na cond do login");
             } else {
                 startActivity(new Intent(this, MainActivity.class));
-                Log.i("TAG", "entrou na cond do main");
+                Log.i(TAG, "entrou na cond do main");
                 finish();
             }
         }catch (Exception e) {
@@ -106,7 +106,7 @@ public class SplashActivity extends Activity implements Runnable {
 
         UserService service = retrofit.create(UserService.class);
 
-        Log.i("TAG", "email: " + email + " senha: " + password);
+        Log.i(TAG, "email: " + email + " senha: " + password);
         u.setEmail(email);
         u.setPassword(password);
 
@@ -133,8 +133,8 @@ public class SplashActivity extends Activity implements Runnable {
                         System.out.println("Resultado do login: " + u.toString());
 
                         try {
-                            try {crud.deleteUser(crud.getUser());} catch (Exception e) {e.printStackTrace();}
-                            crud.insertUser(u);
+                            //try {crud.deleteUser(crud.getUser());} catch (Exception e) {e.printStackTrace();}
+                            //try{ crud.updateUser(u);} catch (Exception e) {e.printStackTrace();}
                             System.out.println("Resultado do crud: " + u.getIdUser());
                             verifyStatusSearch(u.getIdUser());
                         } catch(Exception e) {
@@ -145,10 +145,16 @@ public class SplashActivity extends Activity implements Runnable {
                     }
                     System.out.print("Id: " + u.getIdUser());
                 }
+                else {
+                    String aux = "Erro: " + response.code();
+                    Log.e(TAG, aux);
+                    Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
+                }
+
             }
             @Override
             public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
-                String aux = " Deu falha no login: " + t.getMessage();
+                String aux = "Erro: " + t.getMessage();
                 Log.e(TAG, aux);
                 Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
                 login(u.getEmail(), u.getPassword());
@@ -157,7 +163,7 @@ public class SplashActivity extends Activity implements Runnable {
     }
 
     public void verifyStatusSearch(int id) {
-        final Search s = new Search(1, Enum.valueOf(StatusSearch.class,"Initial"), 3);
+        final Search s = new Search(1, Enum.valueOf(StatusSearch.class,"Initial"), crud.getUser().getIdUser());
 
         Gson g = new GsonBuilder().registerTypeAdapter(Search.class, new SearchDeserializer())
                 .setLenient()
@@ -177,8 +183,8 @@ public class SplashActivity extends Activity implements Runnable {
             public void onResponse(@NonNull Call<Search> call, @NonNull Response<Search> response) {
                 String aux;
                 if(!response.isSuccessful()) {
-                    aux = "Deu falha no sucesso: " + (response.code());
-                    Log.i("TAG", aux);
+                    aux = "Erro: " + (response.code());
+                    Log.i(TAG, aux);
                 }
                 else if(response.isSuccessful()) {
                     try {
@@ -197,8 +203,8 @@ public class SplashActivity extends Activity implements Runnable {
 
             @Override
             public void onFailure(@NonNull Call<Search> call, @NonNull Throwable t) {
-                String aux = " Deu falha no login: " + t.getMessage();
-                Log.e("TAG", aux);
+                String aux = "Erro: " + t.getMessage();
+                Log.e(TAG, aux);
                 Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
             }
         });

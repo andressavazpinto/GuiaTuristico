@@ -169,9 +169,8 @@ public class ProfileActivity extends AppCompatActivity {
         });
     }
 
-    public String selectLanguage(int position) {
+    public void selectLanguage(int position) {
         language = languages.get(position).getLanguage();
-        return language;
     }
 
     public void update() {
@@ -214,7 +213,7 @@ public class ProfileActivity extends AppCompatActivity {
                 else if(response.isSuccessful()) {
                     User us = response.body();
                     crud.updateUser(us);
-                    Toast.makeText(getApplicationContext(), Message.saveProfile, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), getString(R.string.saveProfile), Toast.LENGTH_SHORT).show();
                     finish();
                 }
             }

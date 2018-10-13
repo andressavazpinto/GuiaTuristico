@@ -9,7 +9,7 @@ import retrofit2.http.Path;
 import util.Url;
 
 public interface SearchService {
-    public static final String BASE_URL = Url.BASE_URL;
+    String BASE_URL = Url.BASE_URL;
 
     @GET("search/user/{id}")
     Call<Search> read(@Path("id") int id);

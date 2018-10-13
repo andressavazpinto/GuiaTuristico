@@ -54,7 +54,6 @@ import service.LocalizationService;
 import service.SearchService;
 import service.UserService;
 import util.DBController;
-import util.Message;
 import util.StatusSearch;
 
 /**
@@ -75,6 +74,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private ConstraintLayout contentMain;
     private ProgressBar spinner;
     private Timer timer;
+    private boolean first = true;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -140,6 +140,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         s.setStatus(Enum.valueOf(StatusSearch.class, jsonSearch.getString("status")));
 
                         Log.d(TAG, "Resultado do status na HomeActivity: " + s.getStatus());
+                        /*if(crud.getStatusSearch() != null)
+                            try{crud.updateStatusSearch(s.getStatus().toString());} catch(Exception e){Log.i(TAG, e.getMessage());}
+                        else
+                            try{crud.insertStatusSearch(s.getStatus().toString());} catch(Exception e){Log.i(TAG, e.getMessage());}*/
+
                         setMiddle(s);
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -157,42 +162,50 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void setMiddle(Search sea) {
-        Log.d(TAG, "Entrou no setMiddle()");
         StatusSearch status;
         status = (Enum.valueOf(StatusSearch.class, sea.getStatus().toString()));
+        String aux = crud.getStatusSearch();
+        Log.d(TAG, "Entrou no setMiddle(), status: " + status.toString());
 
-        switch (status) {
-            case Accepted:
-                Intent intent = new Intent(this, ChatActivity.class);
-                startActivity(intent);
-                finishAffinity();
-                break;
-            case Initial:
-                layout.setVisibility(View.VISIBLE);
-                break;
-            case Searching:
-                layout.setVisibility(View.GONE);
-                layout = contentMain.findViewById(R.id.fragHome);
-                layout.setVisibility(View.VISIBLE);
-                break;
-            case Found:
-                layout.setVisibility(View.GONE);
-                layout = contentMain.findViewById(R.id.fragFound);
-                layout.setVisibility(View.VISIBLE);
-                break;
-            case Rejected:
-                layout.setVisibility(View.GONE);
-                layout = contentMain.findViewById(R.id.fragRejected);
-                layout.setVisibility(View.VISIBLE);
-                break;
-            case WaitingAnswer:
-                layout.setVisibility(View.GONE);
-                layout = contentMain.findViewById(R.id.fragWaiting);
-                layout.setVisibility(View.VISIBLE);
-                break;
+        if(aux != null & aux.equals(status.toString()) & !first) {
+            //não faz nada
+            Log.d(TAG, "Entrou no setMiddle(), aux: " + aux);
+        }
+        else {
+            switch (status) {
+                case Accepted:
+                    Intent intent = new Intent(this, ChatActivity.class);
+                    startActivity(intent);
+                    finishAffinity();
+                    break;
+                case Initial:
+                    layout.setVisibility(View.VISIBLE);
+                    break;
+                case Searching:
+                    layout.setVisibility(View.GONE);
+                    layout = contentMain.findViewById(R.id.fragHome);
+                    layout.setVisibility(View.VISIBLE);
+                    break;
+                case Found:
+                    layout.setVisibility(View.GONE);
+                    layout = contentMain.findViewById(R.id.fragFound);
+                    layout.setVisibility(View.VISIBLE);
+                    break;
+                case Rejected:
+                    layout.setVisibility(View.GONE);
+                    layout = contentMain.findViewById(R.id.fragRejected);
+                    layout.setVisibility(View.VISIBLE);
+                    break;
+                case WaitingAnswer:
+                    layout.setVisibility(View.GONE);
+                    layout = contentMain.findViewById(R.id.fragWaiting);
+                    layout.setVisibility(View.VISIBLE);
+                    break;
 
-            default:
-                layout.setVisibility(View.VISIBLE);
+                default:
+                    layout.setVisibility(View.VISIBLE);
+            }
+            first = false;
         }
         spinner.setVisibility(View.GONE);
 
@@ -227,8 +240,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         contentMain = appBar.findViewById(R.id.contentMain);
         contentMain.setVisibility(View.VISIBLE);
         layout = contentMain.findViewById(R.id.fragHome);
-
-//        verifyStatusSearch();
     }
 
     @Override
@@ -255,8 +266,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             openChangeInterests();
         } else if (id == R.id.nav_logout) {
             //fechar sessão
-            try {crud.deleteUser(crud.getUser());} catch (Exception e) {e.printStackTrace();}
-            try {crud.deleteChat(crud.getChat());} catch (Exception e) {e.printStackTrace();}
+            try {
+                crud.deleteUser(crud.getUser());
+                crud.deleteChat(crud.getChat());
+                crud.deleteStatusSearch();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             startActivity(new Intent(this, LoginActivity.class));  //O efeito ao ser pressionado do botão (no caso abre a activity)
             finishAffinity();
         }
@@ -319,7 +336,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 != PackageManager.PERMISSION_GRANTED) {
 
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                callDialog(Message.messageAskPermissionAgain, new String[]{Manifest.permission.ACCESS_FINE_LOCATION});
+                callDialog(getString(R.string.messageAskPermissionAgain), new String[]{Manifest.permission.ACCESS_FINE_LOCATION});
                 Log.i(TAG, "permissão negada");
             } else {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_CODE);
@@ -352,7 +369,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 != PackageManager.PERMISSION_GRANTED) {
 
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                callDialog(Message.messageAskPermissionAgain, new String[]{Manifest.permission.ACCESS_FINE_LOCATION});
+                callDialog(getString(R.string.messageAskPermissionAgain), new String[]{Manifest.permission.ACCESS_FINE_LOCATION});
                 Log.i(TAG, "permissão negada");
             } else {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_CODE);
@@ -422,16 +439,16 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     private void callDialog( String message, final String[] permissions ) {
         mMaterialDialog = new MaterialDialog(this)
-                .setTitle(Message.permission)
+                .setTitle(getString(R.string.permission))
                 .setMessage(message)
-                .setPositiveButton(Message.agree, new View.OnClickListener() {
+                .setPositiveButton(getString(R.string.AGREE), new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         ActivityCompat.requestPermissions(HomeActivity.this, permissions, REQUEST_PERMISSIONS_CODE);
                         mMaterialDialog.dismiss();
                     }
                 })
-                .setNegativeButton(Message.deny, new View.OnClickListener() {
+                .setNegativeButton(getString(R.string.DENY), new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         mMaterialDialog.dismiss();

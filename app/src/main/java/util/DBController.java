@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import model.Search;
 import model.User;
 
 /**
@@ -44,6 +43,15 @@ public class DBController {
         db.close();
     }
 
+    public void insertStatusSearch(String status) {
+        ContentValues cv = new ContentValues();
+        cv.put("idStatusSearch", 1);
+        cv.put("status", status);
+
+        db.insert("statusSearch", null, cv);
+        db.close();
+    }
+
     public void updateUser(User u) {
         ContentValues cv = new ContentValues();
         cv.put("name", u.getName());
@@ -66,12 +74,24 @@ public class DBController {
         db.close();
     }*/
 
+    public void updateStatusSearch(String status) {
+        ContentValues cv = new ContentValues();
+        cv.put("status", status);
+
+        db.update("statusSearch", cv, "idStatusSearch = ?", new String[]{""+1});
+        db.close();
+}
+
     public void deleteUser(User u) {
         db.delete("user", "idUser = " + u.getIdUser(), null);
     }
 
     public void deleteChat(int idChat) {
-        db.delete("chat", "idChat = " +idChat, null);
+        db.delete("chat", "idChat = " + idChat, null);
+    }
+
+    public void deleteStatusSearch() {
+        db.delete("statusSearch", "idStatusSearch = " + 1, null);
     }
 
     public User getUser() {
@@ -115,5 +135,20 @@ public class DBController {
         }
         cursor.close();
         return idChat;
+    }
+
+    public String getStatusSearch() {
+        String status = "";
+        String[] colums = new String[]{"idStatusSearch", "status"};
+        Cursor cursor = db.query("statusSearch", colums, null, null, null, null, null);
+
+        if(cursor.getCount() > 0) {
+            cursor.moveToNext();
+            do {
+                status = cursor.getString(1);
+            } while(cursor.moveToNext());
+        }
+        cursor.close();
+        return status;
     }
 }

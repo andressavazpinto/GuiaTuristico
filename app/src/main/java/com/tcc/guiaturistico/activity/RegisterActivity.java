@@ -61,7 +61,6 @@ import service.TranslationService;
 import service.UserService;
 import util.DBController;
 import util.Mask;
-import util.Message;
 import util.StatusUser;
 
 /**
@@ -419,7 +418,7 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
                 != PackageManager.PERMISSION_GRANTED) {
 
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                callDialog(Message.messageAskPermissionAgain, new String[]{Manifest.permission.ACCESS_FINE_LOCATION});
+                callDialog(getString(R.string.messageAskPermissionAgain), new String[]{Manifest.permission.ACCESS_FINE_LOCATION});
                 Log.i("TAG", "permissão negada");
             } else {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_CODE);
@@ -453,7 +452,7 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
                 != PackageManager.PERMISSION_GRANTED) {
 
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                callDialog(Message.messageAskPermissionAgain, new String[]{Manifest.permission.ACCESS_FINE_LOCATION});
+                callDialog(getString(R.string.messageAskPermissionAgain), new String[]{Manifest.permission.ACCESS_FINE_LOCATION});
                 Log.i("TAG", "permissão negada");
             } else {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_CODE);
@@ -506,7 +505,7 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
 
             //solicitar novamente permissão ao usuário
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                callDialog(Message.messageAskPermissionAgain, new String[]{Manifest.permission.ACCESS_FINE_LOCATION});
+                callDialog(getString(R.string.messageAskPermissionAgain), new String[]{Manifest.permission.ACCESS_FINE_LOCATION});
                 Log.i(TAG, "permissão negada");
             } else {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_CODE);
@@ -540,16 +539,16 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
 
     private void callDialog( String message, final String[] permissions ) {
         mMaterialDialog = new MaterialDialog(this)
-                .setTitle(Message.permission)
+                .setTitle(getString(R.string.permission))
                 .setMessage(message)
-                .setPositiveButton(Message.agree, new View.OnClickListener() {
+                .setPositiveButton(getString(R.string.AGREE), new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         ActivityCompat.requestPermissions(RegisterActivity.this, permissions, REQUEST_PERMISSIONS_CODE);
                         mMaterialDialog.dismiss();
                     }
                 })
-                .setNegativeButton(Message.deny, new View.OnClickListener() {
+                .setNegativeButton(getString(R.string.DENY), new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         mMaterialDialog.dismiss();

@@ -42,7 +42,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import service.TranslationService;
 import service.UserService;
 import util.DBController;
-import util.Message;
 
 /**
  * Created by Andressa on 07/06/2018.
@@ -74,7 +73,7 @@ public class ProfileActivity extends AppCompatActivity {
         read(user.getIdUser()); //carrega na tela os dados do usuário
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle(Message.profile);
+        getSupportActionBar().setTitle(getString(R.string.profile));
 
         spinnerLanguage = findViewById(R.id.spinnerLanguage);
         spinnerLanguage.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

@@ -266,6 +266,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
                 //fechar sessão
                 try {crud.deleteUser(crud.getUser());} catch (Exception e) {Log.d(TAG, e.getMessage());}
                 try {crud.deleteChat(crud.getChat());} catch (Exception e) {Log.d(TAG, e.getMessage());}
+                try {crud.deleteStatusSearch();} catch (Exception e) {e.printStackTrace();}
                 startActivity(new Intent(this, LoginActivity.class));  //O efeito ao ser pressionado do botão (no caso abre a activity)
                 finishAffinity();
         }

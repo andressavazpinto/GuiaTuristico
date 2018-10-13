@@ -15,7 +15,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationListener;
@@ -45,7 +44,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import service.SearchService;
 import service.UserService;
 import util.DBController;
-import util.Message;
 import util.StatusSearch;
 import util.StatusUser;
 
@@ -57,7 +55,6 @@ public class SplashActivity extends Activity implements Runnable {
     private static final String TAG = "SplashActivity";
     private DBController crud;
     private GoogleApiClient mGoogleApiClient;
-    private LocationRequest mLocationRequest;
     private Localization localization;
     private Location location;
     private MaterialDialog mMaterialDialog;
@@ -194,6 +191,11 @@ public class SplashActivity extends Activity implements Runnable {
                         s.setIdSearch(jsonSearch.getInt("idSearch"));
                         s.setStatus(Enum.valueOf(StatusSearch.class, jsonSearch.getString("status")));
 
+                        if(crud.getStatusSearch() != null)
+                            try{crud.updateStatusSearch(s.getStatus().toString());} catch(Exception e){Log.i(TAG, e.getMessage());}
+                        else
+                            try{crud.insertStatusSearch(s.getStatus().toString());} catch(Exception e){Log.i(TAG, e.getMessage());}
+
                         openHome(s);
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -257,7 +259,7 @@ public class SplashActivity extends Activity implements Runnable {
     }
 
     private void initLocationRequest() {
-        mLocationRequest = new LocationRequest();
+        LocationRequest mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(5000); //de cinco em cinco
         mLocationRequest.setFastestInterval(2000); //no mínimo
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -272,7 +274,7 @@ public class SplashActivity extends Activity implements Runnable {
                 != PackageManager.PERMISSION_GRANTED) {
 
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                callDialog(Message.messageAskPermissionAgain, new String[]{Manifest.permission.ACCESS_FINE_LOCATION});
+                callDialog(getString(R.string.messageAskPermissionAgain), new String[]{Manifest.permission.ACCESS_FINE_LOCATION});
                 Log.i("TAG", "permissão negada");
             } else {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_CODE);
@@ -297,7 +299,6 @@ public class SplashActivity extends Activity implements Runnable {
         LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, (LocationListener) this);
     }
 
-    //listener
     public void onConnected(Bundle bundle) {
         Log.i("LOG", "onConnected(" + bundle + ")");
 
@@ -305,8 +306,8 @@ public class SplashActivity extends Activity implements Runnable {
                 != PackageManager.PERMISSION_GRANTED) {
 
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                callDialog(Message.messageAskPermissionAgain, new String[]{Manifest.permission.ACCESS_FINE_LOCATION});
-                Log.i("TAG", "permissão negada");
+                callDialog(getString(R.string.messageAskPermissionAgain), new String[]{Manifest.permission.ACCESS_FINE_LOCATION});
+                Log.i(TAG, "permissão negada");
             } else {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_CODE);
             }
@@ -338,8 +339,8 @@ public class SplashActivity extends Activity implements Runnable {
 
             //solicitar novamente permissão ao usuário
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                callDialog(Message.messageAskPermissionAgain, new String[]{Manifest.permission.ACCESS_FINE_LOCATION});
-                Log.i("TAG", "permissão negada");
+                callDialog(getString(R.string.messageAskPermissionAgain), new String[]{Manifest.permission.ACCESS_FINE_LOCATION});
+                Log.i(TAG, "permissão negada");
             } else {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_CODE);
             }
@@ -372,16 +373,16 @@ public class SplashActivity extends Activity implements Runnable {
 
     private void callDialog( String message, final String[] permissions ) {
         mMaterialDialog = new MaterialDialog(this)
-                .setTitle(Message.permission)
+                .setTitle(getString(R.string.permission))
                 .setMessage(message)
-                .setPositiveButton(Message.agree, new View.OnClickListener() {
+                .setPositiveButton(getString(R.string.AGREE), new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         ActivityCompat.requestPermissions(SplashActivity.this, permissions, REQUEST_PERMISSIONS_CODE);
                         mMaterialDialog.dismiss();
                     }
                 })
-                .setNegativeButton(Message.deny, new View.OnClickListener() {
+                .setNegativeButton(getString(R.string.DENY), new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         mMaterialDialog.dismiss();

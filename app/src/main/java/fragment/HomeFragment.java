@@ -36,23 +36,18 @@ public class HomeFragment extends Fragment {
     public Button buttonRamdom, buttonByRegion;
     public ProgressDialog progress;
     private Search search;
-    private Boolean found;
     private ConnectGuides connectGuides;
+    private DBController crud;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup v, Bundle b) {
         View view = inflater.inflate(R.layout.middle_home, v, false);
-        DBController crud = new DBController(getContext());
+        crud = new DBController(getContext());
         search = new Search(0, null, crud.getUser().getIdUser());
-        found = false;
         connectGuides = new ConnectGuides();
         setupComponents(view);
         setRetainInstance(true); //preservar a instância do fragment
         return view;
-    }
-
-    public void setFound(Boolean found) {
-        this.found = found;
     }
 
     public void setupComponents(View view) {
@@ -147,13 +142,28 @@ public class HomeFragment extends Fragment {
             public void onResponse(@NonNull Call<ConnectGuides> call, @NonNull Response<ConnectGuides> response) {
                 if(response.isSuccessful()) {
                     connectGuides = response.body();
-                    search.setStatus(Enum.valueOf(StatusSearch.class, "Found"));
-                    setStatus(new Search(0, (Enum.valueOf(StatusSearch.class, "Found")), connectGuides.getIdUser1()));
-                    setStatus(new Search(0, (Enum.valueOf(StatusSearch.class, "Found")), connectGuides.getIdUser2()));
-                    //setConnectGuides(search);
-                    //getActivity().recreate();
 
-                    System.out.println("Resultado da busca: " + response.body());
+                    if(connectGuides != null) {
+                        search.setStatus(Enum.valueOf(StatusSearch.class, "Found"));
+                        setStatus(new Search(0, (Enum.valueOf(StatusSearch.class, "Found")), connectGuides.getIdUser1()));
+                        setStatus(new Search(0, (Enum.valueOf(StatusSearch.class, "Found")), connectGuides.getIdUser2()));
+                        //setConnectGuides(search);
+
+                        if (crud.getStatusSearch() != null)
+                            try {
+                                crud.updateStatusSearch(search.getStatus().toString());
+                            } catch (Exception e) {
+                                Log.i(TAG, e.getMessage());
+                            }
+
+                        getActivity().recreate();
+
+                        System.out.println("Resultado da busca: " + response.body());
+                    }
+                    else {
+                        progress.cancel();
+                        Toast.makeText(getContext(), getString(R.string.noneGuide), Toast.LENGTH_LONG).show();
+                    }
                 }
                 else {
                     progress.cancel();
@@ -164,11 +174,10 @@ public class HomeFragment extends Fragment {
             @Override
             public void onFailure(@NonNull Call<ConnectGuides> call, @NonNull Throwable t) {
                 String aux = "Erro: " + t.getMessage();
-                Log.e("TAG", aux);
+                Log.e(TAG, aux);
                 Toast.makeText(getContext(), aux, Toast.LENGTH_LONG).show();
             }
         });
-        System.out.println("Resultado do searchRam: " + found);
         progress.cancel();
 
     }

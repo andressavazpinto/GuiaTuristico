@@ -51,7 +51,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import service.SearchService;
 import service.UserService;
 import util.DBController;
-import util.Message;
 import util.StatusSearch;
 import util.StatusUser;
 
@@ -274,7 +273,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 != PackageManager.PERMISSION_GRANTED) {
 
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                callDialog(Message.messageAskPermissionAgain, new String[]{Manifest.permission.ACCESS_FINE_LOCATION});
+                callDialog(getString(R.string.messageAskPermissionAgain), new String[]{Manifest.permission.ACCESS_FINE_LOCATION});
                 Log.i("TAG", "permissão negada");
             } else {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_CODE);
@@ -307,7 +306,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 != PackageManager.PERMISSION_GRANTED) {
 
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                callDialog(Message.messageAskPermissionAgain, new String[]{Manifest.permission.ACCESS_FINE_LOCATION});
+                callDialog(getString(R.string.messageAskPermissionAgain), new String[]{Manifest.permission.ACCESS_FINE_LOCATION});
                 Log.i("TAG", "permissão negada");
             } else {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_CODE);
@@ -358,7 +357,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
             //solicitar novamente permissão ao usuário
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                callDialog(Message.messageAskPermissionAgain, new String[]{Manifest.permission.ACCESS_FINE_LOCATION});
+                callDialog(getString(R.string.messageAskPermissionAgain), new String[]{Manifest.permission.ACCESS_FINE_LOCATION});
                 Log.i("TAG", "permissão negada");
             } else {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_CODE);
@@ -392,16 +391,16 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     private void callDialog( String message, final String[] permissions ) {
         mMaterialDialog = new MaterialDialog(this)
-                .setTitle(Message.permission)
+                .setTitle(getString(R.string.permission))
                 .setMessage(message)
-                .setPositiveButton(Message.agree, new View.OnClickListener() {
+                .setPositiveButton(getString(R.string.AGREE), new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         ActivityCompat.requestPermissions(LoginActivity.this, permissions, REQUEST_PERMISSIONS_CODE);
                         mMaterialDialog.dismiss();
                     }
                 })
-                .setNegativeButton(Message.deny, new View.OnClickListener() {
+                .setNegativeButton(getString(R.string.DENY), new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         mMaterialDialog.dismiss();
@@ -448,8 +447,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             public void onResponse(@NonNull Call<Search> call, @NonNull Response<Search> response) {
                 String aux;
                 if(!response.isSuccessful()) {
-                    aux = "Deu falha no sucesso: " + (response.code());
-                    Log.i("TAG", aux);
+                    aux = "Erro: " + (response.code());
+                    Log.i(TAG, aux);
                 }
                 else if(response.isSuccessful()) {
                     try {
@@ -458,6 +457,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                         s.setIdUser(jsonSearch.getInt("idUser"));
                         s.setIdSearch(jsonSearch.getInt("idSearch"));
                         s.setStatus(Enum.valueOf(StatusSearch.class, jsonSearch.getString("status")));
+
+                        try{crud.insertStatusSearch(s.getStatus().toString());} catch(Exception e){Log.i(TAG, e.getMessage());}
 
                         openHome(s);
                     } catch (JSONException e) {

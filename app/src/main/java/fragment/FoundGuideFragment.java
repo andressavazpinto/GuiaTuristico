@@ -44,14 +44,12 @@ public class FoundGuideFragment extends Fragment {
     private Search search1, search2;
     private ConnectGuides connectGuides;
     private User guide;
-    private int idChat;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup v, Bundle b) {
         View view = inflater.inflate(R.layout.middle_found_guide, v, false);
         crud = new DBController(getContext());
-        search1 = new Search(1, Enum.valueOf(StatusSearch.class,"Initial"), crud.getUser().getIdUser());
-        idChat = 0;
+        search1 = new Search(0, null, crud.getUser().getIdUser());
 
         setupComponents(view);
         readConnectGuides(crud.getUser().getIdUser());
@@ -82,6 +80,7 @@ public class FoundGuideFragment extends Fragment {
         if(search2.getStatus() == Enum.valueOf(StatusSearch.class,"Found")) {
             search1.setStatus(Enum.valueOf(StatusSearch.class, "WaitingAnswer"));
             setStatusSearch(search1);
+
             getActivity().recreate();
         }
         else if(search2.getStatus() == Enum.valueOf(StatusSearch.class, "WaitingAnswer")) {
@@ -101,6 +100,7 @@ public class FoundGuideFragment extends Fragment {
         search2.setStatus(Enum.valueOf(StatusSearch.class, "Rejected"));
         setStatusSearch(search1);
         setStatusSearch(search2);
+
         getActivity().recreate();
     }
 
@@ -121,13 +121,12 @@ public class FoundGuideFragment extends Fragment {
             @Override
             public void onResponse(@NonNull Call<ConnectGuides> call, @NonNull Response<ConnectGuides> response) {
                 if(!response.isSuccessful())
-                    Log.i("erro", "Deu erro: " + response.code());
+                    Log.i(TAG, "Erro: " + response.code());
                 else {
                     connectGuides = response.body();
-                    //System.out.println("Resultado readConnectGuides" + connectGuides.toString());
 
                     if(connectGuides == null) {
-                        System.out.print("Resultado null do connectguides na parte de condições");
+                        Log.i(TAG , "Resultado null do connectguides na parte de condições");
                     }
                     else if(connectGuides.getIdUser1() != crud.getUser().getIdUser()) {
                         getSearch(connectGuides.getIdUser1());
@@ -146,7 +145,7 @@ public class FoundGuideFragment extends Fragment {
     }
 
     public void getSearch(int id) {
-        System.out.println("Resultado do que é o id enviado no getSearch: " + id);
+        Log.i(TAG, "Resultado do que é o id enviado no getSearch: " + id);
         Gson g = new GsonBuilder().registerTypeAdapter(Search.class, new SearchDeserializer())
                 .setLenient()
                 .create();
@@ -165,12 +164,11 @@ public class FoundGuideFragment extends Fragment {
             public void onResponse(@NonNull Call<Search> call, @NonNull Response<Search> response) {
                 String aux;
                 if(!response.isSuccessful()) {
-                    aux = "Deu falha no sucesso: " + (response.code());
-                    Log.i("TAG", aux);
+                    aux = "Erro: " + (response.code());
+                    Log.i(TAG, aux);
                 }
                 else {
                     search2 = response.body();
-                    //System.out.println("Resultado do status em FoundGuideFragment: " + search2.toString());
                     readUser(search2.getIdUser());
                 }
             }
@@ -235,16 +233,16 @@ public class FoundGuideFragment extends Fragment {
             @Override
             public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
                 if(!response.isSuccessful())
-                    Log.i("erro", "Deu erro: " + response.code());
+                    Log.i(TAG, "Erro: " + response.code());
                 else {
                     guide = response.body();
-                    textViewName.setText(guide.getName());
+                    try {textViewName.setText(guide.getName());} catch (Exception e) {Log.i(TAG, e.getMessage());}
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
-                Log.e("erro", "Deu ruim: " + t.getMessage());
+                Log.e(TAG, "Erro: " + t.getMessage());
             }
         });
     }
@@ -273,7 +271,8 @@ public class FoundGuideFragment extends Fragment {
             @Override
             public void onResponse(@NonNull Call<Integer> call, @NonNull Response<Integer> response) {
                 if(response.isSuccessful()) {
-                    idChat = (Integer.parseInt(response.body().toString()));
+                    if(response.body() != null)
+                        Log.d(TAG, "idChat: " + response.body());
                 }
             }
 

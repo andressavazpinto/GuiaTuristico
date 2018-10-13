@@ -13,7 +13,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DBHelper extends SQLiteOpenHelper {
 
     private static final String BASE_NAME = "DBApp";
-    private static final int BASE_VERSION = 11;
+    private static final int BASE_VERSION = 13;
 
     public DBHelper(Context context) {
         super(context, BASE_NAME, null, BASE_VERSION);
@@ -36,16 +36,22 @@ public class DBHelper extends SQLiteOpenHelper {
                                 +   "idChat INTEGER, "
                                 +   "PRIMARY KEY(idChat))";
 
+        String sqlCreateTableStatusSearch = "CREATE TABLE IF NOT EXISTS statusSearch("
+                                        +   "idStatusSearch INTEGER NOT NULL, "
+                                        +   "status VARCHAR, "
+                                        +   "PRIMARY KEY(idStatusSearch))";
+
         sqLiteDatabase.execSQL(sqlCreateTableUser);
         sqLiteDatabase.execSQL(sqlCreateTableChat);
+        sqLiteDatabase.execSQL(sqlCreateTableStatusSearch);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
         String sqlDropTableUser = "DROP TABLE user";
-        String sqlDropTableChat = "DROP TABLE chat";
+//        String sqlDropTableChat = "DROP TABLE chat";
         sqLiteDatabase.execSQL(sqlDropTableUser);
-///        sqLiteDatabase.execSQL(sqlDropTableChat);
+//        sqLiteDatabase.execSQL(sqlDropTableChat);
         onCreate(sqLiteDatabase);
     }
 }

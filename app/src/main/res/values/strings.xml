@@ -117,4 +117,9 @@
     <string name="interests">Interesses</string>
     <string name="successfulRegister">Cadastrado com sucesso</string>
     <string name="saveProfile">Atualizado com sucesso!</string>
+    <string name="permission">Permissão</string>
+    <string name="AGREE">PERMITIR</string>
+    <string name="DENY">NEGAR</string>
+    <string name="messageAskPermissionAgain">Para realizar seu cadastro precisamos identificar sua localização.</string>
+
 </resources>

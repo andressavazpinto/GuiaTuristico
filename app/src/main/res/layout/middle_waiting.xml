@@ -21,7 +21,6 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:layout_marginBottom="10dp"
-                android:text="Nome do Guia"
                 android:textSize="24sp" />
 
             <TextView
@@ -74,6 +73,5 @@
                     android:text="@string/waitingReply"
                     android:textSize="14sp" />
             </LinearLayout>
-
         </LinearLayout>
 </LinearLayout>

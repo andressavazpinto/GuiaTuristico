@@ -20,7 +20,6 @@ public interface UserService {
     @GET("users/{id}")
     Call<User> read(@Path("id") int id);
 
-    //@Headers({"Accept: application/json"})
     @POST("users")
     Call<Integer> register(@Body User user);
 
@@ -29,4 +28,10 @@ public interface UserService {
 
     @PUT("users")
     Call<User> update(@Body User user);
+
+    @GET("users/email/{email}")
+    Call<Boolean> checkEmail(@Path("email") String email);
+
+    @GET("users/pass/{email}")
+    Call<String> getPass(@Path("email") String email);
 }

@@ -81,7 +81,15 @@ public class FoundGuideFragment extends Fragment {
             search1.setStatus(Enum.valueOf(StatusSearch.class, "WaitingAnswer"));
             setStatusSearch(search1);
 
-            getActivity().recreate();
+            if (crud.getStatusSearch() != null) {
+                try {
+                    crud.updateStatusSearch(search1.getStatus().toString());
+                } catch (Exception e) {
+                    Log.i(TAG, e.getMessage());
+                }
+            }
+            //getActivity().finish();
+            //getActivity().recreate();
         }
         else if(search2.getStatus() == Enum.valueOf(StatusSearch.class, "WaitingAnswer")) {
             search1.setStatus(Enum.valueOf(StatusSearch.class, "Accepted"));
@@ -89,9 +97,19 @@ public class FoundGuideFragment extends Fragment {
             setStatusSearch(search1);
             setStatusSearch(search2);
 
+            if (crud.getStatusSearch() != null) {
+                try {
+                    crud.updateStatusSearch(search1.getStatus().toString());
+                } catch (Exception e) {
+                    Log.i(TAG, e.getMessage());
+                }
+            }
+
             registerChat();
 
-            getActivity().recreate();
+            //getActivity().finish();
+            //getActivity().recreate();
+
         }
     }
 
@@ -101,7 +119,16 @@ public class FoundGuideFragment extends Fragment {
         setStatusSearch(search1);
         setStatusSearch(search2);
 
+        if (crud.getStatusSearch() != null) {
+            try {
+                crud.updateStatusSearch(search1.getStatus().toString());
+            } catch (Exception e) {
+                Log.i(TAG, e.getMessage());
+            }
+        }
+        getActivity().finish();
         getActivity().recreate();
+
     }
 
     public void readConnectGuides(int id) {
@@ -125,21 +152,19 @@ public class FoundGuideFragment extends Fragment {
                 else {
                     connectGuides = response.body();
 
-                    if(connectGuides == null) {
-                        Log.i(TAG , "Resultado null do connectguides na parte de condições");
-                    }
-                    else if(connectGuides.getIdUser1() != crud.getUser().getIdUser()) {
-                        getSearch(connectGuides.getIdUser1());
-                    }
-                    else {
-                        getSearch(connectGuides.getIdUser2());
+                    if(connectGuides != null) {
+                        if (connectGuides.getIdUser1() != crud.getUser().getIdUser())
+                            getSearch(connectGuides.getIdUser1());
+                        else {
+                            getSearch(connectGuides.getIdUser2());
+                        }
                     }
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<ConnectGuides> call, @NonNull Throwable t) {
-                Log.e("erro", "Deu ruim: " + t.getMessage());
+                Log.e(TAG, "Erro: " + t.getMessage());
             }
         });
     }
@@ -175,8 +200,8 @@ public class FoundGuideFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<Search> call, @NonNull Throwable t) {
-                String aux = " Deu falha no login: " + t.getMessage();
-                Log.e("TAG", aux);
+                String aux = "Erro: " + t.getMessage();
+                Log.e(TAG, aux);
             }
         });
     }
@@ -200,8 +225,8 @@ public class FoundGuideFragment extends Fragment {
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 String aux;
                 if(!response.isSuccessful()) {
-                    aux = "Deu falha no sucesso: " + (response.code());
-                    Log.i("TAG", aux);
+                    aux = "Erro: " + (response.code());
+                    Log.i(TAG, aux);
                 }
                 else if(response.isSuccessful()) {
                     System.out.print("Entrou no sucesso");
@@ -210,8 +235,8 @@ public class FoundGuideFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-                String aux = " Deu falha: " + t.getMessage();
-                Log.e("TAG", aux);
+                String aux = "Erro: " + t.getMessage();
+                Log.e(TAG, aux);
             }
         });
     }

@@ -68,7 +68,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private Location location;
     private MaterialDialog mMaterialDialog;
     private static final int REQUEST_PERMISSIONS_CODE = 128;
-    private static final long TIME = (1000*5);
+    private static final long TIME = (1000*15);
     private DBController crud;
     private ConstraintLayout layout;
     private ConstraintLayout contentMain;
@@ -140,10 +140,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         s.setStatus(Enum.valueOf(StatusSearch.class, jsonSearch.getString("status")));
 
                         Log.d(TAG, "Resultado do status na HomeActivity: " + s.getStatus());
-                        /*if(crud.getStatusSearch() != null)
-                            try{crud.updateStatusSearch(s.getStatus().toString());} catch(Exception e){Log.i(TAG, e.getMessage());}
-                        else
-                            try{crud.insertStatusSearch(s.getStatus().toString());} catch(Exception e){Log.i(TAG, e.getMessage());}*/
 
                         setMiddle(s);
                     } catch (JSONException e) {

@@ -12,7 +12,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -88,12 +87,9 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
     private final int PERMISSION_REQUEST = 2;
     private File fileImage = null;
     private ProgressBar spinner;
-    private TextView nameNavHeader, localizationNavHeader;
-    private ConstraintLayout contentMain;
     private List<Message> list;
     private ListView chat;
     private DBController crud;
-    private Thread thread;
 
     private FirebaseDatabase database;
     private EditText message;
@@ -140,10 +136,10 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
 
         View headerView = navigationView.getHeaderView(0);
 
-        nameNavHeader = headerView.findViewById(R.id.nameNavHeader);
+        TextView nameNavHeader = headerView.findViewById(R.id.nameNavHeader);
         nameNavHeader.setText(getIntent().getStringExtra("name")); //pegando o que foi passado pela activity anterior
 
-        localizationNavHeader = headerView.findViewById(R.id.localizationNavHeader);
+        TextView localizationNavHeader = headerView.findViewById(R.id.localizationNavHeader);
         localizationNavHeader.setText(getIntent().getStringExtra("localization"));
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -156,7 +152,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
         toggle.syncState();
 
         CoordinatorLayout appBar = findViewById(R.id.appbarlayout);
-        contentMain = appBar.findViewById(R.id.contentChat);
+        ConstraintLayout contentMain = appBar.findViewById(R.id.contentChat);
         ConstraintLayout otherContent = appBar.findViewById(R.id.contentMain);
         otherContent.setVisibility(View.GONE);
         contentMain.setVisibility(View.VISIBLE);
@@ -614,10 +610,6 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
                 Log.e("erro", "Deu ruim: " + t.getMessage());
             }
         });
-    }
-
-    public int getIdChat() {
-        return idChat;
     }
 
     public void setIdChat(int idChat) {

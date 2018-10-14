@@ -149,14 +149,15 @@ public class HomeFragment extends Fragment {
                         setStatus(new Search(0, (Enum.valueOf(StatusSearch.class, "Found")), connectGuides.getIdUser2()));
                         //setConnectGuides(search);
 
-                        if (crud.getStatusSearch() != null)
+                        if (crud.getStatusSearch() != null) {
                             try {
                                 crud.updateStatusSearch(search.getStatus().toString());
                             } catch (Exception e) {
                                 Log.i(TAG, e.getMessage());
                             }
-
-                        getActivity().recreate();
+                        }
+                        //getActivity().finish();
+                        //getActivity().recreate();
 
                         System.out.println("Resultado da busca: " + response.body());
                     }

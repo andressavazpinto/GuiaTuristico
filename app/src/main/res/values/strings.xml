@@ -122,4 +122,10 @@
     <string name="DENY">NEGAR</string>
     <string name="messageAskPermissionAgain">Para realizar seu cadastro precisamos identificar sua localização.</string>
 
+    <string name="yes">Sim</string>
+    <string name="noWait">Não, vou aguardar</string>
+    <string name="cancelConnection">Cancelar conexão</string>
+    <string name="reallyCancel">Você realmente deseja cancelar esta conexão? </string>
+
+    <string name="cities">Cidades</string>
 </resources>

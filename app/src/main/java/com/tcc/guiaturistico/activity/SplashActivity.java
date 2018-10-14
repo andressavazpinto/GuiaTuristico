@@ -130,9 +130,6 @@ public class SplashActivity extends Activity implements Runnable {
                         System.out.println("Resultado do login: " + u.toString());
 
                         try {
-                            //try {crud.deleteUser(crud.getUser());} catch (Exception e) {e.printStackTrace();}
-                            //try{ crud.updateUser(u);} catch (Exception e) {e.printStackTrace();}
-                            System.out.println("Resultado do crud: " + u.getIdUser());
                             verifyStatusSearch(u.getIdUser());
                         } catch(Exception e) {
                             e.printStackTrace();
@@ -297,56 +294,6 @@ public class SplashActivity extends Activity implements Runnable {
 
     private void stopLocationUpdate() {
         LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, (LocationListener) this);
-    }
-
-    public void onConnected(Bundle bundle) {
-        Log.i("LOG", "onConnected(" + bundle + ")");
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                callDialog(getString(R.string.messageAskPermissionAgain), new String[]{Manifest.permission.ACCESS_FINE_LOCATION});
-                Log.i(TAG, "permissão negada");
-            } else {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_CODE);
-            }
-        } else {
-            //obter a última localização conhecida do device
-            //location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-            LocationServices.getFusedLocationProviderClient(this);
-        }
-
-        if(location != null) {
-            try {
-                Address ad = getAddress(location.getLatitude(), location.getLongitude());
-                localization = setLocalization(localization, ad);
-            } catch (Exception e) {
-                e.getMessage();
-            }
-            String aux = localization.getCity() + ", " + localization.getUf();
-            Log.d(TAG, "localizationDescription: " + aux);
-            setLocalizationDescription(aux);
-        }
-        startLocationUpdate();
-    }
-
-    public void callAccessLocation(View view) {
-        Log.i(TAG, "callAccessLocation()");
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            //solicitar novamente permissão ao usuário
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                callDialog(getString(R.string.messageAskPermissionAgain), new String[]{Manifest.permission.ACCESS_FINE_LOCATION});
-                Log.i(TAG, "permissão negada");
-            } else {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_CODE);
-            }
-        } else {
-            callConnection();
-        }
     }
 
     public Address getAddress(double latitude, double longitude) throws IOException {

@@ -1,6 +1,9 @@
 package service;
 
+import java.util.List;
+
 import model.Search;
+import model.SearchByRegion;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -16,4 +19,10 @@ public interface SearchService {
 
     @PUT("search")
     Call<Void> update(@Body Search search);
+
+    @GET("search/regions/{id}")
+    Call<List<SearchByRegion>> getRegions(@Path("id") int id);
+
+    @GET("users/{city}/{id}")
+    Call<List<SearchByRegion>> getUsersRegions(@Path("city") String city, @Path("id") int id);
 }

@@ -268,14 +268,15 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
             @Override
             public void onResponse(@NonNull Call<Integer> call, @NonNull Response<Integer> response) {
                 String aux;
-                if(!response.isSuccessful()) {
+                if(response.isSuccessful()) {
+                    Log.i(TAG, "localization id: " + response.body());
+                    //setar o id do endereço no usuário, realizando seu cadastro
+                    registerUser(Integer.parseInt(response.body().toString()));
+                }
+                else {
                     aux = "Erro: " + (response.code());
                     Log.i(TAG, aux);
                     Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
-                }
-                else {
-                    //setar o id do endereço no usuário, realizando seu cadastro
-                    registerUser(Integer.parseInt(response.body().toString()));
                 }
             }
 

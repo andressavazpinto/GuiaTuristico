@@ -38,7 +38,7 @@ public class RejectedFragment extends Fragment {
         View view = inflater.inflate(R.layout.middle_rejected, v, false);
 
         crud = new DBController(getContext());
-        search1 = new Search(1, Enum.valueOf(StatusSearch.class,"Initial"), crud.getUser().getIdUser());
+        search1 = new Search(1, Enum.valueOf(StatusSearch.class,"Searching"), crud.getUser().getIdUser());
 
         setupComponents(view);
         setRetainInstance(true); //preservar a instância do fragment
@@ -73,7 +73,7 @@ public class RejectedFragment extends Fragment {
         progress.setIndeterminate(true);
         progress.show();
 
-        search1.setStatus(Enum.valueOf(StatusSearch.class, "Initial"));
+        search1.setStatus(Enum.valueOf(StatusSearch.class, "Searching"));
         setStatusSearch(search1);
         progress.cancel();
         //getActivity().recreate();

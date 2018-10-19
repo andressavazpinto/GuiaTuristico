@@ -20,13 +20,13 @@ import model.Country;
 @SuppressWarnings("unchecked")
 public class CountryCityAdapter extends BaseExpandableListAdapter {
 
-    public List<Country> groupItem;
+    public ArrayList<String> groupItem;
     public ArrayList<String> tempChild;
     public ArrayList<Object> Childtem;
     public LayoutInflater minflater;
     public Activity activity;
 
-    public CountryCityAdapter(List<Country> grList, ArrayList<Object> childItem) {
+    public CountryCityAdapter(ArrayList<String> grList, ArrayList<Object> childItem) {
         groupItem = grList;
         this.Childtem = childItem;
     }
@@ -102,7 +102,7 @@ public class CountryCityAdapter extends BaseExpandableListAdapter {
         if (convertView == null) {
             convertView = minflater.inflate(R.layout.countries, null);
         }
-        ((CheckedTextView) convertView).setText(groupItem.get(groupPosition).getName());
+        ((CheckedTextView) convertView).setText(groupItem.get(groupPosition));
         ((CheckedTextView) convertView).setChecked(isExpanded);
         return convertView;
     }

@@ -427,7 +427,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     }
 
     public void verifyStatusSearch(int id) {
-        final Search s = new Search(1, Enum.valueOf(StatusSearch.class,"Initial"), 3);
+        final Search s = new Search(1, Enum.valueOf(StatusSearch.class,"Searching"), 3);
 
         Gson g = new GsonBuilder().registerTypeAdapter(Search.class, new SearchDeserializer())
                 .setLenient()

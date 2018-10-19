@@ -77,7 +77,6 @@ public class WaitingAnswerFragment extends Fragment {
 
                         //getActivity().finish();
                         //getActivity().recreate();
-
                     }
                 });
 
@@ -237,8 +236,8 @@ public class WaitingAnswerFragment extends Fragment {
     }
 
     public void cancelConnection() {
-        //setar o usuário daqui como Initial e o outro como Rejected
-        search1.setStatus(Enum.valueOf(StatusSearch.class, "Initial"));
+        //setar o usuário daqui como Searching e o outro como Rejected
+        search1.setStatus(Enum.valueOf(StatusSearch.class, "Searching"));
         setStatusSearch(search1);
 
         if(crud.getStatusSearch() != null)

@@ -157,7 +157,7 @@ public class SplashActivity extends Activity implements Runnable {
     }
 
     public void verifyStatusSearch(int id) {
-        final Search s = new Search(1, Enum.valueOf(StatusSearch.class,"Initial"), crud.getUser().getIdUser());
+        final Search s = new Search(1, Enum.valueOf(StatusSearch.class,"Searching"), crud.getUser().getIdUser());
 
         Gson g = new GsonBuilder().registerTypeAdapter(Search.class, new SearchDeserializer())
                 .setLenient()

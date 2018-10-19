@@ -69,6 +69,7 @@ import model.ChatDeserializer;
 import model.Message;
 import model.Translate;
 import model.TranslateDeserializer;
+import model.User;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -95,10 +96,11 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
     private EditText message;
     private BottomSheetDialog mBottomSheetDialog;
 
-    private boolean translate;
+    private boolean translate = true;
     private String translation, source;
     private Message m2 = new Message(1, 0, null, null, null);
     private int idChat;
+    User u;
     //private String suggestion;
 
     @Override
@@ -113,8 +115,10 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
         }
         crud = new DBController(this);
         idChat = crud.getChat();
+
         database = FirebaseDatabase.getInstance();
 
+        u = crud.getUser();
         if (idChat == 0) {
              read();
         }
@@ -315,8 +319,11 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void setTranslate() {
+        if(idChat == 0) {
+            read();
+        }
         DatabaseReference myRef = database.getReference();
-        myRef.child("chat/"+idChat).child("translate").child(""+crud.getUser().getIdUser()).setValue(translate);
+        myRef.child("chat/"+idChat).child("translate").child(""+u.getIdUser()).setValue(translate);
     }
 
     public void getTranslate(int idChat) {
@@ -370,6 +377,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
                     list.add(a);
                 }
                 listMessages();
+                spinner.setVisibility(View.GONE);
             }
 
             @Override
@@ -383,12 +391,12 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
         message.setText("");
         if(text != null & ! text.equals("") & ! text.matches(" ")) {
             m2.setContent(text);
-            m2.setIdUser(crud.getUser().getIdUser());
+            m2.setIdUser(u.getIdUser());
             m2.setType(type);
             m2.setTranslation(null);
             Translate t = new Translate();
 
-            t.setTarget(crud.getUser().getLanguage());
+            t.setTarget(u.getLanguage());
             t.setQ(text);
             detect(t);
         }
@@ -575,6 +583,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void read() {
+        Log.d(TAG, "entrou no read()" + u.getIdUser());
         Gson g = new GsonBuilder().registerTypeAdapter(Chat.class, new ChatDeserializer())
                 .setLenient()
                 .create();
@@ -586,13 +595,15 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
 
         ChatService service = retrofit.create(ChatService.class);
 
-        Call<Chat> requestUser = service.read(crud.getUser().getIdUser());
+        Call<Chat> requestUser = service.read(u.getIdUser());
         requestUser.enqueue(new Callback<Chat>() {
             @Override
             public void onResponse(@NonNull Call<Chat> call, @NonNull Response<Chat> response) {
                 if(response.isSuccessful()) {
                     Chat c = response.body();
+
                     if(c != null) {
+                        Log.d(TAG, "Chat no read()" + c.toString());
                         setIdChat(c.getIdChat());
                         try {
                             crud.deleteChat(c.getIdChat());
@@ -603,11 +614,16 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
                     }
                     spinner.setVisibility(View.GONE);
                 }
+                else {
+                    Log.d(TAG, "Deu erro no read()");
+                    Toast.makeText(ChatActivity.this, "Error", Toast.LENGTH_LONG);
+                    spinner.setVisibility(View.GONE);
+                }
             }
 
             @Override
             public void onFailure(@NonNull Call<Chat> call, @NonNull Throwable t) {
-                Log.e("erro", "Deu ruim: " + t.getMessage());
+                Log.e(TAG, "Erro: " + t.getMessage());
             }
         });
     }

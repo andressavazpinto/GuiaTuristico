@@ -138,6 +138,7 @@ public class InterestsActivity extends AppCompatActivity {
                 }
                 else {
                     List<Interest> output = response.body();
+                    Log.d(TAG, "interests: " + response.body().toString());
                     //chama método para inflar a tela
                     listInterests(output);
                 }

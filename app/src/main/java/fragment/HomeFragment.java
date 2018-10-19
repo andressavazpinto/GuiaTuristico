@@ -47,6 +47,11 @@ public class HomeFragment extends Fragment {
         connectGuides = new ConnectGuides();
         setupComponents(view);
         setRetainInstance(true); //preservar a instância do fragment
+
+        progress = new ProgressDialog(fragment.HomeFragment.this.getContext());
+        progress.setMessage(getString(R.string.searchingGuide));
+        progress.setIndeterminate(true);
+
         return view;
     }
 
@@ -66,9 +71,7 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        progress = new ProgressDialog(fragment.HomeFragment.this.getContext());
-        progress.setMessage(getString(R.string.searchingGuide));
-        progress.setIndeterminate(true);
+
     }
 
     private void searchByRegion() {
@@ -147,7 +150,6 @@ public class HomeFragment extends Fragment {
                         search.setStatus(Enum.valueOf(StatusSearch.class, "Found"));
                         setStatus(new Search(0, (Enum.valueOf(StatusSearch.class, "Found")), connectGuides.getIdUser1()));
                         setStatus(new Search(0, (Enum.valueOf(StatusSearch.class, "Found")), connectGuides.getIdUser2()));
-                        //setConnectGuides(search);
 
                         if (crud.getStatusSearch() != null) {
                             try {
@@ -156,8 +158,6 @@ public class HomeFragment extends Fragment {
                                 Log.i(TAG, e.getMessage());
                             }
                         }
-                        //getActivity().finish();
-                        //getActivity().recreate();
 
                         System.out.println("Resultado da busca: " + response.body());
                     }

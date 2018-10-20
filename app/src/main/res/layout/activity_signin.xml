@@ -17,8 +17,6 @@
 
             <view
                 class="android.support.v7.widget.ActionMenuView"
-                id="@+id/view"
-                layout_width="match_parent"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/actionBarHeight" />
 
@@ -42,8 +40,6 @@
 
                 <view
                     class="android.support.v7.widget.ActionMenuView"
-                    id="view"
-                    layout_width="match_parent"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/actionBarHeight" />
 
@@ -52,8 +48,7 @@
                     android:layout_weight="1"
                     android:background="@drawable/selector_button"
                     style="@style/patternButton"
-                    android:text="@string/sigIn"
-                    android:onClick="onSigInClicked"/>
+                    android:text="@string/sigIn" />
 
                 <TextView
                     android:id="@+id/textOr"
@@ -72,8 +67,7 @@
                     android:layout_weight="1"
                     android:background="@drawable/selector_button"
                     android:text="@string/signUp"
-                    style="@style/patternButton"
-                    android:onClick="onSigUpClicked"/>
+                    style="@style/patternButton" />
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

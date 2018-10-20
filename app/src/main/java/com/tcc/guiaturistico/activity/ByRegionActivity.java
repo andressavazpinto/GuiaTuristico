@@ -13,30 +13,23 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import adapter.CountryCityAdapter;
-import model.Search;
 import model.SearchByRegion;
-import model.SearchByRegionDeserializer;
-import model.SearchDeserializer;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import service.SearchService;
-import service.UserService;
 import util.DBController;
-import util.StatusSearch;
 
 public class ByRegionActivity extends ExpandableListActivity implements ExpandableListView.OnChildClickListener {
     private static final String TAG = "ByRegionActivity";
     private DBController crud;
+    private ExpandableListView expandableListVew;
     private List<SearchByRegion> searchByRegions = new ArrayList<SearchByRegion>();
 
     ArrayList<String> groupItem = new ArrayList<String>();
@@ -51,52 +44,27 @@ public class ByRegionActivity extends ExpandableListActivity implements Expandab
     }
 
     public void setupComponents() {
-        ExpandableListView expandbleListVew = getExpandableListView();
-        expandbleListVew.setDividerHeight(2);
-        expandbleListVew.setGroupIndicator(null);
-        expandbleListVew.setClickable(true);
-
-        setData();
-
-        CountryCityAdapter countryCityAdapter = new CountryCityAdapter(groupItem, childItem);
-        countryCityAdapter.setInflater((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE),this);
-        getExpandableListView().setAdapter(countryCityAdapter);
-        expandbleListVew.setOnChildClickListener(this);
-    }
-
-    public void setData() {
-        groupItem.add("Alemanha");
-        groupItem.add("Brazil");
-
-        ArrayList<String> child;
-        child = new ArrayList<String>();
-        child.add("Cidade 1");
-        child.add("Cidade 2");
-        child.add("Cidade 3");
-        child.add("Cidade 4");
-        childItem.add(child);
-
-        child = new ArrayList<String>();
-        child.add("Salvador");
-        child.add("São Paulo");
-        childItem.add(child);
+        expandableListVew = getExpandableListView();
+        expandableListVew.setDividerHeight(2);
+        expandableListVew.setGroupIndicator(null);
+        expandableListVew.setClickable(true);
     }
 
     @Override
     public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-        Toast.makeText(this, "Clicked On Child", Toast.LENGTH_SHORT).show();
         return true;
     }
 
     public void getRegions() {
         Log.d(TAG, "Entrou no getRegions()");
+        Log.d(TAG, "id user: " + crud.getUser().getIdUser());
 
-        Gson g = new GsonBuilder().registerTypeAdapter(SearchByRegion.class, new SearchByRegionDeserializer())
+        Gson g = new GsonBuilder()
                 .setLenient()
                 .create();
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(UserService.BASE_URL)
+                .baseUrl(SearchService.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create(g))
                 .build();
 
@@ -113,8 +81,9 @@ public class ByRegionActivity extends ExpandableListActivity implements Expandab
                     Log.i(TAG, aux);
                 }
                 else {
-                    searchByRegions = response.body();
                     Log.d(TAG, "searchByRegions: " + response.body().toString());
+                    searchByRegions = response.body();
+                    listRegions(searchByRegions);
                 }
             }
 
@@ -125,5 +94,32 @@ public class ByRegionActivity extends ExpandableListActivity implements Expandab
                 Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    private void listRegions(List<SearchByRegion> searchByRegions) {
+        //spinner.setVisibility(View.GONE);
+
+        ArrayList<String> child = new ArrayList<String>();;
+
+        for(int i=0; i<searchByRegions.size(); i++) {
+            String country = searchByRegions.get(i).getCountry();
+
+            if(groupItem.size() == 0) {
+                groupItem.add(country);
+            } else
+                if(groupItem != null & ! country.equals(groupItem.get(i-1))) {
+                    groupItem.add(country);
+                    child = new ArrayList<String>();
+                }
+
+            child.add(searchByRegions.get(i).getCity());
+            Log.d(TAG, searchByRegions.get(i).getCity());
+            childItem.add(child);
+        }
+
+        CountryCityAdapter countryCityAdapter = new CountryCityAdapter(groupItem, childItem, crud);
+        countryCityAdapter.setInflater((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE),this);
+        getExpandableListView().setAdapter(countryCityAdapter);
+        expandableListVew.setOnChildClickListener(this);
     }
 }

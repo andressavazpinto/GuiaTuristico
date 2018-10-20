@@ -3,7 +3,6 @@ package service;
 import model.ConnectGuides;
 import model.Search;
 import retrofit2.Call;
-import retrofit2.Response;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
@@ -23,6 +22,9 @@ public interface ConnectGuidesService {
 
     @GET("connectguides/{id}")
     Call<ConnectGuides> read(@Path("id") int id);
+
+    @GET("connectguides/{city}/{id}")
+    Call<ConnectGuides> searchByRegion(@Path("city") String city, @Path("id") int id);
 
     @DELETE("connectguides/{id}")
     Call<Void> delete(@Path("id") int id);

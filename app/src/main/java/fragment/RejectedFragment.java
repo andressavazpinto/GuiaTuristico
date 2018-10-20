@@ -76,7 +76,6 @@ public class RejectedFragment extends Fragment {
         search1.setStatus(Enum.valueOf(StatusSearch.class, "Searching"));
         setStatusSearch(search1);
         progress.cancel();
-        //getActivity().recreate();
     }
 
     public void setStatusSearch(Search search) {

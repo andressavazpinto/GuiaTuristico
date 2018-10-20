@@ -10,36 +10,12 @@
     <dimen name="nav_header_vertical_spacing">8dp</dimen>
     <dimen name="nav_header_height">176dp</dimen>
 
-
-
-
-
-
-    <dimen name="width_content_start">300dp</dimen>
-    <dimen name="icone_sistema">50dp</dimen>
-    <dimen name="margenLeftPadrao">16dp</dimen>
-    <dimen name="margenRightPadrao">16dp</dimen>
-    <dimen name="margenTopPadrao">10dp</dimen>
-    <dimen name="margenBottomPadrao">10dp</dimen>
-    <dimen name="peso_topo_preatendimento">1</dimen>
-    <dimen name="fab_margin">16dp</dimen>
-
-
-    <dimen name="paddingBalaoEsqLeft">30dp</dimen>
-    <dimen name="paddingBalaoEsqRight">10dp</dimen>
-    <dimen name="paddingBalaoEsqTop">5dp</dimen>
-    <dimen name="paddingBalaoEsqBottom">5dp</dimen>
-
     <dimen name="paddingBalaoDirLeft">10dp</dimen>
     <dimen name="paddingBalaoDirRight">30dp</dimen>
     <dimen name="paddingBalaoDirTop">5dp</dimen>
     <dimen name="paddingBalaoDirBottom">5dp</dimen>
 
-    <dimen name="margenBalaoBottom">10dp</dimen>
-    <dimen name="size_bt_enviar">56dp</dimen>
-
     <dimen name="text_size_chat">16sp</dimen>
-    <dimen name="padding_box_sistemas">20dp</dimen>
 
     <dimen name="margenRightChat">30dp</dimen>
     <dimen name="margenLeftChat">30dp</dimen>

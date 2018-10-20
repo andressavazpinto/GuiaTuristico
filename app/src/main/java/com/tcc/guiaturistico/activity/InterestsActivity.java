@@ -284,7 +284,6 @@ public class InterestsActivity extends AppCompatActivity {
         }
     }
 
-    //PAREI AQUI
     public void updateInterests() {
         selectInterests();
 

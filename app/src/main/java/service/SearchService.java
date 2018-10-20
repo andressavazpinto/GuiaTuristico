@@ -23,6 +23,4 @@ public interface SearchService {
     @GET("search/regions/{id}")
     Call<List<SearchByRegion>> getRegions(@Path("id") int id);
 
-    @GET("users/{city}/{id}")
-    Call<List<SearchByRegion>> getUsersRegions(@Path("city") String city, @Path("id") int id);
 }

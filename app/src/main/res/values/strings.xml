@@ -64,6 +64,11 @@
         <item>Español</item>
         <item>Português-BR</item>
     </string-array>
+    <string-array name="pref_example_list_values">
+        <item>1</item>
+        <item>0</item>
+        <item>-1</item>
+    </string-array>
 
     <string name="cook1">Prato típico da sua região</string>
     <string name="cook2">Cardápio de um restaurante/ bar</string>
@@ -107,12 +112,12 @@
     <string name="yourMessage">Sua mensagem</string>
     <string name="guideMessage">Mensagem do guia</string>
 
-    <string name="developing">Em desenvolvimento... Tente buscar pelo modo aleatório</string>
+    <string name="developing">Em desenvolvimento… Tente buscar pelo modo aleatório</string>
 
     <string name="camera">Câmera</string>
     <string name="photo_library">Galeria de fotos</string>
 
-    <string name="searchingGuide">Procurando...</string>
+    <string name="searchingGuide">Procurando…</string>
     <string name="noneGuide">Nenhum guia disponível no momento, mas continuaremos a busca!</string>
     <string name="interests">Interesses</string>
     <string name="successfulRegister">Cadastrado com sucesso</string>
@@ -128,4 +133,7 @@
     <string name="reallyCancel">Você realmente deseja cancelar esta conexão? </string>
 
     <string name="cities">Cidades</string>
+
+    <string name="translationDescription">Apresentar tradução das mensagens recebidas</string>
+    <string name="changeLanguage">Alterar idioma do aplicativo</string>
 </resources>

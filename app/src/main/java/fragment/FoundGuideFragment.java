@@ -93,8 +93,6 @@ public class FoundGuideFragment extends Fragment {
             } catch (Throwable throwable) {
                 throwable.printStackTrace();
             }
-            //getActivity().finish();
-            //getActivity().recreate();
         }
         else if(search2.getStatus() == Enum.valueOf(StatusSearch.class, "WaitingAnswer")) {
             search1.setStatus(Enum.valueOf(StatusSearch.class, "Accepted"));
@@ -113,9 +111,6 @@ public class FoundGuideFragment extends Fragment {
 
             Log.d(TAG, "chamou register chat: " + connectGuides.toString());
             registerChat();
-
-
-
         }
     }
 
@@ -132,9 +127,6 @@ public class FoundGuideFragment extends Fragment {
                 Log.i(TAG, e.getMessage());
             }
         }
-        //getActivity().finish();
-        //getActivity().recreate();
-
     }
 
     public void readConnectGuides(int id) {

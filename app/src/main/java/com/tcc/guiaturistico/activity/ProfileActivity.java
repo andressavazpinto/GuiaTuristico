@@ -146,7 +146,7 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
                 if(!response.isSuccessful())
-                    Log.i("erro", "Deu erro: " + response.code());
+                    Log.i(TAG, "Erro: " + response.code());
                 else {
                     u = response.body();
                     System.out.println(response.body().toString());
@@ -163,7 +163,7 @@ public class ProfileActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
-                Log.e("erro", "Deu ruim: " + t.getMessage());
+                Log.e(TAG, "Erro: " + t.getMessage());
             }
         });
     }
@@ -206,7 +206,7 @@ public class ProfileActivity extends AppCompatActivity {
                 String aux;
                 if(!response.isSuccessful()) {
                     aux = "Erro: " + (response.code());
-                    Log.i("erro", aux);
+                    Log.i(TAG, aux);
                     Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
                 }
                 else if(response.isSuccessful()) {
@@ -333,7 +333,7 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Call<JsonObject> call, @NonNull Throwable t) {
                 String aux = " Erro: " + t.getMessage();
-                Log.e("listLanguages", aux);
+                Log.e(TAG, aux);
             }
         });
     }

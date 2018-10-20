@@ -77,7 +77,6 @@ public class HomeFragment extends Fragment {
     private void searchByRegion() {
         Intent intent = new Intent(getActivity(), ByRegionActivity.class);
         getActivity().startActivity(intent);
-        //startActivity(intent);
     }
 
     private void searchRamdomly() {
@@ -180,6 +179,5 @@ public class HomeFragment extends Fragment {
             }
         });
         progress.cancel();
-
     }
 }

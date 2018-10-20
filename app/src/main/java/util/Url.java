@@ -10,6 +10,10 @@ public class Url {
 
     //Lucas
     //public static String BASE_URL = "http://192.168.43.225:8089/GuiaWSMaven/rest/";
+    //public static String BASE_URL = "http://192.168.53.120:8089/GuiaWSMaven/rest/";
+
+    //Jéssica
+    //public static String BASE_URL = "http://172.20.10.3:8089/GuiaWSMaven/rest/";
 
     //Morato
     //public static String BASE_URL = "http://192.168.0.103:8089/GuiaWSMaven/rest/";

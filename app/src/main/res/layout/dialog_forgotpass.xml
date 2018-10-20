@@ -3,7 +3,6 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -17,8 +16,8 @@
             android:text="@string/messagePass"
             android:textSize="16sp"
             android:layout_marginRight="12dp"
-            android:layout_marginLeft="12dp"
-            />
+            android:layout_marginLeft="12dp" />
+
     </RelativeLayout>
 
     <LinearLayout

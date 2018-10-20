@@ -79,9 +79,9 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
     private Location location;
     private MaterialDialog mMaterialDialog;
     private static final int REQUEST_PERMISSIONS_CODE = 128;
-    List<String> list_languages;
-    List<Language> languages;
-    String language;
+    private List<String> list_languages;
+    private List<Language> languages;
+    private String language;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

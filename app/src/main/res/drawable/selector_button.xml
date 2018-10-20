@@ -4,9 +4,6 @@
     <!-- pressed -->
     <item android:drawable="@drawable/pattern_button_pressed" android:state_pressed="true"/>
 
-    <!-- focused -->
-    <!--<item android:drawable="@drawable/imagem_com_foco" android:state_focused="true"/>-->
-
     <!-- default -->
     <item android:drawable="@drawable/pattern_button"/>
 

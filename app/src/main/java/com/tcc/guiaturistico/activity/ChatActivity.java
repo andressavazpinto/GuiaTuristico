@@ -100,7 +100,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
     private String translation, source;
     private Message m2 = new Message(1, 0, null, null, null);
     private int idChat;
-    User u;
+    private User u;
     //private String suggestion;
 
     @Override
@@ -295,8 +295,8 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.suggestions:
                 break;
-            case R.id.reportGuide:
-                break;
+            //case R.id.reportGuide:
+                //break;
             case R.id.leftSession:
                 break;
             case R.id.submenu_cooking:

@@ -74,9 +74,6 @@ public class WaitingAnswerFragment extends Fragment {
                         deleteConnection(connectGuides);
                         cancelConnection();
                         dialog.dismiss();
-
-                        //getActivity().finish();
-                        //getActivity().recreate();
                     }
                 });
 

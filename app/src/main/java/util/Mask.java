@@ -5,17 +5,8 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.EditText;
 
-/**
- * Created by Andressa on 20/05/2018.
- */
-
 public class Mask {
-
-    public static final String FORMAT_CPF = "###.###.###-##";
-    public static final String FORMAT_FONE = "(##)####-#####";
-    public static final String FORMAT_CEP = "#####-###";
     public static final String FORMAT_DATE = "##/##/####";
-    public static final String FORMAT_HOUR = "##:##";
 
     public static TextWatcher insert(final String mask, final EditText et) {
         return new TextWatcher() {

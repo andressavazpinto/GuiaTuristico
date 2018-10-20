@@ -68,7 +68,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private Location location;
     private MaterialDialog mMaterialDialog;
     private static final int REQUEST_PERMISSIONS_CODE = 128;
-    private static final long TIME = (1000*25);
+    private static final long TIME = (1000*15);
     private DBController crud;
     private ConstraintLayout layout;
     private ConstraintLayout contentMain;

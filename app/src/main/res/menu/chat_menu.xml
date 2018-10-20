@@ -72,9 +72,9 @@
             </item>
         </menu>
     </item>
-    <item
+    <!--item
         android:id="@+id/reportGuide"
-        android:title="@string/reportGuide" />
+        android:title="@string/reportGuide" /-->
     <item
         android:id="@+id/leftSession"
         android:title="@string/leftSession" />

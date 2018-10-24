@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -32,6 +33,7 @@ public class RejectedFragment extends Fragment {
     public Button buttonRamdom, buttonByRegion;
     private DBController crud;
     private Search search1;
+    private ProgressBar spinner;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup v, Bundle b) {
@@ -46,6 +48,7 @@ public class RejectedFragment extends Fragment {
     }
 
     public void setupComponents(View view) {
+        spinner = view.findViewById(R.id.progressBar);
         buttonByRegion = view.findViewById(R.id.buttonByRegion);
         buttonRamdom = view.findViewById(R.id.buttonRamdom);
         buttonRamdom.setOnClickListener(new View.OnClickListener() {
@@ -68,14 +71,10 @@ public class RejectedFragment extends Fragment {
     }
 
     private void searchRamdomly() {
-        ProgressDialog progress = new ProgressDialog(fragment.RejectedFragment.this.getContext());
-        progress.setMessage(getString(R.string.searchingGuide));
-        progress.setIndeterminate(true);
-        progress.show();
+        spinner.setVisibility(View.VISIBLE);
 
         search1.setStatus(Enum.valueOf(StatusSearch.class, "Searching"));
         setStatusSearch(search1);
-        progress.cancel();
     }
 
     public void setStatusSearch(Search search) {

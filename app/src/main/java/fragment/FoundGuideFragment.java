@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,6 +45,7 @@ public class FoundGuideFragment extends Fragment {
     private Search search1, search2;
     private ConnectGuides connectGuides;
     private User guide;
+    private ProgressBar spinner;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup v, Bundle b) {
@@ -59,6 +61,7 @@ public class FoundGuideFragment extends Fragment {
     }
 
     public void setupComponents(View view) {
+        spinner = view.findViewById(R.id.progressBar);
         textViewName = view.findViewById(R.id.textViewName);
         buttonAccept = view.findViewById(R.id.buttonAccept);
         buttonReject = view.findViewById(R.id.buttonReject);
@@ -77,7 +80,15 @@ public class FoundGuideFragment extends Fragment {
     }
 
     public void acceptGuide() {
-        if(search2.getStatus() == Enum.valueOf(StatusSearch.class,"Found")) {
+        spinner.setVisibility(View.VISIBLE);
+        if(search2 == null) {
+            if (connectGuides.getIdUser1() != crud.getUser().getIdUser())
+                getSearch(connectGuides.getIdUser1());
+            else {
+                getSearch(connectGuides.getIdUser2());
+            }
+        }
+        else if(search2.getStatus() == Enum.valueOf(StatusSearch.class,"Found")) {
             search1.setStatus(Enum.valueOf(StatusSearch.class, "WaitingAnswer"));
             setStatusSearch(search1);
 
@@ -115,6 +126,7 @@ public class FoundGuideFragment extends Fragment {
     }
 
     public void rejectGuide() {
+        spinner.setVisibility(View.VISIBLE);
         search1.setStatus(Enum.valueOf(StatusSearch.class, "Searching"));
         search2.setStatus(Enum.valueOf(StatusSearch.class, "Rejected"));
         setStatusSearch(search1);
@@ -153,8 +165,9 @@ public class FoundGuideFragment extends Fragment {
                     if(connectGuides != null) {
                         Log.d(TAG, "connectGuides: " + response.body());
                         Log.d(TAG, "connectGuides: " + connectGuides.toString());
-                        if (connectGuides.getIdUser1() != crud.getUser().getIdUser())
+                        if (connectGuides.getIdUser1() != crud.getUser().getIdUser()) {
                             getSearch(connectGuides.getIdUser1());
+                        }
                         else {
                             getSearch(connectGuides.getIdUser2());
                         }
@@ -261,7 +274,7 @@ public class FoundGuideFragment extends Fragment {
                     Log.i(TAG, "Erro: " + response.code());
                 else {
                     guide = response.body();
-                    try {textViewName.setText(guide.getName());} catch (Exception e) {Log.i(TAG, e.getMessage());}
+                    textViewName.setText(guide.getName());
                 }
             }
 
@@ -299,8 +312,9 @@ public class FoundGuideFragment extends Fragment {
             @Override
             public void onResponse(@NonNull Call<Integer> call, @NonNull Response<Integer> response) {
                 if(response.isSuccessful()) {
-                    if(response.body() != null)
+                    if(response.body() != null) {
                         Log.d(TAG, "idChat: " + response.body());
+                    }
                 }
             }
 

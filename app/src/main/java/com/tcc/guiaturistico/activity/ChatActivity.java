@@ -64,21 +64,35 @@ import java.util.List;
 import java.util.Map;
 
 import adapter.ChatAdapter;
+import fragment.FoundGuideFragment;
+import fragment.HomeFragment;
+import fragment.RejectedFragment;
+import fragment.WaitingAnswerFragment;
 import model.Chat;
 import model.ChatDeserializer;
+import model.ConnectGuides;
+import model.ConnectGuidesDeserializer;
 import model.Message;
+import model.Search;
+import model.SearchDeserializer;
 import model.Translate;
 import model.TranslateDeserializer;
 import model.User;
+import model.UserDeserializer;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import service.ChatService;
+import service.ConnectGuidesService;
+import service.SearchService;
 import service.TranslationService;
 import service.UserService;
 import util.DBController;
+import util.StatusChat;
+import util.StatusConnectGuides;
+import util.StatusSearch;
 
 public class ChatActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = "ChatActivity";
@@ -96,17 +110,21 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
     private EditText message;
     private BottomSheetDialog mBottomSheetDialog;
 
-    private boolean translate = true;
+    private boolean translate = false;
     private String translation, source;
     private Message m2 = new Message(1, 0, null, null, null);
     private int idChat;
-    private User u;
+    private User u, user2;
+    private ConnectGuides connectGuides;
+    private Search search1, search2;
+    private String s;
     //private String suggestion;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
 
         try {
             FirebaseApp.initializeApp(this);
@@ -115,10 +133,12 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
         }
         crud = new DBController(this);
         idChat = crud.getChat();
+        s = crud.getStatusSearch();
 
         database = FirebaseDatabase.getInstance();
 
         u = crud.getUser();
+
         if (idChat == 0) {
              read();
         }
@@ -127,7 +147,11 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
             getMessages(idChat);
         }
 
+        //setTranslate();
         list = new ArrayList<Message>();
+
+        readConnectGuides(u.getIdUser());
+
         setupComponents();
     }
 
@@ -257,8 +281,8 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
             case R.id.nav_profile:
                 openProfile();
                 break;
-            case R.id.nav_settings:
-                break;
+            //case R.id.nav_settings:
+                //break;
             case R.id.nav_changeInterests:
                 openChangeInterests();
                 break;
@@ -298,6 +322,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
             //case R.id.reportGuide:
                 //break;
             case R.id.leftSession:
+                leftSession();
                 break;
             case R.id.submenu_cooking:
                 break;
@@ -319,16 +344,18 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void setTranslate() {
+        Log.d(TAG, "dentro do setTranslate");
         if(idChat == 0) {
             read();
         }
         DatabaseReference myRef = database.getReference();
+        Log.d(TAG, "idChat: " + idChat + " idUser: " + u.getIdUser() + " translate: " + translate);
         myRef.child("chat/"+idChat).child("translate").child(""+u.getIdUser()).setValue(translate);
     }
 
     public void getTranslate(int idChat) {
         Log.d(TAG, "idChat getTranslate: " + idChat);
-        final DatabaseReference myRef = database.getReference("/chat/"+ idChat +"/translate/" + crud.getUser().getIdUser());
+        final DatabaseReference myRef = database.getReference("/chat/"+ idChat +"/translate/" + u.getIdUser());
 
         ValueEventListener postListener = new ValueEventListener() {
             @Override
@@ -396,7 +423,9 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
             m2.setTranslation(null);
             Translate t = new Translate();
 
-            t.setTarget(u.getLanguage());
+            Log.d(TAG, "Dados do u: " + u.getIdUser() + u.getLanguage());
+            //t.setTarget(u.getLanguage());
+            t.setTarget(user2.getLanguage());
             t.setQ(text);
             detect(t);
         }
@@ -604,13 +633,15 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
 
                     if(c != null) {
                         Log.d(TAG, "Chat no read()" + c.toString());
+                        Log.d(TAG, "antes de chamar o setTranslate");
+                        setTranslate();
                         setIdChat(c.getIdChat());
+                        Log.d(TAG, "depois de chamar o setIdChat: " + c.getIdChat());
                         try {
-                            crud.deleteChat(c.getIdChat());
+                            crud.updateChat(c.getIdChat());
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-                        crud.insertChat(c.getIdChat());
                     }
                     spinner.setVisibility(View.GONE);
                 }
@@ -632,5 +663,233 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
         this.idChat = idChat;
         getTranslate(idChat);
         getMessages(idChat);
+    }
+
+    public void readConnectGuides(int id) {
+        Gson g = new GsonBuilder().registerTypeAdapter(ConnectGuides.class, new ConnectGuidesDeserializer())
+                .setLenient()
+                .create();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(ConnectGuidesService.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create(g))
+                .build();
+
+        ConnectGuidesService service = retrofit.create(ConnectGuidesService.class);
+
+        Call<ConnectGuides> requestUser = service.read(id);
+        requestUser.enqueue(new Callback<ConnectGuides>() {
+            @Override
+            public void onResponse(@NonNull Call<ConnectGuides> call, @NonNull Response<ConnectGuides> response) {
+                if(!response.isSuccessful())
+                    Log.i(TAG, "Erro: " + response.code());
+                else {
+                    connectGuides = response.body();
+
+                    if(connectGuides != null) {
+                        Log.d(TAG, "connectGuides: " + response.body());
+                        Log.d(TAG, "connectGuides: " + connectGuides.toString());
+                        if (connectGuides.getIdUser1() != u.getIdUser())
+                            getSearch(connectGuides.getIdUser1());
+                        else {
+                            getSearch(connectGuides.getIdUser2());
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ConnectGuides> call, @NonNull Throwable t) {
+                Log.e(TAG, "Erro: " + t.getMessage());
+            }
+        });
+    }
+
+    public void getSearch(int id) {
+        Log.i(TAG, "Resultado do que é o id enviado no getSearch: " + id);
+        Gson g = new GsonBuilder().registerTypeAdapter(Search.class, new SearchDeserializer())
+                .setLenient()
+                .create();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(UserService.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create(g))
+                .build();
+
+        SearchService service = retrofit.create(SearchService.class);
+
+        Call<Search> requestSearch = service.read(id);
+
+        requestSearch.enqueue(new Callback<Search>() {
+            @Override
+            public void onResponse(@NonNull Call<Search> call, @NonNull Response<Search> response) {
+                String aux;
+                if(!response.isSuccessful()) {
+                    aux = "Erro: " + (response.code());
+                    Log.i(TAG, aux);
+                }
+                else {
+                    search2 = response.body();
+                    readUser(search2.getIdUser());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Search> call, @NonNull Throwable t) {
+                String aux = "Erro: " + t.getMessage();
+                Log.e(TAG, aux);
+            }
+        });
+    }
+
+    public void setStatusSearch(final Search search) {
+        Gson g = new GsonBuilder().registerTypeAdapter(Search.class, new SearchDeserializer())
+                .setLenient()
+                .create();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(SearchService.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create(g))
+                .build();
+
+        SearchService service = retrofit.create(SearchService.class);
+
+        Call<Void> requestSearch = service.update(search);
+
+        requestSearch.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                String aux;
+                if(!response.isSuccessful()) {
+                    aux = "Erro: " + (response.code());
+                    Log.i(TAG, aux);
+                }
+                else if(response.isSuccessful()) {
+                    Log.d(TAG, "Este foi o search alterado: " + search.toString());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                String aux = "Erro: " + t.getMessage();
+                Log.e(TAG, aux);
+            }
+        });
+    }
+
+    public void readUser(int id) {
+        Gson g = new GsonBuilder().registerTypeAdapter(User.class, new UserDeserializer())
+                .setLenient()
+                .create();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(UserService.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create(g))
+                .build();
+
+        UserService service = retrofit.create(UserService.class);
+
+        Call<User> requestUser = service.read(id);
+        requestUser.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
+                if(!response.isSuccessful())
+                    Log.i(TAG, "Erro: " + response.code());
+                else
+                    user2 = response.body();
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
+                Log.e(TAG, "Erro: " + t.getMessage());
+            }
+        });
+    }
+
+    public void leftSession() {
+        search1 = new Search(0, Enum.valueOf(StatusSearch.class, "Searching"), u.getIdUser());
+        search2.setStatus(Enum.valueOf(StatusSearch.class, "Searching"));
+        setStatusSearch(search1);
+        setStatusSearch(search2);
+
+//        deleteConnectGuides();
+        desactiveChat(new Chat(search1.getIdUser(), search2.getIdUser(), idChat, Enum.valueOf(StatusChat.class, "Inactive")));
+
+
+        if (s != null) {
+            try {
+                crud.updateStatusSearch(search1.getStatus().toString());
+            } catch (Exception e) {
+                Log.i(TAG, e.getMessage());
+            }
+        }
+
+//        Intent intent = new Intent(this, HomeActivity.class);
+  //      this.startActivity(intent);
+    //    finish();
+    }
+
+    public void deleteConnectGuides() {
+        Gson g = new GsonBuilder()
+                .setLenient()
+                .create();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(ConnectGuidesService.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create(g))
+                .build();
+
+        ConnectGuidesService service = retrofit.create(ConnectGuidesService.class);
+
+        Call<Void> requestUser = service.delete(connectGuides.getIdConnectGuides());
+        requestUser.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                if(!response.isSuccessful())
+                    Log.i(TAG, "Erro: " + response.code());
+                else {
+                    Log.i(TAG, "ConnectGuides deletado com sucesso: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                Log.e(TAG, "Erro: " + t.getMessage());
+            }
+        });
+    }
+
+    public void desactiveChat(Chat chat) {
+        Gson g = new GsonBuilder()
+                .setLenient()
+                .create();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(ChatService.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create(g))
+                .build();
+
+        ChatService service = retrofit.create(ChatService.class);
+
+        Call<Void> requestUser = service.update(chat);
+        requestUser.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                if(!response.isSuccessful())
+                    Log.i(TAG, "Erro: " + response.code());
+                else {
+                    deleteConnectGuides();
+                    Log.i(TAG, "Chat desativado com sucesso: " + response.code());
+                    Intent intent = new Intent(ChatActivity.this, HomeActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                Log.e(TAG, "Erro: " + t.getMessage());
+            }
+        });
     }
 }

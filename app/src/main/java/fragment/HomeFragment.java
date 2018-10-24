@@ -1,6 +1,5 @@
 package fragment;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -10,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -34,7 +34,7 @@ import util.StatusSearch;
 public class HomeFragment extends Fragment {
     private static final String TAG = "HomeFragment";
     public Button buttonRamdom, buttonByRegion;
-    public ProgressDialog progress;
+    private ProgressBar spinner;
     private Search search;
     private ConnectGuides connectGuides;
     private DBController crud;
@@ -48,14 +48,11 @@ public class HomeFragment extends Fragment {
         setupComponents(view);
         setRetainInstance(true); //preservar a instância do fragment
 
-        progress = new ProgressDialog(fragment.HomeFragment.this.getContext());
-        progress.setMessage(getString(R.string.searchingGuide));
-        progress.setIndeterminate(true);
-
         return view;
     }
 
     public void setupComponents(View view) {
+        spinner = view.findViewById(R.id.progressBar);
         buttonByRegion = view.findViewById(R.id.buttonByRegion);
         buttonRamdom = view.findViewById(R.id.buttonRamdom);
         buttonRamdom.setOnClickListener(new View.OnClickListener() {
@@ -80,7 +77,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void searchRamdomly() {
-        progress.show();
+        spinner.setVisibility(View.VISIBLE);
         search.setStatus(Enum.valueOf(StatusSearch.class,"Searching"));
         setStatus(search);
         searchRam(search);
@@ -161,12 +158,12 @@ public class HomeFragment extends Fragment {
                         System.out.println("Resultado da busca: " + response.body());
                     }
                     else {
-                        progress.cancel();
+                        spinner.setVisibility(View.GONE);
                         Toast.makeText(getContext(), getString(R.string.noneGuide), Toast.LENGTH_LONG).show();
                     }
                 }
                 else {
-                    progress.cancel();
+                    spinner.setVisibility(View.GONE);
                     Toast.makeText(getContext(), getString(R.string.noneGuide), Toast.LENGTH_LONG).show();
                 }
             }
@@ -178,6 +175,6 @@ public class HomeFragment extends Fragment {
                 Toast.makeText(getContext(), aux, Toast.LENGTH_LONG).show();
             }
         });
-        progress.cancel();
+        spinner.setVisibility(View.VISIBLE);
     }
 }

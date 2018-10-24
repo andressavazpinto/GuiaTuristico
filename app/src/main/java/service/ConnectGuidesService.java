@@ -15,7 +15,7 @@ public interface ConnectGuidesService {
     public static final String BASE_URL = Url.BASE_URL;
 
     @PUT("connectguides")
-    Call<Void> update(@Body Search search);
+    Call<Void> update(@Body ConnectGuides connectGuides);
 
     @POST("connectguides")
     Call<ConnectGuides> searchRandomly(@Body Search search);

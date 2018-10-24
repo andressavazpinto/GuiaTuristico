@@ -66,13 +66,13 @@ public class DBController {
         db.close();
     }
 
-    /*public void updateChat(int idChat) {
+    public void updateChat(int idChat) {
         ContentValues cv = new ContentValues();
         cv.put("idChat", idChat);
 
-        db.update("chat", cv, "idChat = ?", new String[]{""+s.getIdUser()});
+        db.update("chat", cv, "idChat = ?", new String[]{""+idChat});
         db.close();
-    }*/
+    }
 
     public void updateStatusSearch(String status) {
         ContentValues cv = new ContentValues();

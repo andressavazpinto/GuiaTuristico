@@ -253,19 +253,16 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         if (id == R.id.nav_profile) {
             openProfile();
-        } else if (id == R.id.nav_settings) {
+        //} else if (id == R.id.nav_settings) {
 
         } else if (id == R.id.nav_changeInterests) {
             openChangeInterests();
         } else if (id == R.id.nav_logout) {
             //fechar sessão
-            try {
-                crud.deleteUser(crud.getUser());
-                crud.deleteChat(crud.getChat());
-                crud.deleteStatusSearch();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            try {crud.deleteUser(crud.getUser()); } catch (Exception e){e.printStackTrace();}
+            try {crud.deleteChat(crud.getChat());} catch (Exception e){e.printStackTrace();}
+            try {crud.deleteStatusSearch();} catch (Exception e){e.printStackTrace();}
+
 
             startActivity(new Intent(this, LoginActivity.class));  //O efeito ao ser pressionado do botão (no caso abre a activity)
             finishAffinity();

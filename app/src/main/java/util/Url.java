@@ -19,7 +19,10 @@ public class Url {
     //public static String BASE_URL = "http://192.168.0.103:8089/GuiaWSMaven/rest/";
 
     //SP
-    public static String BASE_URL = "http://192.168.0.3:8089/GuiaWSMaven/rest/";
+    //public static String BASE_URL = "http://192.168.0.3:8089/GuiaWSMaven/rest/";
+
+    //Celular
+    public static String BASE_URL = "http://192.168.43.48:8089/GuiaWSMaven/rest/";
 
     //Trabalho
     //public static String BASE_URL = "http://192.168.0.42:8089/GuiaWSMaven/rest/";

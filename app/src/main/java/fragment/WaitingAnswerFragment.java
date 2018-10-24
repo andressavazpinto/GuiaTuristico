@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -39,6 +40,7 @@ public class WaitingAnswerFragment extends Fragment {
     private Search search1, search2;
     private ConnectGuides connectGuides;
     private User guide;
+    private ProgressBar spinner;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup v, Bundle b) {
@@ -55,6 +57,7 @@ public class WaitingAnswerFragment extends Fragment {
     }
 
     public void setupComponents(View view) {
+        spinner = view.findViewById(R.id.progressBar);
         textViewName = view.findViewById(R.id.textViewName);
         textViewCurrently = view.findViewById(R.id.textViewCurrently);
         textViewTimeThere = view.findViewById(R.id.textViewTimeThere);
@@ -74,6 +77,7 @@ public class WaitingAnswerFragment extends Fragment {
                         deleteConnection(connectGuides);
                         cancelConnection();
                         dialog.dismiss();
+                        spinner.setVisibility(View.VISIBLE);
                     }
                 });
 

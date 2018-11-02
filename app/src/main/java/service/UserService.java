@@ -15,7 +15,7 @@ import retrofit2.http.POST;
 
 public interface UserService {
 
-    public static final String BASE_URL = Url.BASE_URL;
+    String BASE_URL = Url.BASE_URL;
 
     @GET("users/{id}")
     Call<User> read(@Path("id") int id);

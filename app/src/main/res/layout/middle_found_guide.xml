@@ -1,13 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:visibility="gone"/>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:baselineAligned="false"
         android:orientation="vertical">
-
-    <include layout="@layout/progress_bar"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -82,5 +90,6 @@
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
+</RelativeLayout>
 
 

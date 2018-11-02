@@ -17,9 +17,8 @@ import util.Url;
  */
 
 public interface UserInterestService {
-    public static final String BASE_URL = Url.BASE_URL;
+    String BASE_URL = Url.BASE_URL;
 
-    //@Headers({"Accept: application/json"})
     @POST("users/interests")
     Call<Integer> insert(@Body List<UserInterest> userInterests);
 
@@ -31,5 +30,4 @@ public interface UserInterestService {
 
     @PUT("users/interests/{idUser}")
     Call<Void> update(@Path("idUser") int idUser, @Body List<UserInterest> userInterests);
-
 }

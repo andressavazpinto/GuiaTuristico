@@ -30,7 +30,7 @@ import util.StatusSearch;
 
 public class RejectedFragment extends Fragment {
     private static final String TAG = "RejectedFragment";
-    public Button buttonRamdom, buttonByRegion;
+    public Button buttonBack;
     private DBController crud;
     private Search search1;
     private ProgressBar spinner;
@@ -49,30 +49,17 @@ public class RejectedFragment extends Fragment {
 
     public void setupComponents(View view) {
         spinner = view.findViewById(R.id.progressBar);
-        buttonByRegion = view.findViewById(R.id.buttonByRegion);
-        buttonRamdom = view.findViewById(R.id.buttonRamdom);
-        buttonRamdom.setOnClickListener(new View.OnClickListener() {
+        buttonBack = view.findViewById(R.id.buttonBack);
+        buttonBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                searchRamdomly();
-            }
-        });
-        buttonByRegion.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                searchByRegion();
+                turnBack();
             }
         });
     }
 
-    private void searchByRegion() {
-        Intent intent = new Intent(getActivity(), ByRegionActivity.class);
-        getActivity().startActivity(intent);
-    }
-
-    private void searchRamdomly() {
+    private void turnBack() {
         spinner.setVisibility(View.VISIBLE);
-
         search1.setStatus(Enum.valueOf(StatusSearch.class, "Searching"));
         setStatusSearch(search1);
     }

@@ -8,10 +8,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ExpandableListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.tcc.guiaturistico.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +31,7 @@ import util.DBController;
 public class ByRegionActivity extends ExpandableListActivity implements ExpandableListView.OnChildClickListener {
     private static final String TAG = "ByRegionActivity";
     private DBController crud;
+    private ProgressBar spinner;
     private ExpandableListView expandableListVew;
     private List<SearchByRegion> searchByRegions = new ArrayList<SearchByRegion>();
 
@@ -39,6 +42,7 @@ public class ByRegionActivity extends ExpandableListActivity implements Expandab
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         crud = new DBController(this);
+
         getRegions();
         setupComponents();
     }
@@ -48,6 +52,7 @@ public class ByRegionActivity extends ExpandableListActivity implements Expandab
         expandableListVew.setDividerHeight(2);
         expandableListVew.setGroupIndicator(null);
         expandableListVew.setClickable(true);
+        //spinner.setVisibility(View.GONE);
     }
 
     @Override

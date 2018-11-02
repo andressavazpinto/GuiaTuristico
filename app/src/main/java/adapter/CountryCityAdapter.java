@@ -33,10 +33,10 @@ import util.StatusSearch;
 
 public class CountryCityAdapter extends BaseExpandableListAdapter {
     private static final String TAG = "CountryCityAdapter";
-    public ArrayList<String> groupItem;
-    public ArrayList<String> tempChild;
-    public ArrayList<Object> Childtem;
-    public LayoutInflater inflater;
+    private ArrayList<String> groupItem;
+    private ArrayList<String> tempChild;
+    private ArrayList<Object> Childtem;
+    private LayoutInflater inflater;
     public Activity activity;
     private Search search;
     private ConnectGuides connectGuides;
@@ -171,7 +171,7 @@ public class CountryCityAdapter extends BaseExpandableListAdapter {
         });
     }
 
-    public void searchByRegion(String city, int id) {
+    private void searchByRegion(String city, int id) {
         Gson g = new GsonBuilder()
                 .setLenient()
                 .create();

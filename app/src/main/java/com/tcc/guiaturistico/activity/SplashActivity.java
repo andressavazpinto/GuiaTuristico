@@ -103,7 +103,7 @@ public class SplashActivity extends Activity implements Runnable {
 
         UserService service = retrofit.create(UserService.class);
 
-        Log.i(TAG, "email: " + email + " senha: " + password);
+        //Log.i(TAG, "email: " + email + " senha: " + password);
         u.setEmail(email);
         u.setPassword(password);
 

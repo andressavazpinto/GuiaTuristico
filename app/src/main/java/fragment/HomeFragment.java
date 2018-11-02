@@ -67,8 +67,6 @@ public class HomeFragment extends Fragment {
                 searchByRegion();
             }
         });
-
-
     }
 
     private void searchByRegion() {
@@ -156,6 +154,8 @@ public class HomeFragment extends Fragment {
                         }
 
                         System.out.println("Resultado da busca: " + response.body());
+
+                        getActivity().recreate();
                     }
                     else {
                         spinner.setVisibility(View.GONE);

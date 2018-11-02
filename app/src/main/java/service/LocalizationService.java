@@ -11,7 +11,7 @@ import retrofit2.http.Path;
 import util.Url;
 
 public interface LocalizationService {
-    public static final String BASE_URL = Url.BASE_URL;
+    String BASE_URL = Url.BASE_URL;
 
     /*@GET("localization/{id}")
     Call<Localization> read(@Path("id") int id);*/

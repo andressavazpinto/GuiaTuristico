@@ -1,5 +1,6 @@
 package fragment;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.tcc.guiaturistico.R;
+import com.tcc.guiaturistico.activity.ChatActivity;
 
 import model.Chat;
 import model.ChatDeserializer;
@@ -53,6 +55,7 @@ public class FoundGuideFragment extends Fragment {
         crud = new DBController(getContext());
         search1 = new Search(0, null, crud.getUser().getIdUser());
 
+        Log.i(TAG, "antes de chamar o readConnectGuides");
         readConnectGuides(crud.getUser().getIdUser());
 
         setRetainInstance(true); //preservar a instância do fragment
@@ -63,7 +66,7 @@ public class FoundGuideFragment extends Fragment {
     public void setupComponents(View view) {
         spinner = view.findViewById(R.id.progressBar);
         textViewName = view.findViewById(R.id.textViewName);
-        buttonAccept = view.findViewById(R.id.buttonAccept);
+        buttonAccept =view.findViewById(R.id.buttonAccept);
         buttonReject = view.findViewById(R.id.buttonReject);
         buttonAccept.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,13 +77,14 @@ public class FoundGuideFragment extends Fragment {
         buttonReject.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                rejectGuide();
+                reject(new ConnectGuides (connectGuides.getIdConnectGuides(), search1.getIdUser(), guide.getIdUser(), null));
             }
         });
     }
 
     public void acceptGuide() {
         spinner.setVisibility(View.VISIBLE);
+
         if(search2 == null) {
             if (connectGuides.getIdUser1() != crud.getUser().getIdUser())
                 getSearch(connectGuides.getIdUser1());
@@ -92,18 +96,12 @@ public class FoundGuideFragment extends Fragment {
             search1.setStatus(Enum.valueOf(StatusSearch.class, "WaitingAnswer"));
             setStatusSearch(search1);
 
+            Log.i(TAG, "search2 dentro: " + search2.toString());
+
             if (crud.getStatusSearch() != null) {
-                try {
-                    crud.updateStatusSearch(search1.getStatus().toString());
-                } catch (Exception e) {
-                    Log.i(TAG, e.getMessage());
-                }
+                try { crud.updateStatusSearch(search1.getStatus().toString()); } catch (Exception e) { Log.i(TAG, e.getMessage()); }
             }
-            try {
-                this.finalize();
-            } catch (Throwable throwable) {
-                throwable.printStackTrace();
-            }
+            try { this.finalize(); } catch (Throwable throwable) { throwable.printStackTrace(); }
         }
         else if(search2.getStatus() == Enum.valueOf(StatusSearch.class, "WaitingAnswer")) {
             search1.setStatus(Enum.valueOf(StatusSearch.class, "Accepted"));
@@ -111,33 +109,13 @@ public class FoundGuideFragment extends Fragment {
             setStatusSearch(search1);
             setStatusSearch(search2);
 
-            if (crud.getStatusSearch() != null) {
-                try {
-                    Log.d(TAG, "Atualizou no cel o status da busca");
-                    crud.updateStatusSearch(search1.getStatus().toString());
-                } catch (Exception e) {
-                    Log.i(TAG, e.getMessage());
-                }
-            }
+            if (crud.getStatusSearch() != null)
+                try{crud.updateStatusSearch(search1.getStatus().toString());} catch(Exception e){Log.i(TAG, e.getMessage());}
+            else
+                try{crud.insertStatusSearch(search1.getStatus().toString());} catch(Exception e){Log.i(TAG, e.getMessage());}
 
             Log.d(TAG, "chamou register chat: " + connectGuides.toString());
             registerChat();
-        }
-    }
-
-    public void rejectGuide() {
-        spinner.setVisibility(View.VISIBLE);
-        search1.setStatus(Enum.valueOf(StatusSearch.class, "Searching"));
-        search2.setStatus(Enum.valueOf(StatusSearch.class, "Rejected"));
-        setStatusSearch(search1);
-        setStatusSearch(search2);
-
-        if (crud.getStatusSearch() != null) {
-            try {
-                crud.updateStatusSearch(search1.getStatus().toString());
-            } catch (Exception e) {
-                Log.i(TAG, e.getMessage());
-            }
         }
     }
 
@@ -164,13 +142,12 @@ public class FoundGuideFragment extends Fragment {
 
                     if(connectGuides != null) {
                         Log.d(TAG, "connectGuides: " + response.body());
-                        Log.d(TAG, "connectGuides: " + connectGuides.toString());
-                        if (connectGuides.getIdUser1() != crud.getUser().getIdUser()) {
-                            getSearch(connectGuides.getIdUser1());
-                        }
-                        else {
-                            getSearch(connectGuides.getIdUser2());
-                        }
+                        Log.i(TAG, "Antes de chamar o readUser: ");
+
+                        if (connectGuides.getIdUser1() != crud.getUser().getIdUser())
+                            readUser(connectGuides.getIdUser1());
+                        else
+                            readUser(connectGuides.getIdUser2());
                     }
                 }
             }
@@ -207,7 +184,8 @@ public class FoundGuideFragment extends Fragment {
                 }
                 else {
                     search2 = response.body();
-                    readUser(search2.getIdUser());
+                    Log.i(TAG, "chamar de novo o acceptGuide");
+                    acceptGuide();
                 }
             }
 
@@ -255,6 +233,7 @@ public class FoundGuideFragment extends Fragment {
     }
 
     public void readUser(int id) {
+        Log.i(TAG, "Dentro do readUser: ");
         Gson g = new GsonBuilder().registerTypeAdapter(User.class, new UserDeserializer())
                 .setLenient()
                 .create();
@@ -314,6 +293,9 @@ public class FoundGuideFragment extends Fragment {
                 if(response.isSuccessful()) {
                     if(response.body() != null) {
                         Log.d(TAG, "idChat: " + response.body());
+                        Intent intent = new Intent(getActivity(), ChatActivity.class);
+                        startActivity(intent);
+                        getActivity().finishAffinity();
                     }
                 }
             }
@@ -323,6 +305,49 @@ public class FoundGuideFragment extends Fragment {
                 String aux = " Erro: " + t.getMessage();
                 Log.e(TAG, aux);
                 Toast.makeText(getContext(), aux, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    public void reject(ConnectGuides cg) {
+        spinner.setVisibility(View.VISIBLE);
+        final ConnectGuides cg2 = cg;
+
+        Gson g = new GsonBuilder().registerTypeAdapter(ConnectGuides.class, new ConnectGuidesDeserializer())
+                .setLenient()
+                .create();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(ConnectGuidesService.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create(g))
+                .build();
+
+        ConnectGuidesService service = retrofit.create(ConnectGuidesService.class);
+
+        Call<Void> requestConnect = service.reject(cg);
+        requestConnect.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                if(!response.isSuccessful()) {
+                    Log.i(TAG, "Erro: " + response.code());
+                    Log.i(TAG, "Erro: " + response.body());
+                    spinner.setVisibility(View.GONE);
+                }
+                else {
+                    if (crud.getStatusSearch() != null) {
+                        try {
+                            crud.updateStatusSearch("Searching");
+                        } catch (Exception e) {
+                            Log.i(TAG, e.getMessage());
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                Log.e(TAG, "Erro: " + t.getMessage());
+                reject(cg2);
             }
         });
     }

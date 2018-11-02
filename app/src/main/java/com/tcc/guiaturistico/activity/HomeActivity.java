@@ -68,7 +68,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private Location location;
     private MaterialDialog mMaterialDialog;
     private static final int REQUEST_PERMISSIONS_CODE = 128;
-    private static final long TIME = (1000*15);
+    private static final long TIME = (1000*5);
     private DBController crud;
     private ConstraintLayout layout;
     private ConstraintLayout contentMain;
@@ -107,7 +107,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void verifyStatusSearch() {
-        Log.d(TAG, "Entrou no verifyStatusSearch()");
+        //Log.d(TAG, "Entrou no verifyStatusSearch()");
         final Search s = new Search(0, null, crud.getUser().getIdUser());
 
         Gson g = new GsonBuilder().registerTypeAdapter(Search.class, new SearchDeserializer())
@@ -139,7 +139,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         s.setIdSearch(jsonSearch.getInt("idSearch"));
                         s.setStatus(Enum.valueOf(StatusSearch.class, jsonSearch.getString("status")));
 
-                        Log.d(TAG, "Resultado do status na HomeActivity: " + s.getStatus());
+                        //Log.d(TAG, "Resultado do status na HomeActivity: " + s.getStatus());
 
                         setMiddle(s);
                     } catch (JSONException e) {
@@ -158,10 +158,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void setMiddle(Search sea) {
-        StatusSearch status;
-        status = (Enum.valueOf(StatusSearch.class, sea.getStatus().toString()));
+        StatusSearch status = (Enum.valueOf(StatusSearch.class, sea.getStatus().toString()));
         String aux = crud.getStatusSearch();
-        Log.d(TAG, "Entrou no setMiddle(), status: " + status.toString());
 
         if(aux != null & aux.equals(status.toString()) & !first) {
             //não faz nada
@@ -170,9 +168,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         else {
             switch (status) {
                 case Accepted:
-                    Intent intent = new Intent(this, ChatActivity.class);
-                    startActivity(intent);
-                    finishAffinity();
+                    //não faz nada, mantém onde estava (found -> chatactivity)
                     break;
                 case Searching:
                     layout.setVisibility(View.GONE);
@@ -264,7 +260,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             try {crud.deleteStatusSearch();} catch (Exception e){e.printStackTrace();}
 
 
-            startActivity(new Intent(this, LoginActivity.class));  //O efeito ao ser pressionado do botão (no caso abre a activity)
+            startActivity(new Intent(this, MainActivity.class));  //O efeito ao ser pressionado do botão (no caso abre a activity)
             finishAffinity();
         }
 

@@ -12,7 +12,7 @@ import util.Url;
  */
 
 public interface InterestService {
-    public static final String BASE_URL = Url.BASE_URL;
+    String BASE_URL = Url.BASE_URL;
 
     @GET("interests")
     Call<List<Interest>> list();

@@ -9,16 +9,20 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
+import to.ChatConnectTO;
 import util.Url;
 
 public interface ConnectGuidesService {
-    public static final String BASE_URL = Url.BASE_URL;
+    String BASE_URL = Url.BASE_URL;
 
     @PUT("connectguides")
     Call<Void> update(@Body ConnectGuides connectGuides);
 
     @POST("connectguides")
     Call<ConnectGuides> searchRandomly(@Body Search search);
+
+    @POST("connectguides/reject")
+    Call<Void> reject(@Body ConnectGuides connectGuides);
 
     @GET("connectguides/{id}")
     Call<ConnectGuides> read(@Path("id") int id);

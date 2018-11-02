@@ -136,4 +136,6 @@
 
     <string name="translationDescription">Apresentar tradução das mensagens recebidas</string>
     <string name="changeLanguage">Alterar idioma do aplicativo</string>
+
+    <string name="turnBack">Voltar</string>
 </resources>

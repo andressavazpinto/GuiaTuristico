@@ -64,10 +64,6 @@ import java.util.List;
 import java.util.Map;
 
 import adapter.ChatAdapter;
-import fragment.FoundGuideFragment;
-import fragment.HomeFragment;
-import fragment.RejectedFragment;
-import fragment.WaitingAnswerFragment;
 import model.Chat;
 import model.ChatDeserializer;
 import model.ConnectGuides;
@@ -89,10 +85,9 @@ import service.ConnectGuidesService;
 import service.SearchService;
 import service.TranslationService;
 import service.UserService;
+import to.ChatConnectTO;
 import util.DBController;
 import util.StatusChat;
-import util.StatusConnectGuides;
-import util.StatusSearch;
 
 public class ChatActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = "ChatActivity";
@@ -116,7 +111,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
     private int idChat;
     private User u, user2;
     private ConnectGuides connectGuides;
-    private Search search1, search2;
+    private Search search2;
     private String s;
     //private String suggestion;
 
@@ -124,7 +119,6 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-
 
         try {
             FirebaseApp.initializeApp(this);
@@ -134,10 +128,9 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
         crud = new DBController(this);
         idChat = crud.getChat();
         s = crud.getStatusSearch();
+        u = crud.getUser();
 
         database = FirebaseDatabase.getInstance();
-
-        u = crud.getUser();
 
         if (idChat == 0) {
              read();
@@ -291,7 +284,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
                 try {crud.deleteUser(crud.getUser());} catch (Exception e) {Log.d(TAG, e.getMessage());}
                 try {crud.deleteChat(crud.getChat());} catch (Exception e) {Log.d(TAG, e.getMessage());}
                 try {crud.deleteStatusSearch();} catch (Exception e) {e.printStackTrace();}
-                startActivity(new Intent(this, LoginActivity.class));  //O efeito ao ser pressionado do botão (no caso abre a activity)
+                startActivity(new Intent(this, MainActivity.class));  //O efeito ao ser pressionado do botão (no caso abre a activity)
                 finishAffinity();
         }
 
@@ -311,10 +304,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
         switch (id) {
             case R.id.automaticTranslation:
-                if(translate)
-                    translate = false;
-                else
-                    translate = true;
+                translate = !translate;
                 setTranslate();
                 break;
             case R.id.suggestions:
@@ -322,7 +312,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
             //case R.id.reportGuide:
                 //break;
             case R.id.leftSession:
-                leftSession();
+                leftSession(new ChatConnectTO(idChat, connectGuides.getIdConnectGuides(), u.getIdUser(), search2.getIdUser(), Enum.valueOf(StatusChat.class, "Inactive")));
                 break;
             case R.id.submenu_cooking:
                 break;
@@ -637,17 +627,14 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
                         setTranslate();
                         setIdChat(c.getIdChat());
                         Log.d(TAG, "depois de chamar o setIdChat: " + c.getIdChat());
-                        try {
-                            crud.updateChat(c.getIdChat());
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+
+                        try{crud.insertChat(c.getIdChat());} catch(Exception e){Log.i(TAG, e.getMessage());}
                     }
                     spinner.setVisibility(View.GONE);
                 }
                 else {
                     Log.d(TAG, "Deu erro no read()");
-                    Toast.makeText(ChatActivity.this, "Error", Toast.LENGTH_LONG);
+                    Toast.makeText(ChatActivity.this, "Error", Toast.LENGTH_LONG).show();
                     spinner.setVisibility(View.GONE);
                 }
             }
@@ -742,41 +729,6 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
-    public void setStatusSearch(final Search search) {
-        Gson g = new GsonBuilder().registerTypeAdapter(Search.class, new SearchDeserializer())
-                .setLenient()
-                .create();
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(SearchService.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create(g))
-                .build();
-
-        SearchService service = retrofit.create(SearchService.class);
-
-        Call<Void> requestSearch = service.update(search);
-
-        requestSearch.enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-                String aux;
-                if(!response.isSuccessful()) {
-                    aux = "Erro: " + (response.code());
-                    Log.i(TAG, aux);
-                }
-                else if(response.isSuccessful()) {
-                    Log.d(TAG, "Este foi o search alterado: " + search.toString());
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-                String aux = "Erro: " + t.getMessage();
-                Log.e(TAG, aux);
-            }
-        });
-    }
-
     public void readUser(int id) {
         Gson g = new GsonBuilder().registerTypeAdapter(User.class, new UserDeserializer())
                 .setLenient()
@@ -806,60 +758,10 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
-    public void leftSession() {
-        search1 = new Search(0, Enum.valueOf(StatusSearch.class, "Searching"), u.getIdUser());
-        search2.setStatus(Enum.valueOf(StatusSearch.class, "Searching"));
-        setStatusSearch(search1);
-        setStatusSearch(search2);
+    public void leftSession(ChatConnectTO to) {
+        spinner.setVisibility(View.VISIBLE);
+        final ChatConnectTO to2 = to;
 
-//        deleteConnectGuides();
-        desactiveChat(new Chat(search1.getIdUser(), search2.getIdUser(), idChat, Enum.valueOf(StatusChat.class, "Inactive")));
-
-
-        if (s != null) {
-            try {
-                crud.updateStatusSearch(search1.getStatus().toString());
-            } catch (Exception e) {
-                Log.i(TAG, e.getMessage());
-            }
-        }
-
-//        Intent intent = new Intent(this, HomeActivity.class);
-  //      this.startActivity(intent);
-    //    finish();
-    }
-
-    public void deleteConnectGuides() {
-        Gson g = new GsonBuilder()
-                .setLenient()
-                .create();
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(ConnectGuidesService.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create(g))
-                .build();
-
-        ConnectGuidesService service = retrofit.create(ConnectGuidesService.class);
-
-        Call<Void> requestUser = service.delete(connectGuides.getIdConnectGuides());
-        requestUser.enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-                if(!response.isSuccessful())
-                    Log.i(TAG, "Erro: " + response.code());
-                else {
-                    Log.i(TAG, "ConnectGuides deletado com sucesso: " + response.code());
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-                Log.e(TAG, "Erro: " + t.getMessage());
-            }
-        });
-    }
-
-    public void desactiveChat(Chat chat) {
         Gson g = new GsonBuilder()
                 .setLenient()
                 .create();
@@ -871,14 +773,18 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
 
         ChatService service = retrofit.create(ChatService.class);
 
-        Call<Void> requestUser = service.update(chat);
+        Call<Void> requestUser = service.leftSession(to);
         requestUser.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 if(!response.isSuccessful())
                     Log.i(TAG, "Erro: " + response.code());
                 else {
-                    deleteConnectGuides();
+                    if (s != null) {
+                        try { crud.updateStatusSearch("Searching"); } catch (Exception e) { Log.i(TAG, e.getMessage()); }
+                    }
+                    try { crud.deleteChat(idChat); } catch (Exception e) { Log.i(TAG, e.getMessage()); }
+
                     Log.i(TAG, "Chat desativado com sucesso: " + response.code());
                     Intent intent = new Intent(ChatActivity.this, HomeActivity.class);
                     startActivity(intent);
@@ -889,7 +795,17 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
                 Log.e(TAG, "Erro: " + t.getMessage());
+                leftSession(to2);
             }
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (getIntent().getBooleanExtra("EXIT", false)) {
+            finish();
+        }
     }
 }

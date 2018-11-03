@@ -48,7 +48,7 @@
                     android:layout_weight="1"
                     android:background="@drawable/selector_button"
                     style="@style/patternButton"
-                    android:text="@string/sigIn" />
+                    android:text="@string/signIn" />
 
                 <TextView
                     android:id="@+id/textOr"

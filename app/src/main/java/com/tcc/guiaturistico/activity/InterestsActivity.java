@@ -22,6 +22,7 @@ import java.util.List;
 
 import model.Interest;
 import model.InterestDeserializer;
+import model.Localization;
 import model.UserInterest;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -29,6 +30,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import service.InterestService;
+import service.LocalizationService;
 import service.UserInterestService;
 import util.DBController;
 
@@ -199,13 +201,13 @@ public class InterestsActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
             }
         });
-        openHome();
+        getLocalization(crud.getUser().getIdLocalization());
     }
 
-    public void openHome(){
+    public void openHome(Localization loc){
         Intent intent = new Intent(this, HomeActivity.class);
         intent.putExtra("name", crud.getUser().getName());
-        //intent.putExtra("localization", crud.getUser().getLocalization());
+        intent.putExtra("localization", loc.getCity() + ", " + loc.getUf());
         startActivity(intent);
         finishAffinity();
     }
@@ -331,7 +333,41 @@ public class InterestsActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
             }
         });
-        openHome();
+        getLocalization(crud.getUser().getIdLocalization());
+    }
+
+    public void getLocalization(int idLocalization) {
+        final int idAux = idLocalization;
+        Gson g = new GsonBuilder()
+                .setLenient()
+                .create();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(LocalizationService.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create(g))
+                .build();
+
+        LocalizationService service = retrofit.create(LocalizationService.class);
+
+        Call<Localization> requestLocalization = service.read(idLocalization);
+
+        requestLocalization.enqueue(new Callback<Localization>() {
+            @Override
+            public void onResponse(@NonNull Call<Localization> call, @NonNull Response<Localization> response) {
+                if(response.isSuccessful()) {
+                    openHome(response.body());
+                }
+                else {
+                    Log.i(TAG, "Erro: " + (response.code()));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Localization> call, @NonNull Throwable t) {
+                Log.e(TAG, "Erro: " + t.getMessage());
+                getLocalization(idAux);
+            }
+        });
     }
 }
 

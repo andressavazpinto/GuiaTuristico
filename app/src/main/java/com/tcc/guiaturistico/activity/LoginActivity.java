@@ -31,9 +31,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.tcc.guiaturistico.R;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -52,7 +49,6 @@ import service.SearchService;
 import service.UserService;
 import util.DBController;
 import util.StatusSearch;
-import util.StatusUser;
 
 /**
  * Created by Andressa on 31/03/2018.
@@ -152,20 +148,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
                 if(response.isSuccessful()) {
                     try {
-                        JSONObject jsonUser = new JSONObject(new Gson().toJson(response.body()));
-
-                        System.out.println(response.body());
-
-                        u.setIdUser(jsonUser.getInt("idUser"));
-                        u.setName(jsonUser.getString("name"));
-                        u.setDateOfBirth(jsonUser.getString("dateOfBirth"));
-                        u.setEmail(jsonUser.getString("email"));
-                        u.setPassword(jsonUser.getString("password"));
-                        u.setLanguage(jsonUser.getString("language"));
-                        u.setIdLocalization(jsonUser.getInt("idLocalization"));
-                        u.setStatusAccount(Enum.valueOf(StatusUser.class, jsonUser.getString("statusAccount")));
-
-                        System.out.println("Resultado do login: " + u.toString());
+                        u = response.body();
 
                         try {
                             if(crud.getUser() != null)
@@ -177,7 +160,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                         } catch(Exception e) {
                             e.printStackTrace();
                         }
-                    } catch (JSONException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                     System.out.print("Id: " + u.getIdUser());
@@ -427,8 +410,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     }
 
     public void verifyStatusSearch(int id) {
-        final Search s = new Search(1, Enum.valueOf(StatusSearch.class,"Searching"), 3);
-
         Gson g = new GsonBuilder().registerTypeAdapter(Search.class, new SearchDeserializer())
                 .setLenient()
                 .create();
@@ -452,16 +433,12 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 }
                 else if(response.isSuccessful()) {
                     try {
-                        JSONObject jsonSearch = new JSONObject(new Gson().toJson(response.body()));
-
-                        s.setIdUser(jsonSearch.getInt("idUser"));
-                        s.setIdSearch(jsonSearch.getInt("idSearch"));
-                        s.setStatus(Enum.valueOf(StatusSearch.class, jsonSearch.getString("status")));
+                        Search s = response.body();
 
                         try{crud.insertStatusSearch(s.getStatus().toString());} catch(Exception e){Log.i(TAG, e.getMessage());}
 
                         openHome(s);
-                    } catch (JSONException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }

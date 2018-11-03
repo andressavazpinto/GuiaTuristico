@@ -62,7 +62,7 @@
                     android:background="@drawable/selector_button"
                     android:layout_gravity="end"
                     android:layout_marginEnd="@dimen/activity_horizontal_margin"
-                    android:text="@string/ramdom" />
+                    android:text="@string/random" />
             </LinearLayout>
 
             <LinearLayout

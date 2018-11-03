@@ -1,14 +1,12 @@
 package model;
 
-import java.io.Serializable;
-
 import util.StatusUser;
 
 /**
  * Created by Andressa on 13/05/2018.
  */
 
-public class User implements Serializable {
+public class User {
 
     private int idUser;
     private String name;
@@ -20,7 +18,6 @@ public class User implements Serializable {
     private StatusUser statusAccount;
 
     public User() {
-
     }
 
     public User(int idUser) {
@@ -37,7 +34,6 @@ public class User implements Serializable {
         this.password = password;
         this.idLocalization = idLocalization;
         this.statusAccount = statusAccount;
-        //this.idChat = idChat;
     }
 
     public int getIdUser() {

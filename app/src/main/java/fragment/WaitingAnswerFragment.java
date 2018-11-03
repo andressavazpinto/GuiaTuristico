@@ -18,6 +18,7 @@ import com.tcc.guiaturistico.R;
 
 import model.ConnectGuides;
 import model.ConnectGuidesDeserializer;
+import model.Localization;
 import model.Search;
 import model.SearchDeserializer;
 import model.User;
@@ -28,6 +29,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import service.ConnectGuidesService;
+import service.LocalizationService;
 import service.SearchService;
 import service.UserService;
 import util.DBController;
@@ -225,7 +227,7 @@ public class WaitingAnswerFragment extends Fragment {
                     Log.i(TAG, "Erro: " + response.code());
                 else {
                     guide = response.body();
-                    try {textViewName.setText(guide.getName());} catch (Exception e) {Log.i(TAG, e.getMessage());}
+                    getLocalization(guide);
                 }
             }
 
@@ -276,6 +278,41 @@ public class WaitingAnswerFragment extends Fragment {
             @Override
             public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
                 Log.e(TAG, "Erro: " + t.getMessage());
+            }
+        });
+    }
+
+    public void getLocalization(User guide) {
+        final User userAux = guide;
+        Gson g = new GsonBuilder()
+                .setLenient()
+                .create();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(LocalizationService.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create(g))
+                .build();
+
+        LocalizationService service = retrofit.create(LocalizationService.class);
+
+        Call<Localization> requestLocalization = service.read(guide.getIdLocalization());
+
+        requestLocalization.enqueue(new Callback<Localization>() {
+            @Override
+            public void onResponse(@NonNull Call<Localization> call, @NonNull Response<Localization> response) {
+                if (response.isSuccessful()) {
+                    Localization loc = response.body();
+                    textViewName.setText(userAux.getName());
+                    textViewCurrently.setText(getString(R.string.currently) + " " + loc.getCity() + ", " + loc.getUf());
+                } else {
+                    Log.i(TAG, "Erro: " + (response.code()));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Localization> call, @NonNull Throwable t) {
+                Log.e(TAG, "Erro: " + t.getMessage());
+                getLocalization(userAux);
             }
         });
     }

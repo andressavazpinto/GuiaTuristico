@@ -22,6 +22,7 @@ import model.Chat;
 import model.ChatDeserializer;
 import model.ConnectGuides;
 import model.ConnectGuidesDeserializer;
+import model.Localization;
 import model.Search;
 import model.SearchDeserializer;
 import model.User;
@@ -33,6 +34,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import service.ChatService;
 import service.ConnectGuidesService;
+import service.LocalizationService;
 import service.SearchService;
 import service.UserService;
 import util.DBController;
@@ -42,7 +44,7 @@ import util.StatusSearch;
 public class FoundGuideFragment extends Fragment {
     private static final String TAG = "FoundGuideFragment";
     public Button buttonAccept, buttonReject;
-    public TextView textViewName;
+    public TextView textViewName, textViewCurrently;
     private DBController crud;
     private Search search1, search2;
     private ConnectGuides connectGuides;
@@ -55,7 +57,6 @@ public class FoundGuideFragment extends Fragment {
         crud = new DBController(getContext());
         search1 = new Search(0, null, crud.getUser().getIdUser());
 
-        Log.i(TAG, "antes de chamar o readConnectGuides");
         readConnectGuides(crud.getUser().getIdUser());
 
         setRetainInstance(true); //preservar a instância do fragment
@@ -66,6 +67,7 @@ public class FoundGuideFragment extends Fragment {
     public void setupComponents(View view) {
         spinner = view.findViewById(R.id.progressBar);
         textViewName = view.findViewById(R.id.textViewName);
+        textViewCurrently = view.findViewById(R.id.textViewCurrently);
         buttonAccept =view.findViewById(R.id.buttonAccept);
         buttonReject = view.findViewById(R.id.buttonReject);
         buttonAccept.setOnClickListener(new View.OnClickListener() {
@@ -114,7 +116,6 @@ public class FoundGuideFragment extends Fragment {
             else
                 try{crud.insertStatusSearch(search1.getStatus().toString());} catch(Exception e){Log.i(TAG, e.getMessage());}
 
-            Log.d(TAG, "chamou register chat: " + connectGuides.toString());
             registerChat();
         }
     }
@@ -141,9 +142,6 @@ public class FoundGuideFragment extends Fragment {
                     connectGuides = response.body();
 
                     if(connectGuides != null) {
-                        Log.d(TAG, "connectGuides: " + response.body());
-                        Log.i(TAG, "Antes de chamar o readUser: ");
-
                         if (connectGuides.getIdUser1() != crud.getUser().getIdUser())
                             readUser(connectGuides.getIdUser1());
                         else
@@ -160,7 +158,6 @@ public class FoundGuideFragment extends Fragment {
     }
 
     public void getSearch(int id) {
-        Log.i(TAG, "Resultado do que é o id enviado no getSearch: " + id);
         Gson g = new GsonBuilder().registerTypeAdapter(Search.class, new SearchDeserializer())
                 .setLenient()
                 .create();
@@ -184,7 +181,6 @@ public class FoundGuideFragment extends Fragment {
                 }
                 else {
                     search2 = response.body();
-                    Log.i(TAG, "chamar de novo o acceptGuide");
                     acceptGuide();
                 }
             }
@@ -233,7 +229,6 @@ public class FoundGuideFragment extends Fragment {
     }
 
     public void readUser(int id) {
-        Log.i(TAG, "Dentro do readUser: ");
         Gson g = new GsonBuilder().registerTypeAdapter(User.class, new UserDeserializer())
                 .setLenient()
                 .create();
@@ -253,7 +248,7 @@ public class FoundGuideFragment extends Fragment {
                     Log.i(TAG, "Erro: " + response.code());
                 else {
                     guide = response.body();
-                    textViewName.setText(guide.getName());
+                    getLocalization(guide);
                 }
             }
 
@@ -292,7 +287,6 @@ public class FoundGuideFragment extends Fragment {
             public void onResponse(@NonNull Call<Integer> call, @NonNull Response<Integer> response) {
                 if(response.isSuccessful()) {
                     if(response.body() != null) {
-                        Log.d(TAG, "idChat: " + response.body());
                         Intent intent = new Intent(getActivity(), ChatActivity.class);
                         startActivity(intent);
                         getActivity().finishAffinity();
@@ -348,6 +342,41 @@ public class FoundGuideFragment extends Fragment {
             public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
                 Log.e(TAG, "Erro: " + t.getMessage());
                 reject(cg2);
+            }
+        });
+    }
+
+    public void getLocalization(User guide) {
+        final User userAux = guide;
+        Gson g = new GsonBuilder()
+                .setLenient()
+                .create();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(LocalizationService.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create(g))
+                .build();
+
+        LocalizationService service = retrofit.create(LocalizationService.class);
+
+        Call<Localization> requestLocalization = service.read(guide.getIdLocalization());
+
+        requestLocalization.enqueue(new Callback<Localization>() {
+            @Override
+            public void onResponse(@NonNull Call<Localization> call, @NonNull Response<Localization> response) {
+                if (response.isSuccessful()) {
+                    Localization loc = response.body();
+                    textViewName.setText(userAux.getName());
+                    textViewCurrently.setText(getString(R.string.currently) + " " + loc.getCity() + ", " + loc.getUf());
+                } else {
+                    Log.i(TAG, "Erro: " + (response.code()));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Localization> call, @NonNull Throwable t) {
+                Log.e(TAG, "Erro: " + t.getMessage());
+                getLocalization(userAux);
             }
         });
     }

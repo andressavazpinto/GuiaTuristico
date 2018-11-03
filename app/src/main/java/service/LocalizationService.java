@@ -1,7 +1,6 @@
 package service;
 
 import model.Localization;
-import model.User;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -13,10 +12,9 @@ import util.Url;
 public interface LocalizationService {
     String BASE_URL = Url.BASE_URL;
 
-    /*@GET("localization/{id}")
-    Call<Localization> read(@Path("id") int id);*/
+    @GET("localization/{id}")
+    Call<Localization> read(@Path("id") int id);
 
-    //@Headers({"Accept: application/json"})
     @POST("localization")
     Call<Integer> register(@Body Localization localization);
 

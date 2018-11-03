@@ -1,8 +1,6 @@
 package model;
 
-import java.io.Serializable;
-
-public class Localization implements Serializable {
+public class Localization {
     private int idLocalization;
     private double latitude, longitude;
     private String city, uf, country;

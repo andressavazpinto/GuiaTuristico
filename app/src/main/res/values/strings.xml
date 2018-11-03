@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Guia</string>
-    <string name="sigIn">Entre</string>
+    <string name="signIn">Entre</string>
     <string name="or">ou</string>
     <string name="signUp">Cadastre-se</string>
     <string name="email">Email</string>
@@ -13,14 +13,13 @@
     <string name="send">Enviar</string>
     <string name="name">Nome</string>
     <string name="dateOfBirth">Data de nascimento</string>
-    <string name="occupation">Ocupação</string>
     <string name="language">Idioma</string>
     <string name="localization">Localização</string>
     <string name="toContinue">Continuar</string>
     <string name="ok">OK</string>
     <string name="meetCulture">Conheça outra cultura</string>
     <string name="toStart">Para começar, busque um guia</string>
-    <string name="ramdom">Aleatório</string>
+    <string name="random">Aleatório</string>
     <string name="byRegion">Por região</string>
     <string name="checkInterests">Marque seus interesses</string>
     <string name="art">Arte</string>
@@ -91,8 +90,8 @@
     <string name="culture10">O que não pode deixar de conhecer</string>
 
     <string name="art1">Museu / Teatro</string>
-    <string name="art2">Casa de shows / concertos</string>
-    <string name="art3">Capa CD favorito</string>
+    <string name="art2">Casa de shows</string>
+    <string name="art3">Capa do CD favorito</string>
     <string name="art4">Livraria</string>
     <string name="art5">Obra de arte</string>
     <string name="art6">Centro histórico</string>
@@ -111,8 +110,6 @@
 
     <string name="yourMessage">Sua mensagem</string>
     <string name="guideMessage">Mensagem do guia</string>
-
-    <string name="developing">Em desenvolvimento… Tente buscar pelo modo aleatório</string>
 
     <string name="camera">Câmera</string>
     <string name="photo_library">Galeria de fotos</string>

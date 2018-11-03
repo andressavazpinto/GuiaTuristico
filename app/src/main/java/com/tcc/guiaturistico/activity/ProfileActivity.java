@@ -326,7 +326,6 @@ public class ProfileActivity extends AppCompatActivity {
                         lang.setLanguage(langItens.get(i).getAsJsonObject().get("language").getAsString());
                         output.add(lang);
                     }
-
                     listLang(output);
                 }
             }

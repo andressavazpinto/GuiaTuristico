@@ -1,0 +1,138 @@
+<resources>
+    <string name="app_name">Guide</string>
+    <string name="signIn">Sign In</string>
+    <string name="or">or</string>
+    <string name="signUp">Sign Up</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="logIn">Login</string>
+    <string name="forgotPass">Forgot my password</string>
+    <string name="forgetPass">Forgot your password?</string>
+    <string name="messagePass">Please, enter your email to send a temporary password</string>
+    <string name="cancel">Cancel</string>
+    <string name="send">Send</string>
+    <string name="name">Name</string>
+    <string name="dateOfBirth">Date of birth</string>
+    <string name="language">Language</string>
+    <string name="localization">Localization</string>
+    <string name="toContinue">Continue</string>
+    <string name="ok">OK</string>
+    <string name="meetCulture">Meet another culture</string>
+    <string name="toStart">To start, search a guide</string>
+    <string name="random">Randomly</string>
+    <string name="byRegion">By region</string>
+    <string name="checkInterests">Check your interests</string>
+    <string name="art">Art</string>
+    <string name="cooking">Cooking</string>
+    <string name="culture">Culture</string>
+    <string name="sport">Sport</string>
+
+    <string name="profile">Profile</string>
+    <string name="guide">Guide</string>
+    <string name="settings">Settings</string>
+    <string name="chats">Chats</string>
+    <string name="changeInterests">Change interests</string>
+    <string name="logout">Logout</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="error_invalid_email">Invalid email</string>
+    <string name="error_field_required">Field required</string>
+
+    <string name="save">Save</string>
+
+    <string name="reject">Reject</string>
+    <string name="accept">Accept</string>
+    <string name="currently">Currently in</string>
+    <string name="timeThere">There is</string>
+    <string name="waitingReply">Waiting reply</string>
+    <string name="guideRejected">The guide rejected the connection</string>
+    <string name="tryAgain">Try again</string>
+
+    <string name="write">Write</string>
+    <string name="buttonCam">Send image</string>
+    <string name="buttonSend">Send text entered</string>
+    <string name="automaticTranslation">Automatic translation</string>
+    <string name="suggestions">Suggestions</string>
+    <string name="reportGuide">Report guide</string>
+    <string name="leftSession">Left session</string>
+
+    <string-array name="list_languages">
+        <item>English</item>
+        <item>Español</item>
+        <item>Português-BR</item>
+    </string-array>
+    <string-array name="pref_example_list_values">
+        <item>1</item>
+        <item>0</item>
+        <item>-1</item>
+    </string-array>
+
+    <string name="cook1">Typical dish of your region</string>
+    <string name="cook2">Menu of a restaurant/ bar</string>
+    <string name="cook3">Your favorite plate</string>
+    <string name="cook4">Best restaurant</string>
+    <string name="cook5">Typical snack in bars</string>
+    <string name="cook6">Exotic plate</string>
+    <string name="cook7">Typical breakfast</string>
+    <string name="cook8">What you can not miss</string>
+
+    <string name="culture1">Something written in your language</string>
+    <string name="culture2">Typical celebration</string>
+    <string name="culture3">Public transport of your city</string>
+    <string name="culture4">City Architecture</string>
+    <string name="culture5">Trade/ Shopping/ Store</string>
+    <string name="culture6">Beach / Lake / Waterfall</string>
+    <string name="culture7">Important street</string>
+    <string name="culture8">Pic of your desktop/ school/ college</string>
+    <string name="culture9">Pic of your school/ college</string>
+    <string name="culture10">What you can not miss</string>
+
+    <string name="art1">Museum / Theater</string>
+    <string name="art2">Concert hall</string>
+    <string name="art3">Favorite CD cover</string>
+    <string name="art4">Book store</string>
+    <string name="art5">Artwork</string>
+    <string name="art6">Historic center</string>
+    <string name="art7">Ballad / Festival / Show</string>
+    <string name="art8">What you can not miss</string>
+
+    <string name="others">Others</string>
+    <string name="others1">Show how the weather is</string>
+    <string name="others2">Show your sight</string>
+    <string name="others3">Your favorite place in town</string>
+    <string name="others4">Your study environment</string>
+    <string name="others5">Your home\'s room</string>
+    <string name="others6">Your street</string>
+    <string name="others7">Natural beauties</string>
+    <string name="others8">Accommodation</string>
+
+    <string name="yourMessage">Your message</string>
+    <string name="guideMessage">Guide\'s message</string>
+
+    <string name="camera">Camera</string>
+    <string name="photo_library">Photo library</string>
+
+    <string name="searchingGuide">Searching…</string>
+    <string name="noneGuide">None guide available now, but we will continue the search!</string>
+    <string name="interests">Interests</string>
+    <string name="successfulRegister">Successfully registered!</string>
+    <string name="saveProfile">Successfully updated!</string>
+    <string name="permission">Permission</string>
+    <string name="AGREE">AGREE</string>
+    <string name="DENY">DENY</string>
+    <string name="messageAskPermissionAgain">To register, we need to identify your location.</string>
+
+    <string name="yes">Yes</string>
+    <string name="noWait">No, I\'ll wait</string>
+    <string name="cancelConnection">Cancel conection</string>
+    <string name="reallyCancel">Do you really want cancel this connection? </string>
+
+    <string name="cities">Cities</string>
+
+    <string name="translationDescription">Show translation of incoming messages</string>
+    <string name="changeLanguage">Change app language</string>
+
+    <string name="turnBack">Back</string>
+</resources>

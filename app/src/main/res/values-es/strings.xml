@@ -1,0 +1,138 @@
+<resources>
+    <string name="app_name">Guía</string>
+    <string name="signIn">Entre</string>
+    <string name="or">o</string>
+    <string name="signUp">Registrarse</string>
+    <string name="email">Email</string>
+    <string name="password">Contraseña</string>
+    <string name="logIn">Entrar</string>
+    <string name="forgotPass">Olvidé mi contraseña</string>
+    <string name="forgetPass">¿Olvidaste tu contraseña?</string>
+    <string name="messagePass">Por favor, introduzca su email para enviar una contraseña temporal</string>
+    <string name="cancel">Cancelar</string>
+    <string name="send">Enviar</string>
+    <string name="name">Nombre</string>
+    <string name="dateOfBirth">Fecha de nacimiento</string>
+    <string name="language">Idioma</string>
+    <string name="localization">Localización</string>
+    <string name="toContinue">Continuar</string>
+    <string name="ok">OK</string>
+    <string name="meetCulture">Conozca otra cultura</string>
+    <string name="toStart">Para empezar, busque un guía</string>
+    <string name="random">Aleatorio</string>
+    <string name="byRegion">Por región</string>
+    <string name="checkInterests">Marque sus intereses</string>
+    <string name="art">Arte</string>
+    <string name="cooking">Culinario</string>
+    <string name="culture">Cultura</string>
+    <string name="sport">Deporte</string>
+
+    <string name="profile">Perfil</string>
+    <string name="guide">Guía</string>
+    <string name="settings">Configuraciones</string>
+    <string name="chats">Conversaciones</string>
+    <string name="changeInterests">Cambiar intereses</string>
+    <string name="logout">Salir</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="error_invalid_email">Email no válido</string>
+    <string name="error_field_required">Campo obligatório</string>
+
+    <string name="save">Guardar</string>
+
+    <string name="reject">Rechazar</string>
+    <string name="accept">Aceptar</string>
+    <string name="currently">Actualmente en</string>
+    <string name="timeThere">Horario de allá</string>
+    <string name="waitingReply">Esperando respuesta</string>
+    <string name="guideRejected">El guía rechazó la conexióno</string>
+    <string name="tryAgain">Inténtalo de nuevo</string>
+
+    <string name="write">Escriba</string>
+    <string name="buttonCam">Enviar imagen</string>
+    <string name="buttonSend">Enviar mensaje</string>
+    <string name="automaticTranslation">Traducción automática</string>
+    <string name="suggestions">Sugerencias</string>
+    <string name="reportGuide">Denunciar guía</string>
+    <string name="leftSession">Abandonar sesión</string>
+
+    <string-array name="list_languages">
+        <item>English</item>
+        <item>Español</item>
+        <item>Português-BR</item>
+    </string-array>
+    <string-array name="pref_example_list_values">
+        <item>1</item>
+        <item>0</item>
+        <item>-1</item>
+    </string-array>
+
+    <string name="cook1">Plato típico de su región</string>
+    <string name="cook2">Menú de un restaurante / bar</string>
+    <string name="cook3">Seu prato favorito</string>
+    <string name="cook4">Mejor restaurante</string>
+    <string name="cook5">Petisco típico en bares</string>
+    <string name="cook6">Plato exótico</string>
+    <string name="cook7">Desayuno típico</string>
+    <string name="cook8">Lo que no puede dejar de conocer</string>
+
+    <string name="culture1">Algo escrito en su idioma</string>
+    <string name="culture2">Fiesta típica</string>
+    <string name="culture3">Transporte público da su ciudad</string>
+    <string name="culture4">Arquitectura de su ciudad</string>
+    <string name="culture5">Comercio / Centro comercial / Tienda</string>
+    <string name="culture6">Playa / Lago / Cascada</string>
+    <string name="culture7">Calle importante</string>
+    <string name="culture8">Foto de su escritorio / escuela / universidad</string>
+    <string name="culture9">Foto de su escuela / universidad</string>
+    <string name="culture10">Lo que no puede dejar de conocer</string>
+
+    <string name="art1">Museo / Teatro</string>
+    <string name="art2">Casa de conciertos</string>
+    <string name="art3">Portada del CD favorito</string>
+    <string name="art4">Librería</string>
+    <string name="art5">Obra de arte</string>
+    <string name="art6">Centro histórico</string>
+    <string name="art7">Balada / Festival / Show</string>
+    <string name="art8">Lo que no puede dejar de conocer</string>
+
+    <string name="others">Otros</string>
+    <string name="others1">Muestre como está el clima</string>
+    <string name="others2">Muestre su vista</string>
+    <string name="others3">Su lugar favorito en la ciudad</string>
+    <string name="others4">Su ambiente de estudio</string>
+    <string name="others5">Cómodo de su casa</string>
+    <string name="others6">Su calle</string>
+    <string name="others7">Bellezas naturales</string>
+    <string name="others8">Alojamiento</string>
+
+    <string name="yourMessage">Su mensaje</string>
+    <string name="guideMessage">Mensaje del guía</string>
+
+    <string name="camera">Cámara</string>
+    <string name="photo_library">Galería de fotos</string>
+
+    <string name="searchingGuide">Buscando…</string>
+    <string name="noneGuide">No hay guía disponible en este momento, pero seguimos la búsqueda!</string>
+    <string name="interests">Intereses</string>
+    <string name="successfulRegister">Catastrado con éxito</string>
+    <string name="saveProfile">¡Actualizado con éxito!</string>
+    <string name="permission">Permiso</string>
+    <string name="AGREE">PERMITIR</string>
+    <string name="DENY">NEGAR</string>
+    <string name="messageAskPermissionAgain">Para realizar su registro necesitamos identificar su ubicación.</string>
+
+    <string name="yes">Sí</string>
+    <string name="noWait">No, voy a esperar</string>
+    <string name="cancelConnection">Cancelar conexión</string>
+    <string name="reallyCancel">¿Realmente desea cancelar esta conexión?</string>
+
+    <string name="cities">Ciudades</string>
+
+    <string name="translationDescription">Mostrar la traducción de los mensajes recibidos</string>
+    <string name="changeLanguage">Cambiar idioma de la aplicación</string>
+
+    <string name="turnBack">Volver</string>
+</resources>

@@ -11,6 +11,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckedTextView;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,6 +21,7 @@ import com.tcc.guiaturistico.R;
 
 import model.ConnectGuides;
 import model.Search;
+import model.SearchByRegion;
 import model.SearchDeserializer;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -29,12 +31,13 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import service.ConnectGuidesService;
 import service.SearchService;
 import util.DBController;
+import util.StatusConnectGuides;
 import util.StatusSearch;
 
 public class CountryCityAdapter extends BaseExpandableListAdapter {
     private static final String TAG = "CountryCityAdapter";
     private ArrayList<String> groupItem;
-    private ArrayList<String> tempChild;
+    private ArrayList<SearchByRegion> tempChild;
     private ArrayList<Object> Childtem;
     private LayoutInflater inflater;
     public Activity activity;
@@ -66,18 +69,34 @@ public class CountryCityAdapter extends BaseExpandableListAdapter {
 
     @Override
     public View getChildView(int groupPosition, final int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
-        tempChild = (ArrayList<String>) Childtem.get(groupPosition);;
+        tempChild = (ArrayList<SearchByRegion>) Childtem.get(groupPosition);
 
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.cities, null);
         }
 
-        TextView text = convertView.findViewById(R.id.textViewCountry);
-        text.setText(tempChild.get(childPosition));
+        TextView textViewCity = convertView.findViewById(R.id.textViewCity);
+        textViewCity.setText(tempChild.get(childPosition).getCity());
+        TextView textViewName = convertView.findViewById(R.id.textViewName);
+        textViewName.setText("- " + tempChild.get(childPosition).getName());
+        ImageView imageViewCircle = convertView.findViewById(R.id.imageCircle);
+        if(tempChild.get(childPosition).getStatusSearch() != java.lang.Enum.valueOf(StatusSearch.class, "Searching"))
+            imageViewCircle.setImageResource(R.drawable.ic_circle);
+        else
+            imageViewCircle.setImageResource(R.drawable.ic_circle_available);
+
+        imageViewCircle.setVisibility(View.VISIBLE);
+
         convertView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                searchByRegion(tempChild.get(childPosition), crud.getUser().getIdUser());
+                if(tempChild.get(childPosition).getStatusSearch() == java.lang.Enum.valueOf(StatusSearch.class, "Searching")) {
+                    ConnectGuides cg = new ConnectGuides(0, crud.getUser().getIdUser(), tempChild.get(childPosition).getIdUser(), Enum.valueOf(StatusConnectGuides.class, "Found"));
+                    connectGuides(cg);
+                }
+                else {
+                    Toast.makeText(activity, activity.getString(R.string.guideUnavailable), Toast.LENGTH_SHORT).show();
+                }
             }
         });
         return convertView;
@@ -171,7 +190,7 @@ public class CountryCityAdapter extends BaseExpandableListAdapter {
         });
     }
 
-    private void searchByRegion(String city, int id) {
+    private void connectGuides(ConnectGuides cg) {
         Gson g = new GsonBuilder()
                 .setLenient()
                 .create();
@@ -183,7 +202,7 @@ public class CountryCityAdapter extends BaseExpandableListAdapter {
 
         ConnectGuidesService service = retrofit.create(ConnectGuidesService.class);
 
-        Call<ConnectGuides> requestSearch = service.searchByRegion(city, id);
+        Call<ConnectGuides> requestSearch = service.connectGuides(cg);
 
         requestSearch.enqueue(new Callback<ConnectGuides>() {
             @Override
@@ -195,6 +214,7 @@ public class CountryCityAdapter extends BaseExpandableListAdapter {
                         search.setStatus(Enum.valueOf(StatusSearch.class, "Found"));
                         setStatus(new Search(0, (Enum.valueOf(StatusSearch.class, "Found")), connectGuides.getIdUser1()));
                         setStatus(new Search(0, (Enum.valueOf(StatusSearch.class, "Found")), connectGuides.getIdUser2()));
+
                         activity.finish();
 
                         if (crud.getStatusSearch() != null) {

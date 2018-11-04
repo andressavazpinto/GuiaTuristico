@@ -135,4 +135,5 @@
     <string name="changeLanguage">Cambiar idioma de la aplicación</string>
 
     <string name="turnBack">Volver</string>
+    <string name="guideUnavailable">Este guía ya está conectado a otro, vuelva a intentarlo cuando esté disponible</string>
 </resources>

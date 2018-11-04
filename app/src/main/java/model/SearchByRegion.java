@@ -3,16 +3,17 @@ package model;
 import util.StatusSearch;
 
 public class SearchByRegion {
-    private String city, country;
+    private String city, country, name;
     private StatusSearch statusSearch;
     private int idUser;
 
     public SearchByRegion() {
     }
 
-    public SearchByRegion(String city, String country, StatusSearch statusSearch, int idUser) {
+    public SearchByRegion(String city, String country, String name, StatusSearch statusSearch, int idUser) {
         this.city = city;
         this.country = country;
+        this.name = name;
         this.statusSearch = statusSearch;
         this.idUser = idUser;
     }
@@ -31,6 +32,14 @@ public class SearchByRegion {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public StatusSearch getStatusSearch() {
@@ -54,6 +63,7 @@ public class SearchByRegion {
         return "SearchByRegion{" +
                 "city='" + city + '\'' +
                 ", country='" + country + '\'' +
+                ", name='" + name + '\'' +
                 ", statusSearch=" + statusSearch +
                 ", idUser=" + idUser +
                 '}';

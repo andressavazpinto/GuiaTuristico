@@ -68,7 +68,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private Location location;
     private MaterialDialog mMaterialDialog;
     private static final int REQUEST_PERMISSIONS_CODE = 128;
-    private static final long TIME = (1000*5);
+    private static final long TIME = (1000*3);
     private DBController crud;
     private ConstraintLayout layout;
     private ConstraintLayout contentMain;
@@ -107,8 +107,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void verifyStatusSearch() {
-        //Log.d(TAG, "Entrou no verifyStatusSearch()");
-        final Search s = new Search(0, null, crud.getUser().getIdUser());
+        //final Search s = new Search(0, null, crud.getUser().getIdUser());
 
         Gson g = new GsonBuilder().registerTypeAdapter(Search.class, new SearchDeserializer())
                 .setLenient()
@@ -133,16 +132,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 }
                 else if(response.isSuccessful()) {
                     try {
-                        JSONObject jsonSearch = new JSONObject(new Gson().toJson(response.body()));
-
-                        s.setIdUser(jsonSearch.getInt("idUser"));
-                        s.setIdSearch(jsonSearch.getInt("idSearch"));
-                        s.setStatus(Enum.valueOf(StatusSearch.class, jsonSearch.getString("status")));
-
-                        //Log.d(TAG, "Resultado do status na HomeActivity: " + s.getStatus());
-
+                        Search s = response.body();
                         setMiddle(s);
-                    } catch (JSONException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
@@ -249,8 +241,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         if (id == R.id.nav_profile) {
             openProfile();
-        //} else if (id == R.id.nav_settings) {
-
         } else if (id == R.id.nav_changeInterests) {
             openChangeInterests();
         } else if (id == R.id.nav_logout) {

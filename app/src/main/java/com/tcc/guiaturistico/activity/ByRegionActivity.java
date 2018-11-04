@@ -8,12 +8,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ExpandableListView;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.tcc.guiaturistico.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +29,6 @@ import util.DBController;
 public class ByRegionActivity extends ExpandableListActivity implements ExpandableListView.OnChildClickListener {
     private static final String TAG = "ByRegionActivity";
     private DBController crud;
-    private ProgressBar spinner;
     private ExpandableListView expandableListVew;
     private List<SearchByRegion> searchByRegions = new ArrayList<SearchByRegion>();
 
@@ -52,7 +49,6 @@ public class ByRegionActivity extends ExpandableListActivity implements Expandab
         expandableListVew.setDividerHeight(2);
         expandableListVew.setGroupIndicator(null);
         expandableListVew.setClickable(true);
-        //spinner.setVisibility(View.GONE);
     }
 
     @Override
@@ -97,28 +93,26 @@ public class ByRegionActivity extends ExpandableListActivity implements Expandab
                 String aux = " Erro: " + t.getMessage();
                 Log.e(TAG, aux);
                 Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
+                getRegions();
             }
         });
     }
 
     private void listRegions(List<SearchByRegion> searchByRegions) {
-        //spinner.setVisibility(View.GONE);
 
-        ArrayList<String> child = new ArrayList<String>();;
+        ArrayList<SearchByRegion> child = new ArrayList<SearchByRegion>();
 
         for(int i=0; i<searchByRegions.size(); i++) {
             String country = searchByRegions.get(i).getCountry();
 
             if(groupItem.size() == 0) {
                 groupItem.add(country);
-            } else
-                if(groupItem != null & ! country.equals(groupItem.get(i-1))) {
-                    groupItem.add(country);
-                    child = new ArrayList<String>();
-                }
+            } else if(groupItem != null & ! country.equals(groupItem.get(groupItem.size()-1))) {
+                groupItem.add(country);
+                child = new ArrayList<SearchByRegion>();
+            }
 
-            child.add(searchByRegions.get(i).getCity());
-            Log.d(TAG, searchByRegions.get(i).getCity());
+            child.add(searchByRegions.get(i));
             childItem.add(child);
         }
 

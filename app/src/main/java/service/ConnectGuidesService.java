@@ -21,6 +21,9 @@ public interface ConnectGuidesService {
     @POST("connectguides")
     Call<ConnectGuides> searchRandomly(@Body Search search);
 
+    @POST("connectguides/connect")
+    Call<ConnectGuides> connectGuides(@Body ConnectGuides connectGuides);
+
     @POST("connectguides/reject")
     Call<Void> reject(@Body ConnectGuides connectGuides);
 

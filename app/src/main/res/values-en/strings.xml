@@ -126,7 +126,7 @@
 
     <string name="yes">Yes</string>
     <string name="noWait">No, I\'ll wait</string>
-    <string name="cancelConnection">Cancel conection</string>
+    <string name="cancelConnection">Cancel connection</string>
     <string name="reallyCancel">Do you really want cancel this connection? </string>
 
     <string name="cities">Cities</string>
@@ -135,4 +135,5 @@
     <string name="changeLanguage">Change app language</string>
 
     <string name="turnBack">Back</string>
+    <string name="guideUnavailable">This guide is already connected to another, try again when it\'s available</string>
 </resources>

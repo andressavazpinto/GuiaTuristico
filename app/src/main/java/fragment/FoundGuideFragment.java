@@ -48,16 +48,17 @@ public class FoundGuideFragment extends Fragment {
     private DBController crud;
     private Search search1, search2;
     private ConnectGuides connectGuides;
-    private User guide;
+    private User guide, u;
     private ProgressBar spinner;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup v, Bundle b) {
-        View view = inflater.inflate(R.layout.middle_found_guide, v, false);
+        final View view = inflater.inflate(R.layout.middle_found_guide, v, false);
         crud = new DBController(getContext());
-        search1 = new Search(0, null, crud.getUser().getIdUser());
+        u = crud.getUser();
+        search1 = new Search(0, null, u.getIdUser());
 
-        readConnectGuides(crud.getUser().getIdUser());
+        readConnectGuides(u.getIdUser());
 
         setRetainInstance(true); //preservar a instância do fragment
         setupComponents(view);
@@ -88,7 +89,7 @@ public class FoundGuideFragment extends Fragment {
         spinner.setVisibility(View.VISIBLE);
 
         if(search2 == null) {
-            if (connectGuides.getIdUser1() != crud.getUser().getIdUser())
+            if (connectGuides.getIdUser1() != u.getIdUser())
                 getSearch(connectGuides.getIdUser1());
             else {
                 getSearch(connectGuides.getIdUser2());
@@ -142,7 +143,7 @@ public class FoundGuideFragment extends Fragment {
                     connectGuides = response.body();
 
                     if(connectGuides != null) {
-                        if (connectGuides.getIdUser1() != crud.getUser().getIdUser())
+                        if (connectGuides.getIdUser1() != u.getIdUser())
                             readUser(connectGuides.getIdUser1());
                         else
                             readUser(connectGuides.getIdUser2());
@@ -379,5 +380,12 @@ public class FoundGuideFragment extends Fragment {
                 getLocalization(userAux);
             }
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        readConnectGuides(u.getIdUser());
     }
 }

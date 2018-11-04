@@ -23,7 +23,7 @@
             android:layout_marginBottom="@dimen/activity_horizontal_margin"
             android:layout_marginLeft="@dimen/activity_vertical_margin"
             android:layout_marginRight="@dimen/activity_vertical_margin"
-            android:layout_marginTop="22dp"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
             android:orientation="vertical">
 
             <TextView
@@ -33,7 +33,7 @@
                 android:gravity="center"
                 android:layout_marginBottom="23dp"
                 android:text="@string/guideRejected"
-                android:textSize="14sp" />
+                android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/textViewTryAgain"
@@ -41,21 +41,20 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="@string/tryAgain"
-                android:textSize="14sp"/>
+                android:textSize="16sp"/>
         </LinearLayout>
 
         <LinearLayout
             android:baselineAligned="false"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="23dp">
+            android:layout_marginBottom="@dimen/activity_vertical_margin">
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="vertical"
-                android:layout_marginStart="@dimen/activity_horizontal_margin">
+                android:orientation="vertical">
 
                 <Button
                     android:id="@+id/buttonBack"

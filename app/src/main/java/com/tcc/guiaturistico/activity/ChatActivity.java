@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -105,7 +106,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
     private EditText message;
     private BottomSheetDialog mBottomSheetDialog;
 
-    private boolean translate = false;
+    private boolean translate = true;
     private String translation, source;
     private Message m2 = new Message(1, 0, null, null, null);
     private int idChat;
@@ -274,8 +275,6 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
             case R.id.nav_profile:
                 openProfile();
                 break;
-            //case R.id.nav_settings:
-                //break;
             case R.id.nav_changeInterests:
                 openChangeInterests();
                 break;

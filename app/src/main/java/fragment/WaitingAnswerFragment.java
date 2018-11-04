@@ -41,7 +41,7 @@ public class WaitingAnswerFragment extends Fragment {
     public TextView textViewName, textViewCurrently, textViewTimeThere, textViewWaiting;
     private Search search1, search2;
     private ConnectGuides connectGuides;
-    private User guide;
+    private User guide, u;
     private ProgressBar spinner;
 
     @Override
@@ -49,6 +49,7 @@ public class WaitingAnswerFragment extends Fragment {
         View view = inflater.inflate(R.layout.middle_waiting, v, false);
 
         crud = new DBController(getContext());
+        u = crud.getUser();
         search1 = new Search(0, null, crud.getUser().getIdUser());
 
         setupComponents(view);
@@ -315,5 +316,12 @@ public class WaitingAnswerFragment extends Fragment {
                 getLocalization(userAux);
             }
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        readConnectGuides(u.getIdUser());
     }
 }

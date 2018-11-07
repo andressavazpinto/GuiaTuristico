@@ -136,4 +136,7 @@
 
     <string name="turnBack">Volver</string>
     <string name="guideUnavailable">Este guía ya está conectado a otro, vuelva a intentarlo cuando esté disponible</string>
+
+    <string name="evaluateGuide">Por favor, evalúe su guía</string>
+    <string name="thanks">Gracias!</string>
 </resources>

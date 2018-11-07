@@ -20,4 +20,6 @@
     <color name="balloon_left">#c0cad6</color>
     <color name="balloon_right">#d5e1ef</color>
     <color name="country">#d5e1ef</color>
+
+    <color name="star">#A09005</color>
 </resources>

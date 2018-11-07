@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,12 +45,14 @@ import util.StatusSearch;
 
 public class FoundGuideFragment extends Fragment {
     private static final String TAG = "FoundGuideFragment";
-    public Button buttonAccept, buttonReject;
-    public TextView textViewName, textViewCurrently;
+    private Button buttonAccept, buttonReject;
+    private TextView textViewName, textViewCurrently, textViewScore;
+    private ImageView star;
     private DBController crud;
     private Search search1, search2;
     private ConnectGuides connectGuides;
     private User guide, u;
+    private Localization loc;
     private ProgressBar spinner;
 
     @Override
@@ -69,6 +73,10 @@ public class FoundGuideFragment extends Fragment {
         spinner = view.findViewById(R.id.progressBar);
         textViewName = view.findViewById(R.id.textViewName);
         textViewCurrently = view.findViewById(R.id.textViewCurrently);
+        LinearLayout linearLayout = view.findViewById(R.id.linearScore);
+        textViewScore = linearLayout.findViewById(R.id.textViewScore);
+        star = linearLayout.findViewById(R.id.imageViewStar);
+
         buttonAccept =view.findViewById(R.id.buttonAccept);
         buttonReject = view.findViewById(R.id.buttonReject);
         buttonAccept.setOnClickListener(new View.OnClickListener() {
@@ -182,6 +190,7 @@ public class FoundGuideFragment extends Fragment {
                 }
                 else {
                     search2 = response.body();
+                    getLocalization(u.getIdLocalization(), search2);
                     acceptGuide();
                 }
             }
@@ -288,8 +297,14 @@ public class FoundGuideFragment extends Fragment {
             public void onResponse(@NonNull Call<Integer> call, @NonNull Response<Integer> response) {
                 if(response.isSuccessful()) {
                     if(response.body() != null) {
+
                         Intent intent = new Intent(getActivity(), ChatActivity.class);
+                        intent.putExtra("name", u.getName());
+                        intent.putExtra("localization", loc.getCity() + ", " + loc.getUf());
+                        intent.putExtra("score", u.getScoreS());
+
                         startActivity(intent);
+                        getActivity().finish();
                         getActivity().finishAffinity();
                     }
                 }
@@ -369,6 +384,12 @@ public class FoundGuideFragment extends Fragment {
                     Localization loc = response.body();
                     textViewName.setText(userAux.getName());
                     textViewCurrently.setText(getString(R.string.currently) + " " + loc.getCity() + ", " + loc.getUf());
+
+                    String aux = userAux.getScoreS();
+                    if(aux != null & Double.parseDouble(aux) != 0.0) {
+                        textViewScore.setText(aux);
+                        star.setVisibility(View.VISIBLE);
+                    }
                 } else {
                     Log.i(TAG, "Erro: " + (response.code()));
                 }
@@ -387,5 +408,39 @@ public class FoundGuideFragment extends Fragment {
         super.onResume();
 
         readConnectGuides(u.getIdUser());
+    }
+
+    public void getLocalization(int idLocalization, Search s) {
+        final int idAux = idLocalization;
+        final Search search = s;
+        Gson g = new GsonBuilder()
+                .setLenient()
+                .create();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(LocalizationService.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create(g))
+                .build();
+
+        LocalizationService service = retrofit.create(LocalizationService.class);
+
+        Call<Localization> requestLocalization = service.read(idLocalization);
+
+        requestLocalization.enqueue(new Callback<Localization>() {
+            @Override
+            public void onResponse(@NonNull Call<Localization> call, @NonNull Response<Localization> response) {
+                if (response.isSuccessful()) {
+                    loc = response.body();
+                } else {
+                    Log.i(TAG, "Erro: " + (response.code()));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Localization> call, @NonNull Throwable t) {
+                Log.e(TAG, "Erro: " + t.getMessage());
+                getLocalization(idAux, search);
+            }
+        });
     }
 }

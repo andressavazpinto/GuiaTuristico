@@ -20,6 +20,8 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,10 +34,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.tcc.guiaturistico.R;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -45,6 +45,7 @@ import model.Localization;
 import model.LocalizationDeserializer;
 import model.Search;
 import model.SearchDeserializer;
+import model.User;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -62,7 +63,8 @@ import util.StatusSearch;
 
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
     private static final String TAG = "HomeActivity";
-    public TextView nameNavHeader, localizationNavHeader;
+    public TextView nameNavHeader, localizationNavHeader, scoreNavHeader;
+    private View headerView;
     private GoogleApiClient mGoogleApiClient;
     private Localization localization;
     private Location location;
@@ -75,6 +77,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private ProgressBar spinner;
     private Timer timer;
     private boolean first = true;
+    private User u;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -83,6 +86,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         LocationServices.getFusedLocationProviderClient(this);
 
         crud = new DBController(this);
+        u = crud.getUser();
         setupComponents();
 
         verifyStatusSearch();
@@ -95,6 +99,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 public void run() {
                     try {
                         verifyStatusSearch();
+                        getScore(u.getIdUser());
                     } catch (Exception e) {
                         String aux = e.getMessage();
                         Log.d(TAG, aux);
@@ -107,8 +112,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void verifyStatusSearch() {
-        //final Search s = new Search(0, null, crud.getUser().getIdUser());
-
         Gson g = new GsonBuilder().registerTypeAdapter(Search.class, new SearchDeserializer())
                 .setLenient()
                 .create();
@@ -120,7 +123,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         SearchService service = retrofit.create(SearchService.class);
 
-        Call<Search> requestSearch = service.read(crud.getUser().getIdUser());
+        Call<Search> requestSearch = service.read(u.getIdUser());
 
         requestSearch.enqueue(new Callback<Search>() {
             @Override
@@ -200,13 +203,34 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        View headerView = navigationView.getHeaderView(0);
+        headerView = navigationView.getHeaderView(0);
 
         nameNavHeader = headerView.findViewById(R.id.nameNavHeader);
-        nameNavHeader.setText(getIntent().getStringExtra("name")); //pegando o que foi passado pela activity anterior
+        String name = getIntent().getStringExtra("name");
+        if(name != null)
+            nameNavHeader.setText(name); //pegando o que foi passado pela activity anterior
+        else
+            nameNavHeader.setText(u.getName());
 
         localizationNavHeader = headerView.findViewById(R.id.localizationNavHeader);
-        localizationNavHeader.setText(getIntent().getStringExtra("localization"));
+        try {
+            localizationNavHeader.setText(getIntent().getStringExtra("localization"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            String aux = getIntent().getStringExtra("score");
+            if (aux != null & Double.parseDouble(aux) != 0.0) {
+                LinearLayout linearLayout = headerView.findViewById(R.id.linearNav);
+                scoreNavHeader = linearLayout.findViewById(R.id.scoreNavHeader);
+                scoreNavHeader.setText(aux);
+                ImageView star = linearLayout.findViewById(R.id.imageViewStar);
+                star.setVisibility(View.VISIBLE);
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -484,6 +508,50 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 String aux = " Erro: " + t.getMessage();
                 Log.e(TAG, aux);
                 Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    public void getScore(int idUser) {
+        final int idAux = idUser;
+
+        Gson g = new GsonBuilder()
+                .setLenient()
+                .create();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(UserService.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create(g))
+                .build();
+
+        UserService service = retrofit.create(UserService.class);
+
+        Call<Double> requestLocalization = service.getScore(idAux);
+
+        requestLocalization.enqueue(new Callback<Double>() {
+            @Override
+            public void onResponse(@NonNull Call<Double> call, @NonNull Response<Double> response) {
+                if (response.isSuccessful()) {
+
+                    if(response.body() != 0.0) {
+                        DecimalFormat two = new DecimalFormat("0.00");
+                        String aux = two.format(response.body());
+
+                        LinearLayout linearLayout = headerView.findViewById(R.id.linearNav);
+                        scoreNavHeader = linearLayout.findViewById(R.id.scoreNavHeader);
+                        scoreNavHeader.setText(aux);
+                        ImageView star = linearLayout.findViewById(R.id.imageViewStar);
+                        star.setVisibility(View.VISIBLE);
+                    }
+                } else {
+                    Log.i(TAG, "Erro: " + (response.code()));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Double> call, @NonNull Throwable t) {
+                Log.e(TAG, "Erro: " + t.getMessage());
+                getScore(idAux);
             }
         });
     }

@@ -45,6 +45,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import service.LocalizationService;
 import service.SearchService;
 import service.UserService;
 import util.DBController;
@@ -177,9 +178,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         spinner.setVisibility(View.GONE);
     }
 
-    public void openHome(Search s){
-        System.out.print("Resultado entrou no openHome()");
-
+    public void openHome(Search s, Localization loc){
         Intent intent;
         StatusSearch status = (Enum.valueOf(StatusSearch.class, s.getStatus().toString()));
         switch (status) {
@@ -191,7 +190,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         }
 
         intent.putExtra("name", u.getName());
-        intent.putExtra("localization", getLocalizationDescription());
+        intent.putExtra("localization", loc.getCity() + ", " + loc.getUf());
+        intent.putExtra("score", u.getScoreS());
         startActivity(intent);
         finishAffinity();
     }
@@ -437,7 +437,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
                         try{crud.insertStatusSearch(s.getStatus().toString());} catch(Exception e){Log.i(TAG, e.getMessage());}
 
-                        openHome(s);
+                        getLocalization(u.getIdLocalization(), s);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -449,6 +449,40 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 String aux = " Deu falha no login: " + t.getMessage();
                 Log.e("TAG", aux);
                 Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    public void getLocalization(int idLocalization, Search s) {
+        final int idAux = idLocalization;
+        final Search search = s;
+        Gson g = new GsonBuilder()
+                .setLenient()
+                .create();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(LocalizationService.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create(g))
+                .build();
+
+        LocalizationService service = retrofit.create(LocalizationService.class);
+
+        Call<Localization> requestLocalization = service.read(idLocalization);
+
+        requestLocalization.enqueue(new Callback<Localization>() {
+            @Override
+            public void onResponse(@NonNull Call<Localization> call, @NonNull Response<Localization> response) {
+                if (response.isSuccessful()) {
+                    openHome(search, response.body());
+                } else {
+                    Log.i(TAG, "Erro: " + (response.code()));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Localization> call, @NonNull Throwable t) {
+                Log.e(TAG, "Erro: " + t.getMessage());
+                getLocalization(idAux, search);
             }
         });
     }

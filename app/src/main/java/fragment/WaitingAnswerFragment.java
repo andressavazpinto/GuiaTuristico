@@ -9,6 +9,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -38,7 +40,8 @@ import util.StatusSearch;
 public class WaitingAnswerFragment extends Fragment {
     private static final String TAG = "WaitingAnswerFragment";
     private DBController crud;
-    public TextView textViewName, textViewCurrently, textViewTimeThere, textViewWaiting;
+    private TextView textViewName, textViewCurrently, textViewScore, textViewWaiting;
+    private ImageView star;
     private Search search1, search2;
     private ConnectGuides connectGuides;
     private User guide, u;
@@ -63,7 +66,9 @@ public class WaitingAnswerFragment extends Fragment {
         spinner = view.findViewById(R.id.progressBar);
         textViewName = view.findViewById(R.id.textViewName);
         textViewCurrently = view.findViewById(R.id.textViewCurrently);
-        textViewTimeThere = view.findViewById(R.id.textViewTimeThere);
+        LinearLayout linearLayout = view.findViewById(R.id.linearScore);
+        textViewScore = linearLayout.findViewById(R.id.textViewScore);
+        star = linearLayout.findViewById(R.id.imageViewStar);
 
         textViewWaiting = view.findViewById(R.id.textViewWaiting);
         textViewWaiting.setOnClickListener(new View.OnClickListener() {
@@ -305,6 +310,12 @@ public class WaitingAnswerFragment extends Fragment {
                     Localization loc = response.body();
                     textViewName.setText(userAux.getName());
                     textViewCurrently.setText(getString(R.string.currently) + " " + loc.getCity() + ", " + loc.getUf());
+
+                    String aux = userAux.getScoreS();
+                    if(aux != null & Double.parseDouble(aux) != 0.0) {
+                        textViewScore.setText(aux);
+                        star.setVisibility(View.VISIBLE);
+                    }
                 } else {
                     Log.i(TAG, "Erro: " + (response.code()));
                 }

@@ -96,7 +96,7 @@ public class DBController {
 
     public User getUser() {
         User u = new User();
-        String[] colums = new String[]{"idUser", "name", "dateOfBirth", "language", "email", "password", "idLocalization", "statusAccount"};
+        String[] colums = new String[]{"idUser", "name", "dateOfBirth", "language", "email", "password", "idLocalization", "statusAccount", "score"};
         Cursor cursor = db.query("user", colums, null, null, null, null, null);
 
         if(cursor.getCount() > 0) {
@@ -116,6 +116,8 @@ public class DBController {
                 u.setPassword(cursor.getString(5));
                 u.setIdLocalization(cursor.getInt(6));
                 u.setStatusAccount(Enum.valueOf(StatusUser.class, "Active"));
+                u.setScore(cursor.getDouble(8));
+
             } while(cursor.moveToNext());
         }
         cursor.close();

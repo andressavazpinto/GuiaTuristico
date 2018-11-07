@@ -1,5 +1,7 @@
 package model;
 
+import java.text.DecimalFormat;
+
 import util.StatusUser;
 
 /**
@@ -16,6 +18,7 @@ public class User {
     private String password;
     private int idLocalization;
     private StatusUser statusAccount;
+    private double score;
 
     public User() {
     }
@@ -25,7 +28,7 @@ public class User {
     }
 
     public User(int idUser, String name, String dateOfBirth, String language,
-                String email, String password, int idLocalization, StatusUser statusAccount) {//}, int idChat) {
+                String email, String password, int idLocalization, StatusUser statusAccount, double score) {
         this.idUser = idUser;
         this.name = name;
         this.dateOfBirth = dateOfBirth;
@@ -34,6 +37,7 @@ public class User {
         this.password = password;
         this.idLocalization = idLocalization;
         this.statusAccount = statusAccount;
+        this.score = score;
     }
 
     public int getIdUser() {
@@ -100,6 +104,19 @@ public class User {
         this.statusAccount = statusAccount;
     }
 
+    public double getScore() {
+        return score;
+    }
+
+    public String getScoreS() {
+        DecimalFormat two = new DecimalFormat("0.00");
+        return two.format(getScore());
+    }
+
+    public void setScore(double score) {
+        this.score = score;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -111,6 +128,7 @@ public class User {
                 ", password='" + password + '\'' +
                 ", idLocalization=" + idLocalization +
                 ", statusAccount=" + statusAccount +
+                ", score=" + score +
                 '}';
     }
 }

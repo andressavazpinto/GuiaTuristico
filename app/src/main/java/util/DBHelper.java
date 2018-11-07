@@ -13,7 +13,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DBHelper extends SQLiteOpenHelper {
 
     private static final String BASE_NAME = "DBApp";
-    private static final int BASE_VERSION = 13;
+    private static final int BASE_VERSION = 15;
 
     public DBHelper(Context context) {
         super(context, BASE_NAME, null, BASE_VERSION);
@@ -30,6 +30,7 @@ public class DBHelper extends SQLiteOpenHelper {
                                 +   "password VARCHAR (300), "
                                 +   "idLocalization INTEGER, "
                                 +   "statusAccount VARCHAR(50), "
+                                +   "score DECIMAL(1,2), "
                                 +   "PRIMARY KEY(idUser))";
 
         String sqlCreateTableChat = "CREATE TABLE IF NOT EXISTS chat("

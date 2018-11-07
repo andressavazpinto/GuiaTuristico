@@ -4,12 +4,12 @@
 package com.tcc.guiaturistico.activity;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -34,6 +34,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -65,6 +66,7 @@ import java.util.List;
 import java.util.Map;
 
 import adapter.ChatAdapter;
+import fragment.HomeFragment;
 import model.Chat;
 import model.ChatDeserializer;
 import model.ConnectGuides;
@@ -106,6 +108,8 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
     private EditText message;
     private BottomSheetDialog mBottomSheetDialog;
 
+    private DialogScore2 dialogScore2;
+
     private boolean translate = true;
     private String translation, source;
     private Message m2 = new Message(1, 0, null, null, null);
@@ -120,6 +124,8 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        dialogScore2 = new DialogScore2(this, this);
 
         try {
             FirebaseApp.initializeApp(this);
@@ -163,6 +169,15 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
 
         TextView localizationNavHeader = headerView.findViewById(R.id.localizationNavHeader);
         localizationNavHeader.setText(getIntent().getStringExtra("localization"));
+
+        String aux = getIntent().getStringExtra("score");
+        if(aux != null & Double.parseDouble(aux) != 0.0) {
+            LinearLayout linearLayout = headerView.findViewById(R.id.linearNav);
+            TextView scoreNavHeader = linearLayout.findViewById(R.id.scoreNavHeader);
+            scoreNavHeader.setText(aux);
+            ImageView star = linearLayout.findViewById(R.id.imageViewStar);
+            star.setVisibility(View.VISIBLE);
+        }
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -785,9 +800,8 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
                     try { crud.deleteChat(idChat); } catch (Exception e) { Log.i(TAG, e.getMessage()); }
 
                     Log.i(TAG, "Chat desativado com sucesso: " + response.code());
-                    Intent intent = new Intent(ChatActivity.this, HomeActivity.class);
-                    startActivity(intent);
-                    finish();
+
+                    dialogScore2.showLayoutScore(search2.getIdUser());
                 }
             }
 

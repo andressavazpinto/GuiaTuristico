@@ -1,5 +1,6 @@
 package service;
 
+import model.Grade;
 import model.User;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
@@ -29,9 +30,15 @@ public interface UserService {
     @PUT("users")
     Call<User> update(@Body User user);
 
+    @POST("users/score/{id}")
+    Call<Void> updateScore(@Path("id") int idUser, @Body Grade grade);
+
     @GET("users/email/{email}")
     Call<Boolean> checkEmail(@Path("email") String email);
 
     @GET("users/pass/{email}")
     Call<String> getPass(@Path("email") String email);
+
+    @GET("users/score/{id}")
+    Call<Double> getScore(@Path("id") int idUser);
 }

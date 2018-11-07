@@ -208,6 +208,8 @@ public class InterestsActivity extends AppCompatActivity {
         Intent intent = new Intent(this, HomeActivity.class);
         intent.putExtra("name", crud.getUser().getName());
         intent.putExtra("localization", loc.getCity() + ", " + loc.getUf());
+        Log.i(TAG, "Score: "+crud.getUser().getScoreS());
+        intent.putExtra("score", crud.getUser().getScoreS());
         startActivity(intent);
         finishAffinity();
     }

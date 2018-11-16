@@ -59,8 +59,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import service.LocalizationService;
 import service.TranslationService;
 import service.UserService;
+import util.Age;
 import util.DBController;
-import util.Mask;
+import util.MaskDate;
 import util.StatusUser;
 
 /**
@@ -95,7 +96,7 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
 
         editTextName = findViewById(R.id.editTextName);
         editTextDateOfBirth = findViewById(R.id.editTextDateOfBirth);
-        editTextDateOfBirth.addTextChangedListener(Mask.insert(Mask.FORMAT_DATE, editTextDateOfBirth));
+        editTextDateOfBirth.addTextChangedListener(MaskDate.insert(MaskDate.FORMAT_DATE, editTextDateOfBirth));
         editTextUserEmail = findViewById(R.id.editTextUserEmail);
         editTextPassword = findViewById(R.id.editTextPassword);
 
@@ -126,9 +127,14 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
                 if (imm.isActive()) {
                     hideSoftKeyboard();
                 }
-                if(validateFields()) {
+
+                int validate = validateFields();
+                if(validate == 1) {
                     spinner.setVisibility(View.VISIBLE);
                     registerLocalization();
+                }
+                else if(validate == -1) {
+                    Toast.makeText(getApplicationContext(), getString(R.string.checkFields), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -325,7 +331,6 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
             public void onResponse(Call<Integer> call, Response<Integer> response) {
                 if(response.isSuccessful()) {
                     u.setIdUser(Integer.parseInt(response.body().toString()));
-                    System.out.print("Id: " + u.getIdUser() + "\n");
                     crud.insertUser(u);
                     finishAffinity();
                     openInterests();
@@ -333,7 +338,6 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
                 else {
                     String aux = " Erro: " + response.body();
                     Log.e(TAG, aux);
-                    Log.e(TAG, "u:" + u.toString());
                     Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
                 }
             }
@@ -354,39 +358,51 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
         startActivity(intent);
     }
 
-    public boolean validateFields() {
-        Boolean aux = true;
+    public int validateFields() {
+        int aux = 1;
+        Age age = new Age();
+        String dateOfBirth = editTextDateOfBirth.getText().toString();
+
         if(editTextName.getText().length() == 0){
             editTextName.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_line_error));
-            aux = false;
+            aux = -1;
         }
         else
             editTextName.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_line_success));
 
-        if(editTextDateOfBirth.getText().length() == 0){
+        if(editTextDateOfBirth.getText().length() == 0) {// | !age.validateDate(dateOfBirth)){
             editTextDateOfBirth.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_line_error));
-            aux = false;
+            aux = -1;
+        }
+        else if(!age.validateDate(dateOfBirth)){
+            editTextDateOfBirth.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_line_error));
+            aux = -1;
+        }
+        else if(age.calculaIdade(dateOfBirth,"dd-MM-yyyy") < 18) {
+            editTextDateOfBirth.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_line_error));
+            aux = 0;
+            Toast.makeText(this, getText(R.string.age18), Toast.LENGTH_SHORT).show();
         }
         else
             editTextDateOfBirth.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_line_success));
 
         if(editTextLocalization.getText().length() == 0){
             editTextLocalization.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_line_error));
-            aux = false;
+            aux = -1;
         }
         else
             editTextLocalization.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_line_success));
 
         if(editTextUserEmail.getText().length() == 0 | !editTextUserEmail.getText().toString().contains("@")){
             editTextUserEmail.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_line_error));
-            aux = false;
+            aux = -1;
         }
         else
             editTextUserEmail.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_line_success));
 
         if(editTextPassword.getText().length() == 0){
             editTextPassword.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_line_error));
-            aux = false;
+            aux = -1;
         }
         else
             editTextPassword.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_line_success));

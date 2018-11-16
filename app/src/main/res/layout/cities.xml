@@ -1,6 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="40dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/country"
     android:orientation="vertical">
 
@@ -8,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="39dp"
         android:gravity="center_vertical"
-        android:paddingStart="30dp">
+        android:paddingStart="5dp">
 
         <TextView
             android:id="@+id/textViewCity"
@@ -25,6 +26,31 @@
             android:layout_marginStart="5dp"
             android:textColor="@color/colorAccent"
             android:textSize="14sp"/>
+
+        <LinearLayout
+            android:id="@+id/linearScore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/textViewScore"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textSize="12sp"/>
+
+            <ImageView
+                android:id="@+id/imageViewStar"
+                android:layout_width="13dp"
+                android:layout_height="13dp"
+                android:layout_weight="1"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="@dimen/paddingBalaoDirTop"
+                android:visibility="visible"
+                app:srcCompat="@drawable/ic_star_fragment" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"

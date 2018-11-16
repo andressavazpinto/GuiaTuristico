@@ -4,7 +4,6 @@
 package com.tcc.guiaturistico.activity;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -64,9 +63,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import adapter.ChatAdapter;
-import fragment.HomeFragment;
 import model.Chat;
 import model.ChatDeserializer;
 import model.ConnectGuides;
@@ -98,17 +98,20 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
     private final int TAKE_PICTURE = 3;
     private final int CAMERA = 4;
     private final int PERMISSION_REQUEST = 2;
+    private static final long TIME = (1000*5);
     private File fileImage = null;
     private ProgressBar spinner;
     private List<Message> list;
     private ListView chat;
     private DBController crud;
+    private Timer timer;
+    private boolean first = true;
 
     private FirebaseDatabase database;
     private EditText message;
     private BottomSheetDialog mBottomSheetDialog;
 
-    private DialogScore2 dialogScore2;
+    private DialogScore dialogScore;
 
     private boolean translate = true;
     private String translation, source;
@@ -118,6 +121,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
     private ConnectGuides connectGuides;
     private Search search2;
     private String s;
+    private boolean clickOnLeftSession = false;
     //private String suggestion;
 
     @Override
@@ -125,7 +129,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        dialogScore2 = new DialogScore2(this, this);
+        dialogScore = new DialogScore(this, this);
 
         try {
             FirebaseApp.initializeApp(this);
@@ -133,7 +137,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
             e.printStackTrace();
         }
         crud = new DBController(this);
-        idChat = crud.getChat();
+        //idChat = crud.getChat();
         s = crud.getStatusSearch();
         u = crud.getUser();
 
@@ -143,6 +147,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
              read();
         }
         else {
+            System.out.println("O idChat não está vazio" + idChat);
             getTranslate(idChat);
             getMessages(idChat);
         }
@@ -151,6 +156,25 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
         list = new ArrayList<Message>();
 
         readConnectGuides(u.getIdUser());
+
+        //verifica de tempos em tempos o status da conversa
+        if(timer == null) {
+            timer = new Timer();
+            TimerTask tarefa = new TimerTask() {
+                @Override
+                public void run() {
+                    try {
+                        if(first)
+                            readChat(idChat);
+                    } catch (Exception e) {
+                        String aux = e.getMessage();
+                        Log.d(TAG, aux);
+                        Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            };
+            timer.scheduleAtFixedRate(tarefa, TIME, TIME);
+        }
 
         setupComponents();
     }
@@ -171,7 +195,9 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
         localizationNavHeader.setText(getIntent().getStringExtra("localization"));
 
         String aux = getIntent().getStringExtra("score");
-        if(aux != null & Double.parseDouble(aux) != 0.0) {
+        double score = getIntent().getDoubleExtra("scoreDouble", 0.00);
+
+        if(score != 0.0) {
             LinearLayout linearLayout = headerView.findViewById(R.id.linearNav);
             TextView scoreNavHeader = linearLayout.findViewById(R.id.scoreNavHeader);
             scoreNavHeader.setText(aux);
@@ -463,7 +489,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
             image.compress(Bitmap.CompressFormat.JPEG, 100, baos); //bm is the bitmap object
             byte[] b = baos.toByteArray();
             String encodedImage = Base64.encodeToString(b, Base64.DEFAULT);
-            Log.w("ChatActivity", "Encode image: " + encodedImage);
+            Log.w(TAG, "Encode image: " + encodedImage);
 
             m2.setContent(encodedImage);
             sendMessage(m2);
@@ -616,7 +642,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void read() {
-        Log.d(TAG, "entrou no read()" + u.getIdUser());
+        Log.d(TAG, "Entrou no read(): " + u.getIdUser());
         Gson g = new GsonBuilder().registerTypeAdapter(Chat.class, new ChatDeserializer())
                 .setLenient()
                 .create();
@@ -628,8 +654,8 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
 
         ChatService service = retrofit.create(ChatService.class);
 
-        Call<Chat> requestUser = service.read(u.getIdUser());
-        requestUser.enqueue(new Callback<Chat>() {
+        Call<Chat> requestChat = service.read(u.getIdUser());
+        requestChat.enqueue(new Callback<Chat>() {
             @Override
             public void onResponse(@NonNull Call<Chat> call, @NonNull Response<Chat> response) {
                 if(response.isSuccessful()) {
@@ -643,6 +669,9 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
                         Log.d(TAG, "depois de chamar o setIdChat: " + c.getIdChat());
 
                         try{crud.insertChat(c.getIdChat());} catch(Exception e){Log.i(TAG, e.getMessage());}
+                    }
+                    else {
+                        Log.d(TAG, "Chat no read() vazio");
                     }
                     spinner.setVisibility(View.GONE);
                 }
@@ -667,6 +696,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void readConnectGuides(int id) {
+        Log.i(TAG, "Entrou no readConnectGuides()");
         Gson g = new GsonBuilder().registerTypeAdapter(ConnectGuides.class, new ConnectGuidesDeserializer())
                 .setLenient()
                 .create();
@@ -690,6 +720,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
                     if(connectGuides != null) {
                         Log.d(TAG, "connectGuides: " + response.body());
                         Log.d(TAG, "connectGuides: " + connectGuides.toString());
+                        //first = false;
                         if (connectGuides.getIdUser1() != u.getIdUser())
                             getSearch(connectGuides.getIdUser1());
                         else {
@@ -797,11 +828,12 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
                     if (s != null) {
                         try { crud.updateStatusSearch("Searching"); } catch (Exception e) { Log.i(TAG, e.getMessage()); }
                     }
-                    try { crud.deleteChat(idChat); } catch (Exception e) { Log.i(TAG, e.getMessage()); }
 
                     Log.i(TAG, "Chat desativado com sucesso: " + response.code());
 
-                    dialogScore2.showLayoutScore(search2.getIdUser());
+                    first = false;
+                    clickOnLeftSession = true;
+                    dialogScore.showLayoutScore(user2.getIdUser(), idChat, false);
                 }
             }
 
@@ -813,12 +845,43 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
+    public void readChat(final int idChat) {
+        Gson g = new GsonBuilder().registerTypeAdapter(Chat.class, new ChatDeserializer())
+                .setLenient()
+                .create();
 
-        if (getIntent().getBooleanExtra("EXIT", false)) {
-            finish();
-        }
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(ChatService.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create(g))
+                .build();
+
+        ChatService service = retrofit.create(ChatService.class);
+
+        Call<Chat> requestChat = service.readChat(idChat);
+        requestChat.enqueue(new Callback<Chat>() {
+            @Override
+            public void onResponse(@NonNull Call<Chat> call, @NonNull Response<Chat> response) {
+                if(response.isSuccessful()) {
+                    Chat c = response.body();
+
+                    if(c != null) {
+                        if(c.getStatus().equals(Enum.valueOf(StatusChat.class, "Inactive")) & !clickOnLeftSession) {
+                            dialogScore.showLayoutScore(search2.getIdUser(), idChat, true);
+                            first = false;
+                        }
+                    }
+                    spinner.setVisibility(View.GONE);
+                }
+                else {
+                    Toast.makeText(ChatActivity.this, "Error", Toast.LENGTH_LONG).show();
+                    spinner.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Chat> call, @NonNull Throwable t) {
+                Log.e(TAG, "Erro: " + t.getMessage());
+            }
+        });
     }
 }

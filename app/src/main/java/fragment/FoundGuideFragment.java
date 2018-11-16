@@ -1,6 +1,6 @@
 package fragment;
 
-import android.content.Intent;
+import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -18,7 +18,9 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.tcc.guiaturistico.R;
-import com.tcc.guiaturistico.activity.ChatActivity;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 import model.Chat;
 import model.ChatDeserializer;
@@ -54,15 +56,36 @@ public class FoundGuideFragment extends Fragment {
     private User guide, u;
     private Localization loc;
     private ProgressBar spinner;
+    private static final long TIME = (1000*5);
+    private Timer timer;
+    private String statusSearch;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup v, Bundle b) {
         final View view = inflater.inflate(R.layout.middle_found_guide, v, false);
         crud = new DBController(getContext());
         u = crud.getUser();
+        statusSearch = crud.getStatusSearch();
+
         search1 = new Search(0, null, u.getIdUser());
 
-        readConnectGuides(u.getIdUser());
+
+        if(timer == null) {
+            timer = new Timer();
+            TimerTask tarefa = new TimerTask() {
+                @Override
+                public void run() {
+                    try {
+                        readConnectGuides(u.getIdUser());
+                    } catch (Exception e) {
+                        String aux = e.getMessage();
+                        Log.d(TAG, aux);
+                        Toast.makeText(getActivity(), aux, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            };
+            timer.scheduleAtFixedRate(tarefa, TIME, TIME);
+        }
 
         setRetainInstance(true); //preservar a instância do fragment
         setupComponents(view);
@@ -77,8 +100,10 @@ public class FoundGuideFragment extends Fragment {
         textViewScore = linearLayout.findViewById(R.id.textViewScore);
         star = linearLayout.findViewById(R.id.imageViewStar);
 
-        buttonAccept =view.findViewById(R.id.buttonAccept);
+        buttonAccept = view.findViewById(R.id.buttonAccept);
         buttonReject = view.findViewById(R.id.buttonReject);
+        buttonAccept.setVisibility(View.VISIBLE);
+        buttonReject.setVisibility(View.VISIBLE);
         buttonAccept.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -297,15 +322,7 @@ public class FoundGuideFragment extends Fragment {
             public void onResponse(@NonNull Call<Integer> call, @NonNull Response<Integer> response) {
                 if(response.isSuccessful()) {
                     if(response.body() != null) {
-
-                        Intent intent = new Intent(getActivity(), ChatActivity.class);
-                        intent.putExtra("name", u.getName());
-                        intent.putExtra("localization", loc.getCity() + ", " + loc.getUf());
-                        intent.putExtra("score", u.getScoreS());
-
-                        startActivity(intent);
-                        getActivity().finish();
-                        getActivity().finishAffinity();
+                        //não faz nada, pq a condição está na home
                     }
                 }
             }
@@ -344,7 +361,7 @@ public class FoundGuideFragment extends Fragment {
                     spinner.setVisibility(View.GONE);
                 }
                 else {
-                    if (crud.getStatusSearch() != null) {
+                    if (statusSearch != null) {
                         try {
                             crud.updateStatusSearch("Searching");
                         } catch (Exception e) {
@@ -382,14 +399,23 @@ public class FoundGuideFragment extends Fragment {
             public void onResponse(@NonNull Call<Localization> call, @NonNull Response<Localization> response) {
                 if (response.isSuccessful()) {
                     Localization loc = response.body();
-                    textViewName.setText(userAux.getName());
-                    textViewCurrently.setText(getString(R.string.currently) + " " + loc.getCity() + ", " + loc.getUf());
+
+                    Activity activity = getActivity();
+
+                    if(activity != null) {
+                        textViewName.setText(userAux.getName());
+                        textViewName.setVisibility(View.VISIBLE);
+                        textViewCurrently.setText(getString(R.string.currently) + " " + loc.getCity() + ", " + loc.getUf());
+                        textViewCurrently.setVisibility(View.VISIBLE);
+                    }
 
                     String aux = userAux.getScoreS();
-                    if(aux != null & Double.parseDouble(aux) != 0.0) {
+                    double score = userAux.getScore();
+                    if(score != 0.00) {
                         textViewScore.setText(aux);
                         star.setVisibility(View.VISIBLE);
                     }
+                    spinner.setVisibility(View.GONE);
                 } else {
                     Log.i(TAG, "Erro: " + (response.code()));
                 }

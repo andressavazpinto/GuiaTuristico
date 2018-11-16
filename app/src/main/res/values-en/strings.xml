@@ -139,4 +139,9 @@
 
     <string name="evaluateGuide">Please, rate your guide</string>
     <string name="thanks">Thanks!</string>
+
+    <string name="checkFields">Check the data of the field(s) in red</string>
+    <string name="emailOrPass">E-mail or password incorrect(s)</string>
+    <string name="disconnected">Your guide left the chat</string>
+    <string name="age18">Whoops, you\'re not old enough to use the app ...</string>
 </resources>

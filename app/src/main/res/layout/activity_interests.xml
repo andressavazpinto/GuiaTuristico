@@ -15,39 +15,25 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-            <view
-                class="android.support.v7.widget.ActionMenuView"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/actionBarHeight" />
-        <TextView
-            android:id="@+id/textViewCheckInterests"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/checkInterests"
-            android:visibility="gone"
-            android:textSize="18sp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:gravity="center"/>
 
-            <view
-                android:id="@+id/view2"
-                class="android.support.v7.widget.ActionMenuView"
+            <TextView
+                android:id="@+id/textViewCheckInterests"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/actionBarHeight" />
-                <LinearLayout
-                    android:id="@+id/linearCheck"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    android:orientation="vertical">
-                </LinearLayout>
+                android:layout_height="wrap_content"
+                android:text="@string/checkInterests"
+                android:visibility="gone"
+                android:textSize="18sp"
+                android:layout_marginTop="30dp"
+                android:layout_marginBottom="50dp"
+                android:gravity="center"/>
 
-        <view
-            android:id="@+id/view20"
-            class="android.support.v7.widget.ActionMenuView"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/actionBarHeight" />
+            <LinearLayout
+                android:id="@+id/linearCheck"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:orientation="vertical">
+            </LinearLayout>
 
             <Button
                 android:id="@+id/buttonSave"
@@ -55,7 +41,7 @@
                 android:background="@drawable/selector_button"
                 android:text="@string/save"
                 style="@style/patternButton"
-                android:layout_marginTop="25dp"
+                android:layout_marginTop="50dp"
                 android:layout_marginBottom="10dp"
                 android:visibility="gone"
                 android:layout_gravity="end"/>

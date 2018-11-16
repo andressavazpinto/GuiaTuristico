@@ -42,6 +42,8 @@ public class ByRegionActivity extends ExpandableListActivity implements Expandab
 
         getRegions();
         setupComponents();
+
+
     }
 
     public void setupComponents() {
@@ -99,23 +101,28 @@ public class ByRegionActivity extends ExpandableListActivity implements Expandab
     }
 
     private void listRegions(List<SearchByRegion> searchByRegions) {
-
         ArrayList<SearchByRegion> child = new ArrayList<SearchByRegion>();
 
         for(int i=0; i<searchByRegions.size(); i++) {
+
             String country = searchByRegions.get(i).getCountry();
 
             if(groupItem.size() == 0) {
                 groupItem.add(country);
             } else if(groupItem != null & ! country.equals(groupItem.get(groupItem.size()-1))) {
                 groupItem.add(country);
+                childItem.add(child);
                 child = new ArrayList<SearchByRegion>();
             }
 
             child.add(searchByRegions.get(i));
-            childItem.add(child);
-        }
 
+        }
+        childItem.add(child);
+        setAdapter();
+    }
+
+    public void setAdapter() {
         CountryCityAdapter countryCityAdapter = new CountryCityAdapter(groupItem, childItem, crud);
         countryCityAdapter.setInflater((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE),this);
         getExpandableListView().setAdapter(countryCityAdapter);

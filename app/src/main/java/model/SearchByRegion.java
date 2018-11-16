@@ -1,21 +1,25 @@
 package model;
 
+import java.text.DecimalFormat;
+
 import util.StatusSearch;
 
 public class SearchByRegion {
     private String city, country, name;
     private StatusSearch statusSearch;
     private int idUser;
+    private double score;
 
     public SearchByRegion() {
     }
 
-    public SearchByRegion(String city, String country, String name, StatusSearch statusSearch, int idUser) {
+    public SearchByRegion(String city, String country, String name, StatusSearch statusSearch, int idUser, double score) {
         this.city = city;
         this.country = country;
         this.name = name;
         this.statusSearch = statusSearch;
         this.idUser = idUser;
+        this.score = score;
     }
 
     public String getCity() {
@@ -58,6 +62,19 @@ public class SearchByRegion {
         this.idUser = idUser;
     }
 
+    public double getScore() {
+        return score;
+    }
+
+    public void setScore(double score) {
+        this.score = score;
+    }
+
+    public String getScoreS() {
+        DecimalFormat two = new DecimalFormat("0.00");
+        return two.format(getScore());
+    }
+
     @Override
     public String toString() {
         return "SearchByRegion{" +
@@ -66,6 +83,7 @@ public class SearchByRegion {
                 ", name='" + name + '\'' +
                 ", statusSearch=" + statusSearch +
                 ", idUser=" + idUser +
+                ", score=" + score +
                 '}';
     }
 }

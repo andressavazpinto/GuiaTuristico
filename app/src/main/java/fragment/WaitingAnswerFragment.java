@@ -13,10 +13,14 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.tcc.guiaturistico.R;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 import model.ConnectGuides;
 import model.ConnectGuidesDeserializer;
@@ -46,6 +50,8 @@ public class WaitingAnswerFragment extends Fragment {
     private ConnectGuides connectGuides;
     private User guide, u;
     private ProgressBar spinner;
+    private static final long TIME = (1000*5);
+    private Timer timer;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup v, Bundle b) {
@@ -55,8 +61,24 @@ public class WaitingAnswerFragment extends Fragment {
         u = crud.getUser();
         search1 = new Search(0, null, crud.getUser().getIdUser());
 
+        if(timer == null) {
+            timer = new Timer();
+            TimerTask tarefa = new TimerTask() {
+                @Override
+                public void run() {
+                    try {
+                        readConnectGuides(u.getIdUser());
+                    } catch (Exception e) {
+                        String aux = e.getMessage();
+                        Log.d(TAG, aux);
+                        Toast.makeText(getActivity(), aux, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            };
+            timer.scheduleAtFixedRate(tarefa, TIME, TIME);
+        }
+
         setupComponents(view);
-        readConnectGuides(crud.getUser().getIdUser());
 
         setRetainInstance(true); //preservar a instância do fragment
         return view;
@@ -308,11 +330,14 @@ public class WaitingAnswerFragment extends Fragment {
             public void onResponse(@NonNull Call<Localization> call, @NonNull Response<Localization> response) {
                 if (response.isSuccessful()) {
                     Localization loc = response.body();
-                    textViewName.setText(userAux.getName());
-                    textViewCurrently.setText(getString(R.string.currently) + " " + loc.getCity() + ", " + loc.getUf());
+                    if(getActivity() != null) {
+                        textViewName.setText(userAux.getName());
+                        textViewCurrently.setText(getString(R.string.currently) + " " + loc.getCity() + ", " + loc.getUf());
+                    }
 
                     String aux = userAux.getScoreS();
-                    if(aux != null & Double.parseDouble(aux) != 0.0) {
+                    double score = userAux.getScore();
+                    if(score != 0.00) {
                         textViewScore.setText(aux);
                         star.setVisibility(View.VISIBLE);
                     }

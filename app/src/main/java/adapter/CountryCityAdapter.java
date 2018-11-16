@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckedTextView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -74,11 +75,25 @@ public class CountryCityAdapter extends BaseExpandableListAdapter {
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.cities, null);
         }
-
         TextView textViewCity = convertView.findViewById(R.id.textViewCity);
         textViewCity.setText(tempChild.get(childPosition).getCity());
+
         TextView textViewName = convertView.findViewById(R.id.textViewName);
         textViewName.setText("- " + tempChild.get(childPosition).getName());
+
+        LinearLayout linearLayout = convertView.findViewById(R.id.linearScore);
+        TextView textViewScore = linearLayout.findViewById(R.id.textViewScore);
+        //ImageView star = linearLayout.findViewById(R.id.imageViewStar);
+        String aux = " - " + tempChild.get(childPosition).getScoreS();
+        double score = tempChild.get(childPosition).getScore();
+        if(score != 0.00) {
+            //star.setVisibility(View.VISIBLE);
+            textViewScore.setText(aux);
+        }
+        else  {
+            //star.setVisibility(View.GONE);
+        }
+
         ImageView imageViewCircle = convertView.findViewById(R.id.imageCircle);
         if(tempChild.get(childPosition).getStatusSearch() != java.lang.Enum.valueOf(StatusSearch.class, "Searching"))
             imageViewCircle.setImageResource(R.drawable.ic_circle);

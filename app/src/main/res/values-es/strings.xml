@@ -139,4 +139,9 @@
 
     <string name="evaluateGuide">Por favor, evalúe su guía</string>
     <string name="thanks">Gracias!</string>
+
+    <string name="checkFields">Compruebe lo(s) dato(s) de lo(s) campo(s) en rojo</string>
+    <string name="emailOrPass">E-mail o contraseña incorrecto(s)</string>
+    <string name="disconnected">Su guía abandonó la conversación</string>
+    <string name="age18">Ops, no tienes edad suficiente para utilizar la aplicación ...</string>
 </resources>

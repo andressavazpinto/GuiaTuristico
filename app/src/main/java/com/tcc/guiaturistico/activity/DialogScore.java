@@ -1,22 +1,23 @@
 package com.tcc.guiaturistico.activity;
 
+import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.DialogFragment;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Bundle;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.tcc.guiaturistico.R;
+
+import org.w3c.dom.Text;
 
 import model.Grade;
 import retrofit2.Call;
@@ -25,67 +26,144 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import service.UserService;
+import util.DBController;
 
-public class DialogScore extends DialogFragment {
+public class DialogScore {
     private static final String TAG = "DialogScore";
 
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    private AlertDialog mScoreDialog;
+    private AppCompatActivity mContext;
+    private View mScoreView;
+    private double mGrade = 0.1;
+    private Activity activity;
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setView(R.layout.dialog_score)
-                .setTitle(R.string.evaluateGuide)
-                .setPositiveButton(R.string.send, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        Grade grade = new Grade(3);
-                        sendGrade((Integer) getArguments().get("idUser"), grade);
-                        Intent intent = new Intent(getActivity(), HomeActivity.class);
-                        startActivity(intent);
-                        getActivity().finish();
-                    }
-                })
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        Intent intent = new Intent(getActivity(), HomeActivity.class);
-                        startActivity(intent);
-                        getActivity().finish();
-                    }
-                });
+    public DialogScore(AppCompatActivity context, Activity activity){
+        this.activity = activity;
+        mContext = context;
+    }
 
-        LayoutInflater inflater = LayoutInflater.from(getActivity());
-        View view = inflater.inflate(R.layout.dialog_score, null, false);
-        final LinearLayout linearLayout = view.findViewById(R.id.linearScore);
+    public void showLayoutScore(final int idUser, int idChat, boolean disconnected){
+        DBController crud = new DBController(mContext);
+        try { crud.deleteChat(idChat); } catch (Exception e) { Log.i(TAG, e.getMessage()); }
 
-        //final Drawable drawable1= getResources().getDrawable(R.drawable.ic_star_border);
-        final ImageView star0 = linearLayout.findViewById(R.id.imageViewStarBorder1);
-        star0.setVisibility(View.VISIBLE);
+        //Adicionando o Layout a View que será inserida no AlertDialog
+        mScoreView = mContext.getLayoutInflater().inflate(R.layout.dialog_score, null, false);
+        //Instanciando o AlertDialog - Inserindo a View nele - Criando o AlertDialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        builder.setView(mScoreView);
 
+        mScoreDialog = builder.create();
 
-        //final ImageView imageView1 = new ImageButton(getActivity());
-        //imageView1.setImageDrawable(drawable1);
-        //linearLayout.addView(imageView1);
-        // linearLayout.findViewById(R.id.imageViewStar1);
+        if(disconnected) {
+            TextView textViewDisconnected = mScoreView.findViewById(R.id.disconnected);
+            textViewDisconnected.setVisibility(View.VISIBLE);
+            mScoreDialog.setTitle(R.string.disconnected);
+        }
+        else
+            mScoreDialog.setTitle(R.string.evaluateGuide);
 
-        //final Drawable drawable= getResources().getDrawable(R.drawable.ic_star);
+        LinearLayout linearLayout = mScoreView.findViewById(R.id.linearScore);
 
-        star0.setOnClickListener(new View.OnClickListener() {
+        final ImageView starBorder0 = linearLayout.findViewById(R.id.imageViewStarBorder1);
+        final ImageView starBorder1 = linearLayout.findViewById(R.id.imageViewStarBorder2);
+        final ImageView starBorder2 = linearLayout.findViewById(R.id.imageViewStarBorder3);
+        final ImageView starBorder3 = linearLayout.findViewById(R.id.imageViewStarBorder4);
+        final ImageView starBorder4 = linearLayout.findViewById(R.id.imageViewStarBorder5);
+
+        final Drawable starBorder = mContext.getDrawable(R.drawable.ic_star_border);
+        final Drawable star = mContext.getDrawable(R.drawable.ic_star);
+
+        starBorder0.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                System.out.print("cliquei na estrela");
-                star0.setVisibility(View.GONE);
-
-
-
-                /*linearLayout.removeView(imageView1);
-                imageView1.setImageDrawable(drawable);
-                linearLayout.addView(imageView1);*/
+                starBorder0.setImageDrawable(star);
+                starBorder1.setImageDrawable(starBorder);
+                starBorder2.setImageDrawable(starBorder);
+                starBorder3.setImageDrawable(starBorder);
+                starBorder4.setImageDrawable(starBorder);
+                mGrade = 1;
             }
         });
 
-        return builder.create();
+        starBorder1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                starBorder0.setImageDrawable(star);
+                starBorder1.setImageDrawable(star);
+                starBorder2.setImageDrawable(starBorder);
+                starBorder3.setImageDrawable(starBorder);
+                starBorder4.setImageDrawable(starBorder);
+                mGrade = 2;
+            }
+        });
+
+        starBorder2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                starBorder0.setImageDrawable(star);
+                starBorder1.setImageDrawable(star);
+                starBorder2.setImageDrawable(star);
+                starBorder3.setImageDrawable(starBorder);
+                starBorder4.setImageDrawable(starBorder);
+                mGrade = 3;
+            }
+        });
+
+        starBorder3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                starBorder0.setImageDrawable(star);
+                starBorder1.setImageDrawable(star);
+                starBorder2.setImageDrawable(star);
+                starBorder3.setImageDrawable(star);
+                starBorder4.setImageDrawable(starBorder);
+                mGrade = 4;
+            }
+        });
+
+        starBorder4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                starBorder0.setImageDrawable(star);
+                starBorder1.setImageDrawable(star);
+                starBorder2.setImageDrawable(star);
+                starBorder3.setImageDrawable(star);
+                starBorder4.setImageDrawable(star);
+                mGrade = 5;
+            }
+        });
+
+        LinearLayout linearLayout2 = mScoreView.findViewById(R.id.linearScore_buttons);
+
+        TextView buttonCancel = linearLayout2.findViewById(R.id.button_cancel);
+        buttonCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mScoreDialog.dismiss();
+
+                activity.startActivity(new Intent(activity.getApplicationContext(), HomeActivity.class));
+                activity.finish();
+            }
+        });
+
+        TextView buttonSend = linearLayout2.findViewById(R.id.button_send);
+        buttonSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Grade gradeG = new Grade(mGrade);
+                sendGrade(idUser, gradeG);
+                mScoreDialog.dismiss();
+
+                activity.startActivity(new Intent(activity.getApplicationContext(), HomeActivity.class));
+                activity.finish();
+            }
+        });
+
+        mScoreDialog.show();
     }
 
-    public void sendGrade(int idUser, Grade grade) {
+    private void sendGrade(int idUser, Grade grade) {
 
         Gson g = new GsonBuilder()
                 .setLenient()
@@ -112,8 +190,10 @@ public class DialogScore extends DialogFragment {
             public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
                 String aux = "Erro: " + t.getMessage();
                 Log.e(TAG, aux);
-                Toast.makeText(getActivity(), aux, Toast.LENGTH_LONG).show();
+                Toast.makeText(mContext, aux, Toast.LENGTH_LONG).show();
             }
         });
     }
+
+
 }

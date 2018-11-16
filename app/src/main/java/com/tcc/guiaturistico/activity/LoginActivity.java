@@ -151,20 +151,27 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                     try {
                         u = response.body();
 
-                        try {
-                            if(crud.getUser() != null)
-                                try {crud.deleteUser(crud.getUser());} catch (Exception e) {e.printStackTrace();}
+                        if (u == null) {
+                            Toast.makeText(getApplicationContext(), getString(R.string.emailOrPass), Toast.LENGTH_SHORT).show();
+                        } else {
+                            try {
+                                if (crud.getUser() != null)
+                                    try {
+                                        crud.deleteUser(crud.getUser());
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
 
-                            crud.insertUser(u);
-                            System.out.println("Resultado do crud: " + u.getIdUser());
-                            verifyStatusSearch(u.getIdUser());
-                        } catch(Exception e) {
-                            e.printStackTrace();
+                                crud.insertUser(u);
+                                System.out.println("Resultado do crud: " + u.getIdUser());
+                                verifyStatusSearch(u.getIdUser());
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
-                    } catch (Exception e) {
+                    } catch(Exception e){
                         e.printStackTrace();
                     }
-                    System.out.print("Id: " + u.getIdUser());
                 }
             }
 
@@ -192,6 +199,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         intent.putExtra("name", u.getName());
         intent.putExtra("localization", loc.getCity() + ", " + loc.getUf());
         intent.putExtra("score", u.getScoreS());
+        intent.putExtra("scoreDouble", u.getScore());
         startActivity(intent);
         finishAffinity();
     }

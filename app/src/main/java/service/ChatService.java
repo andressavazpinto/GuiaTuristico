@@ -17,6 +17,9 @@ public interface ChatService {
     @GET("chat/{idUser}")
     Call<Chat> read(@Path("idUser") int id);
 
+    @GET("chat/idchat/{idChat}")
+    Call<Chat> readChat(@Path("idChat") int id);
+
     @POST("chat")
     Call<Integer> register(@Body Chat chat);
 

@@ -5,7 +5,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.EditText;
 
-public class Mask {
+public class MaskDate {
     public static final String FORMAT_DATE = "##/##/####";
 
     public static TextWatcher insert(final String mask, final EditText et) {
@@ -14,7 +14,7 @@ public class Mask {
             String oldTxt = "";
             public void onTextChanged(
                     CharSequence s, int start, int before,int count) {
-                String str = Mask.unmask(s.toString());
+                String str = MaskDate.unmask(s.toString());
                 String maskCurrent = "";
                 if (isUpdating) {
                     oldTxt = str;

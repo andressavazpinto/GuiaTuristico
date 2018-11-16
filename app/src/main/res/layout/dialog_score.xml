@@ -6,6 +6,17 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
+    <TextView
+        android:id="@+id/disconnected"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/activity_vertical_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:layout_gravity="center"
+        android:textSize="16dp"
+        android:visibility="gone"
+        android:text="@string/evaluateGuide"/>
+
     <LinearLayout
         android:id="@+id/linearScore"
         style="@style/patternMargin"

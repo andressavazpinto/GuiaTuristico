@@ -41,6 +41,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import me.drakeet.materialdialog.MaterialDialog;
+import model.Chat;
+import model.ChatDeserializer;
 import model.Localization;
 import model.LocalizationDeserializer;
 import model.Search;
@@ -51,6 +53,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import service.ChatService;
 import service.LocalizationService;
 import service.SearchService;
 import service.UserService;
@@ -70,13 +73,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private Location location;
     private MaterialDialog mMaterialDialog;
     private static final int REQUEST_PERMISSIONS_CODE = 128;
-    private static final long TIME = (1000*3);
+    private static final long TIME = (1000*5);
     private DBController crud;
     private ConstraintLayout layout;
     private ConstraintLayout contentMain;
     private ProgressBar spinner;
     private Timer timer;
     private boolean first = true;
+    private boolean chat = true;
     private User u;
 
     @Override
@@ -163,7 +167,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         else {
             switch (status) {
                 case Accepted:
+                    //verifica se o usuário tem chat aberto, se não tiver
                     //não faz nada, mantém onde estava (found -> chatactivity)
+                    Log.d(TAG, "Case Accepted");
+                    if(chat)
+                        readChat();
                     break;
                 case Searching:
                     layout.setVisibility(View.GONE);
@@ -221,7 +229,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         try {
             String aux = getIntent().getStringExtra("score");
-            if (aux != null & Double.parseDouble(aux) != 0.0) {
+            double score = getIntent().getDoubleExtra("scoreDouble", 0.00);
+            if (score != 0.00) {
                 LinearLayout linearLayout = headerView.findViewById(R.id.linearNav);
                 scoreNavHeader = linearLayout.findViewById(R.id.scoreNavHeader);
                 scoreNavHeader.setText(aux);
@@ -299,6 +308,15 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         if(mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
             startLocationUpdate();
+        }
+
+        try {
+            verifyStatusSearch();
+            getScore(u.getIdUser());
+        } catch (Exception e) {
+            String aux = e.getMessage();
+            Log.d(TAG, aux);
+            Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -554,5 +572,59 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 getScore(idAux);
             }
         });
+    }
+
+    public void readChat() {
+        Log.d(TAG, "Entrou no readChat");
+        Gson g = new GsonBuilder().registerTypeAdapter(Chat.class, new ChatDeserializer())
+                .setLenient()
+                .create();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(ChatService.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create(g))
+                .build();
+
+        ChatService service = retrofit.create(ChatService.class);
+
+        Call<Chat> requestUser = service.read(u.getIdUser());
+        requestUser.enqueue(new Callback<Chat>() {
+            @Override
+            public void onResponse(@NonNull Call<Chat> call, @NonNull Response<Chat> response) {
+                if(response.isSuccessful()) {
+                    Chat c = response.body();
+
+                    if(c != null) {
+                        System.out.println("Chat: " + c.toString());
+                        chat = false;
+                        openChat();
+                    }
+                    spinner.setVisibility(View.GONE);
+                }
+                else {
+                    spinner.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Chat> call, @NonNull Throwable t) {
+                Log.e(TAG, "Erro: " + t.getMessage());
+            }
+        });
+    }
+
+
+    public void openChat() {
+        chat = false;
+
+        Intent intent = new Intent(this, ChatActivity.class);
+        intent.putExtra("name", u.getName());
+        intent.putExtra("localization", getIntent().getStringExtra("localization"));
+        intent.putExtra("scoreDouble", u.getScore());
+        intent.putExtra("score", u.getScoreS());
+
+        startActivity(intent);
+        finish();
+        finishAffinity();
     }
 }

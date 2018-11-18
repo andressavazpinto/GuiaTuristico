@@ -19,7 +19,9 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -84,6 +86,15 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
         editTextUserEmail = findViewById(R.id.editTextUserEmail);
         editTextPassword = findViewById(R.id.editTextPassword);
+
+        editTextPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    login();
+                }
+                return false;
+            }
+        });
 
         Button buttonLogin = findViewById(R.id.buttonLogin);
         buttonLogin.setOnClickListener(new View.OnClickListener() {

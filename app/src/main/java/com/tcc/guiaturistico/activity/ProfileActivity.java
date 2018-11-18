@@ -7,8 +7,10 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -16,6 +18,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -93,6 +96,18 @@ public class ProfileActivity extends AppCompatActivity {
         editTextDateOfBirth = findViewById(R.id.editTextDateOfBirth);
         editTextUserEmail = findViewById(R.id.editTextUserEmail);
         editTextPassword = findViewById(R.id.editTextPassword);
+
+        editTextPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    if(validateFields()) {
+                        spinner.setVisibility(View.VISIBLE);
+                        update();
+                    }
+                }
+                return false;
+            }
+        });
 
         Button buttonSave = findViewById(R.id.buttonSave);
         buttonSave.setVisibility(View.VISIBLE);

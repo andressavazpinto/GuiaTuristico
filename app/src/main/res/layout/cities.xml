@@ -1,77 +1,145 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="40dp"
+    android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/country"
-    android:orientation="vertical">
+    android:orientation="horizontal">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="39dp"
-        android:gravity="center_vertical"
-        android:paddingStart="5dp">
-
-        <TextView
-            android:id="@+id/textViewCity"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:textColor="@color/colorAccent"
-            android:textSize="14sp"/>
-
-        <TextView
-            android:id="@+id/textViewName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:textColor="@color/colorAccent"
-            android:textSize="14sp"/>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <LinearLayout
-            android:id="@+id/linearScore"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_gravity="center_vertical">
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:paddingStart="5dp">
 
             <TextView
-                android:id="@+id/textViewScore"
+                android:id="@+id/textViewCity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:textSize="12sp"/>
+                android:layout_marginStart="5dp"
+                android:textColor="@color/colorAccent"
+                android:textSize="15sp" />
 
-            <ImageView
-                android:id="@+id/imageViewStar"
-                android:layout_width="13dp"
-                android:layout_height="13dp"
-                android:layout_weight="1"
+            <TextView
+                android:id="@+id/textViewName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:textColor="@color/colorAccent"
+                android:textSize="16sp" />
+
+            <LinearLayout
+                android:id="@+id/linearScore"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_marginStart="@dimen/paddingBalaoDirTop"
-                android:visibility="visible"
-                app:srcCompat="@drawable/ic_star_fragment" />
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textViewScore"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textSize="13sp" />
+
+                <ImageView
+                    android:id="@+id/imageViewStar"
+                    android:layout_width="0dp"
+                    android:layout_height="13dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="@dimen/paddingBalaoDirTop"
+                    android:layout_weight="1"
+                    android:visibility="visible"
+                    app:srcCompat="@drawable/ic_star_fragment" />
+            </LinearLayout>
+
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:layout_gravity="center_vertical">
+            android:id="@+id/linearImages"
+            style="@style/patternMargin"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:orientation="horizontal">
 
             <ImageView
-                android:id="@+id/imageCircle"
+                android:id="@+id/imageViewArt"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:visibility="gone"
-                android:layout_gravity="end"
-                android:layout_margin="5dp" />
+                android:src="@drawable/ic_art" />
+
+            <ImageView
+                android:id="@+id/imageViewCooking"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                android:src="@drawable/ic_cooking" />
+
+            <ImageView
+                android:id="@+id/imageViewCulture"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                android:src="@drawable/ic_culture" />
+
+            <ImageView
+                android:id="@+id/imageViewEconomy"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                android:src="@drawable/ic_economy" />
+
+            <ImageView
+                android:id="@+id/imageViewSport"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                android:src="@drawable/ic_sport" />
+
+            <ImageView
+                android:id="@+id/imageViewStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                android:src="@drawable/ic_style" />
+
+            <ImageView
+                android:id="@+id/imageViewLanguage"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                android:src="@drawable/ic_language" />
+
+            <ImageView
+                android:id="@+id/imageViewTecnology"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                android:src="@drawable/ic_tecnology" />
+
         </LinearLayout>
 
     </LinearLayout>
 
-    <View
-        android:layout_width="wrap_content"
-        android:layout_height="1dp"
-        android:background="@android:color/black" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/imageCircle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            android:src="@drawable/ic_circle_available"
+            android:visibility="visible" />
+    </LinearLayout>
 
 </LinearLayout>

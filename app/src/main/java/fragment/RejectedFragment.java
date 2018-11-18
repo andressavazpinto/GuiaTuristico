@@ -1,7 +1,5 @@
 package fragment;
 
-import android.app.ProgressDialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -15,7 +13,6 @@ import android.widget.ProgressBar;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.tcc.guiaturistico.R;
-import com.tcc.guiaturistico.activity.ByRegionActivity;
 
 import model.Search;
 import model.SearchDeserializer;
@@ -31,7 +28,6 @@ import util.StatusSearch;
 public class RejectedFragment extends Fragment {
     private static final String TAG = "RejectedFragment";
     public Button buttonBack;
-    private DBController crud;
     private Search search1;
     private ProgressBar spinner;
 
@@ -39,7 +35,7 @@ public class RejectedFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup v, Bundle b) {
         View view = inflater.inflate(R.layout.middle_rejected, v, false);
 
-        crud = new DBController(getContext());
+        DBController crud = new DBController(getContext());
         search1 = new Search(1, Enum.valueOf(StatusSearch.class,"Searching"), crud.getUser().getIdUser());
 
         setupComponents(view);
@@ -60,7 +56,7 @@ public class RejectedFragment extends Fragment {
 
     private void turnBack() {
         spinner.setVisibility(View.VISIBLE);
-        search1.setStatus(Enum.valueOf(StatusSearch.class, "Searching"));
+        //search1.setStatus(Enum.valueOf(StatusSearch.class, "Searching"));
         setStatusSearch(search1);
     }
 

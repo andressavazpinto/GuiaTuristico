@@ -16,22 +16,26 @@ import com.google.gson.GsonBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
-import adapter.CountryCityAdapter;
+import adapter.ByRegionAdapter;
 import model.SearchByRegion;
+import model.UserInterest;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import service.InterestService;
 import service.SearchService;
+import service.UserInterestService;
 import util.DBController;
 
 public class ByRegionActivity extends ExpandableListActivity implements ExpandableListView.OnChildClickListener {
     private static final String TAG = "ByRegionActivity";
     private DBController crud;
-    private ExpandableListView expandableListVew;
+    private ExpandableListView expandableListView;
     private List<SearchByRegion> searchByRegions = new ArrayList<SearchByRegion>();
 
+    ArrayList listInterests = new ArrayList();
     ArrayList<String> groupItem = new ArrayList<String>();
     ArrayList<Object> childItem = new ArrayList<Object>();
 
@@ -42,15 +46,13 @@ public class ByRegionActivity extends ExpandableListActivity implements Expandab
 
         getRegions();
         setupComponents();
-
-
     }
 
     public void setupComponents() {
-        expandableListVew = getExpandableListView();
-        expandableListVew.setDividerHeight(2);
-        expandableListVew.setGroupIndicator(null);
-        expandableListVew.setClickable(true);
+        expandableListView = getExpandableListView();
+        expandableListView.setDividerHeight(2);
+        expandableListView.setGroupIndicator(null);
+        expandableListView.setClickable(true);
     }
 
     @Override
@@ -115,17 +117,56 @@ public class ByRegionActivity extends ExpandableListActivity implements Expandab
                 child = new ArrayList<SearchByRegion>();
             }
 
+            readUserInterests(searchByRegions.get(i).getIdUser());
             child.add(searchByRegions.get(i));
-
         }
         childItem.add(child);
         setAdapter();
     }
 
     public void setAdapter() {
-        CountryCityAdapter countryCityAdapter = new CountryCityAdapter(groupItem, childItem, crud);
-        countryCityAdapter.setInflater((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE),this);
-        getExpandableListView().setAdapter(countryCityAdapter);
-        expandableListVew.setOnChildClickListener(this);
+        ByRegionAdapter byRegionAdapter = new ByRegionAdapter(groupItem, childItem, crud, listInterests, expandableListView);
+        byRegionAdapter.setInflater((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE),this);
+        getExpandableListView().setAdapter(byRegionAdapter);
+        expandableListView.setOnChildClickListener(this);
+    }
+
+    public void readUserInterests(int idUser) {
+        Gson g = new GsonBuilder()
+                .setLenient()
+                .create();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(InterestService.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create(g))
+                .build();
+
+        UserInterestService service = retrofit.create(UserInterestService.class);
+
+        Call<List<UserInterest>> requestInterest = service.listByUser(idUser);
+
+        requestInterest.enqueue(new Callback<List<UserInterest>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<UserInterest>> call, @NonNull Response<List<UserInterest>> response) {
+                if (!response.isSuccessful()) {
+                    String aux = "Erro: " + (response.code());
+                    Log.i(TAG, aux);
+                } else {
+                    List<UserInterest> output = response.body();
+
+                    listInterests.add(output);
+                    if (output.size() > 0) {
+
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<UserInterest>> call, @NonNull Throwable t) {
+                String aux = " Erro: " + t.getMessage();
+                Log.e(TAG, aux);
+                Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }

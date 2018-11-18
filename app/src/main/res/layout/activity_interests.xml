@@ -28,11 +28,25 @@
                 android:gravity="center"/>
 
             <LinearLayout
-                android:id="@+id/linearCheck"
-                android:layout_width="match_parent"
+                android:id="@+id/linearCheckHorizontal"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
-                android:orientation="vertical">
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:id="@+id/linearCheckVertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/linearImage"
+                    android:layout_width="match_parent"
+                    android:orientation="vertical"
+                    android:layout_height="match_parent">
+                </LinearLayout>
+
             </LinearLayout>
 
             <Button

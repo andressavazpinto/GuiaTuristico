@@ -11,6 +11,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckedTextView;
+import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -24,6 +25,7 @@ import model.ConnectGuides;
 import model.Search;
 import model.SearchByRegion;
 import model.SearchDeserializer;
+import model.UserInterest;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -35,22 +37,28 @@ import util.DBController;
 import util.StatusConnectGuides;
 import util.StatusSearch;
 
-public class CountryCityAdapter extends BaseExpandableListAdapter {
-    private static final String TAG = "CountryCityAdapter";
+public class ByRegionAdapter extends BaseExpandableListAdapter {
+    private static final String TAG = "ByRegionAdapter";
     private ArrayList<String> groupItem;
     private ArrayList<SearchByRegion> tempChild;
+    private ArrayList<UserInterest> tempInterests;
     private ArrayList<Object> Childtem;
+    private ArrayList listInterests;
     private LayoutInflater inflater;
     public Activity activity;
     private Search search;
     private ConnectGuides connectGuides;
     private DBController crud;
+    private int lastExpandedPosition = -1;
+    private ExpandableListView expandableListView;
 
-    public CountryCityAdapter(ArrayList<String> grList, ArrayList<Object> childItem, DBController crud) {
+    public ByRegionAdapter(ArrayList<String> grList, ArrayList<Object> childItem, DBController crud, ArrayList listInterests, ExpandableListView expandableListView) {
         this.crud = crud;
         search = new Search(0, null, crud.getUser().getIdUser());
         groupItem = grList;
         this.Childtem = childItem;
+        this.listInterests = listInterests;
+        this.expandableListView = expandableListView;
     }
 
     public void setInflater(LayoutInflater inflater, Activity activity) {
@@ -70,11 +78,12 @@ public class CountryCityAdapter extends BaseExpandableListAdapter {
 
     @Override
     public View getChildView(int groupPosition, final int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
-        tempChild = (ArrayList<SearchByRegion>) Childtem.get(groupPosition);
+        convertView = inflater.inflate(R.layout.cities, null);
 
-        if (convertView == null) {
-            convertView = inflater.inflate(R.layout.cities, null);
-        }
+        tempChild = (ArrayList<SearchByRegion>) Childtem.get(groupPosition);
+        int id = listUserInterests(listInterests, tempChild.get(childPosition).getIdUser());
+        tempInterests = (ArrayList<UserInterest>) listInterests.get(id);
+
         TextView textViewCity = convertView.findViewById(R.id.textViewCity);
         textViewCity.setText(tempChild.get(childPosition).getCity());
 
@@ -93,6 +102,38 @@ public class CountryCityAdapter extends BaseExpandableListAdapter {
         else  {
             //star.setVisibility(View.GONE);
         }
+
+        LinearLayout linearImages = convertView.findViewById(R.id.linearImages);
+        ImageView art = linearImages.findViewById(R.id.imageViewArt);
+        ImageView cooking = linearImages.findViewById(R.id.imageViewCooking);
+        ImageView culture = linearImages.findViewById(R.id.imageViewCulture);
+        ImageView economy = linearImages.findViewById(R.id.imageViewEconomy);
+        ImageView sport = linearImages.findViewById(R.id.imageViewSport);
+        ImageView style = linearImages.findViewById(R.id.imageViewStyle);
+        ImageView language = linearImages.findViewById(R.id.imageViewLanguage);
+        ImageView tecnology = linearImages.findViewById(R.id.imageViewTecnology);
+
+        for(int i=0; i<tempInterests.size(); i++) {
+            int j = tempInterests.get(i).getIdInterest();
+            if(j == 1)
+                art.setVisibility(View.VISIBLE);
+            else if(j == 2)
+                cooking.setVisibility(View.VISIBLE);
+            else if(j == 3)
+                culture.setVisibility(View.VISIBLE);
+            else if(j == 4)
+                economy.setVisibility(View.VISIBLE);
+            else if(j == 5)
+                sport.setVisibility(View.VISIBLE);
+            else if(j == 6)
+                style.setVisibility(View.VISIBLE);
+            else if(j == 7)
+                language.setVisibility(View.VISIBLE);
+            else if(j == 8)
+                tecnology.setVisibility(View.VISIBLE);
+        }
+
+        linearImages.setVisibility(View.VISIBLE);
 
         ImageView imageViewCircle = convertView.findViewById(R.id.imageCircle);
         if(tempChild.get(childPosition).getStatusSearch() != java.lang.Enum.valueOf(StatusSearch.class, "Searching"))
@@ -140,6 +181,11 @@ public class CountryCityAdapter extends BaseExpandableListAdapter {
     @Override
     public void onGroupExpanded(int groupPosition) {
         super.onGroupExpanded(groupPosition);
+
+        if (lastExpandedPosition != -1 && groupPosition != lastExpandedPosition) {
+            expandableListView.collapseGroup(lastExpandedPosition);
+        }
+        lastExpandedPosition = groupPosition;
     }
 
     @Override
@@ -148,13 +194,13 @@ public class CountryCityAdapter extends BaseExpandableListAdapter {
     }
 
     @Override
-    public View getGroupView(int groupPosition, boolean isExpanded,
-                             View convertView, ViewGroup parent) {
+    public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.countries, null);
         }
         ((CheckedTextView) convertView).setText(groupItem.get(groupPosition));
         ((CheckedTextView) convertView).setChecked(isExpanded);
+
         return convertView;
     }
 
@@ -256,5 +302,16 @@ public class CountryCityAdapter extends BaseExpandableListAdapter {
                 Toast.makeText(activity, aux, Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    public int listUserInterests(ArrayList interests, int idUser) {
+        for(int i=0; i<interests.size(); i++) {
+            ArrayList<UserInterest> a = (ArrayList<UserInterest>) interests.get(i);
+            for(int j=0; j<a.size(); j++) {
+                if (a.get(j).getIdUser() == idUser)
+                    return i;
+            }
+        }
+        return  -1;
     }
 }

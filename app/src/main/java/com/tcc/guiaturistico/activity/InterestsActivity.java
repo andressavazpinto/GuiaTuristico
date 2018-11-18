@@ -1,13 +1,17 @@
 package com.tcc.guiaturistico.activity;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatCheckBox;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -45,7 +49,7 @@ public class InterestsActivity extends AppCompatActivity {
     private DBController crud;
     private static final String TAG = "InterestsActivity";
     private ArrayList<Interest> interests, selectedInterests;
-    private LinearLayout linearLayout;
+    private LinearLayout linearLayoutVertical, linearLayoutHorizontal, linearImage;
     private ProgressBar spinner;
     private TextView textViewCheckInterests;
     private Boolean hasInterests;
@@ -59,7 +63,9 @@ public class InterestsActivity extends AppCompatActivity {
 
         getSupportActionBar().setTitle(getString(R.string.interests));
 
-        linearLayout = findViewById(R.id.linearCheck);
+        linearLayoutHorizontal = findViewById(R.id.linearCheckHorizontal);
+        linearLayoutVertical = linearLayoutHorizontal.findViewById(R.id.linearCheckVertical);
+        linearImage = linearLayoutHorizontal.findViewById(R.id.linearImage);
 
         spinner = findViewById(R.id.progressBar);
         textViewCheckInterests = findViewById(R.id.textViewCheckInterests);
@@ -91,6 +97,7 @@ public class InterestsActivity extends AppCompatActivity {
             int i=0;
             do {
                 final int j = i;
+
                 CheckBox checkBox = new CheckBox(this);
                 checkBox.setTextColor(getResources().getColor(R.color.textItem));
                 checkBox.setTextSize(16);
@@ -98,7 +105,29 @@ public class InterestsActivity extends AppCompatActivity {
                 checkBox.setId(interests.get(j).getIdInterest());
                 checkBox.setPadding(16,16,16,16);
 
-                linearLayout.addView(checkBox);
+                View view  = View.inflate(this, R.layout.interest, null);
+                ImageView iv = view.findViewById(R.id.imageView);
+
+                if(interests.get(j).getName().equals("Arte"))
+                    iv.setImageDrawable(getDrawable(R.drawable.ic_art));
+                else if(interests.get(j).getName().equals("Culinária"))
+                    iv.setImageDrawable(getDrawable(R.drawable.ic_cooking));
+                else if(interests.get(j).getName().equals("Cultura"))
+                    iv.setImageDrawable(getDrawable(R.drawable.ic_culture));
+                else if(interests.get(j).getName().equals("Economia"))
+                    iv.setImageDrawable(getDrawable(R.drawable.ic_economy));
+                else if(interests.get(j).getName().equals("Esporte"))
+                    iv.setImageDrawable(getDrawable(R.drawable.ic_sport));
+                else if(interests.get(j).getName().equals("Estilo"))
+                    iv.setImageDrawable(getDrawable(R.drawable.ic_style));
+                else if(interests.get(j).getName().equals("Idioma"))
+                    iv.setImageDrawable(getDrawable(R.drawable.ic_language));
+                else if(interests.get(j).getName().equals("Tecnologia"))
+                    iv.setImageDrawable(getDrawable(R.drawable.ic_tecnology));
+
+                linearLayoutVertical.addView(checkBox);
+                linearImage.addView(view);
+
                 checkBoxInterest[i] = checkBox;
                 i++;
             } while(i<interests.size());
@@ -107,7 +136,7 @@ public class InterestsActivity extends AppCompatActivity {
         readUserInterests();
 
         textViewCheckInterests.setVisibility(View.VISIBLE);
-        linearLayout.setVisibility(View.VISIBLE);
+        linearLayoutHorizontal.setVisibility(View.VISIBLE);
         buttonSave.setVisibility(View.VISIBLE);
         spinner.setVisibility(View.GONE);
     }

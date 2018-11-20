@@ -208,7 +208,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         }
 
         intent.putExtra("name", u.getName());
-        intent.putExtra("localization", loc.getCity() + ", " + loc.getUf());
+        intent.putExtra("localization", loc.getCity() + ", " + loc.getArea());
         intent.putExtra("score", u.getScoreS());
         intent.putExtra("scoreDouble", u.getScore());
         startActivity(intent);
@@ -290,7 +290,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 } catch (Exception e) {
                     e.getMessage();
                 }
-                setLocalizationDescription(localization.getCity() + ", " + localization.getUf());
+                setLocalizationDescription(localization.getCity() + ", " + localization.getArea());
             }
         }
     }
@@ -325,7 +325,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             } catch (Exception e) {
                 e.getMessage();
             }
-            setLocalizationDescription(localization.getCity() + ", " + localization.getUf());
+            setLocalizationDescription(localization.getCity() + ", " + localization.getArea());
         }
         startLocationUpdate();
     }
@@ -348,7 +348,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         } catch (Exception e) {
             e.getMessage();
         }
-        setLocalizationDescription(localization.getCity() + ", " + localization.getUf());
+        setLocalizationDescription(localization.getCity() + ", " + localization.getArea());
     }
 
     public void callAccessLocation(View view) {
@@ -386,7 +386,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         l.setLatitude(a.getLatitude());
         l.setLongitude(a.getLongitude());
         l.setCity(a.getLocality());
-        l.setUf(a.getAdminArea());
+        l.setArea(a.getAdminArea());
         l.setCountry(a.getCountryName());
         return l;
     }

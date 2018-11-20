@@ -3,17 +3,17 @@ package model;
 public class Localization {
     private int idLocalization;
     private double latitude, longitude;
-    private String city, uf, country;
+    private String city, area, country;
 
     public Localization() {
     }
 
-    public Localization(int idLocalization, double latitude, double longitude, String city, String uf, String country) {
+    public Localization(int idLocalization, double latitude, double longitude, String city, String area, String country) {
         this.idLocalization = idLocalization;
         this.latitude = latitude;
         this.longitude = longitude;
         this.city = city;
-        this.uf = uf;
+        this.area = area;
         this.country = country;
     }
 
@@ -49,12 +49,12 @@ public class Localization {
         this.city = city;
     }
 
-    public String getUf() {
-        return uf;
+    public String getArea() {
+        return area;
     }
 
-    public void setUf(String uf) {
-        this.uf = uf;
+    public void setArea(String area) {
+        this.area = area;
     }
 
     public String getCountry() {
@@ -72,7 +72,7 @@ public class Localization {
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +
                 ", city='" + city + '\'' +
-                ", uf='" + uf + '\'' +
+                ", area='" + area + '\'' +
                 ", country='" + country + '\'' +
                 '}';
     }

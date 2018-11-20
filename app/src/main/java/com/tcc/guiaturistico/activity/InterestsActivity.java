@@ -1,13 +1,10 @@
 package com.tcc.guiaturistico.activity;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.AppCompatCheckBox;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -108,6 +105,8 @@ public class InterestsActivity extends AppCompatActivity {
                 View view  = View.inflate(this, R.layout.interest, null);
                 ImageView iv = view.findViewById(R.id.imageView);
 
+                linearLayoutVertical.addView(checkBox);
+
                 if(interests.get(j).getName().equals("Arte"))
                     iv.setImageDrawable(getDrawable(R.drawable.ic_art));
                 else if(interests.get(j).getName().equals("Culinária"))
@@ -125,7 +124,6 @@ public class InterestsActivity extends AppCompatActivity {
                 else if(interests.get(j).getName().equals("Tecnologia"))
                     iv.setImageDrawable(getDrawable(R.drawable.ic_tecnology));
 
-                linearLayoutVertical.addView(checkBox);
                 linearImage.addView(view);
 
                 checkBoxInterest[i] = checkBox;
@@ -236,7 +234,7 @@ public class InterestsActivity extends AppCompatActivity {
     public void openHome(Localization loc){
         Intent intent = new Intent(this, HomeActivity.class);
         intent.putExtra("name", crud.getUser().getName());
-        intent.putExtra("localization", loc.getCity() + ", " + loc.getUf());
+        intent.putExtra("localization", loc.getCity() + ", " + loc.getArea());
         Log.i(TAG, "Score: "+crud.getUser().getScoreS());
         intent.putExtra("score", crud.getUser().getScoreS());
         startActivity(intent);

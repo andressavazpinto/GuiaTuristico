@@ -171,7 +171,7 @@ public class SplashActivity extends Activity implements Runnable {
         }
 
         intent.putExtra("name", u.getName());
-        intent.putExtra("localization", loc.getCity() + ", " + loc.getUf());
+        intent.putExtra("localization", loc.getCity() + ", " + loc.getArea());
         intent.putExtra("score", u.getScoreS());
         startActivity(intent);
         finish();

@@ -145,7 +145,7 @@ public class FoundGuideFragment extends Fragment {
             setStatusSearch(search1);
             setStatusSearch(search2);
 
-            if (crud.getStatusSearch() != null)
+            if (statusSearch != null)
                 try{crud.updateStatusSearch(search1.getStatus().toString());} catch(Exception e){Log.i(TAG, e.getMessage());}
             else
                 try{crud.insertStatusSearch(search1.getStatus().toString());} catch(Exception e){Log.i(TAG, e.getMessage());}
@@ -405,7 +405,7 @@ public class FoundGuideFragment extends Fragment {
                     if(activity != null) {
                         textViewName.setText(userAux.getName());
                         textViewName.setVisibility(View.VISIBLE);
-                        textViewCurrently.setText(getString(R.string.currently) + " " + loc.getCity() + ", " + loc.getUf());
+                        textViewCurrently.setText(getString(R.string.currently) + " " + loc.getCity() + ", " + loc.getCountry());
                         textViewCurrently.setVisibility(View.VISIBLE);
                     }
 

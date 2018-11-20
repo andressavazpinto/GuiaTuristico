@@ -44,7 +44,8 @@
                     android:id="@+id/linearImage"
                     android:layout_width="match_parent"
                     android:orientation="vertical"
-                    android:layout_height="match_parent">
+                    android:layout_gravity="center_vertical"
+                    android:layout_height="wrap_content">
                 </LinearLayout>
 
             </LinearLayout>
@@ -55,7 +56,7 @@
                 android:background="@drawable/selector_button"
                 android:text="@string/save"
                 style="@style/patternButton"
-                android:layout_marginTop="50dp"
+                android:layout_marginTop="40dp"
                 android:layout_marginBottom="10dp"
                 android:visibility="gone"
                 android:layout_gravity="end"/>

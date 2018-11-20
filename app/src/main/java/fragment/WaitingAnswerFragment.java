@@ -332,7 +332,7 @@ public class WaitingAnswerFragment extends Fragment {
                     Localization loc = response.body();
                     if(getActivity() != null) {
                         textViewName.setText(userAux.getName());
-                        textViewCurrently.setText(getString(R.string.currently) + " " + loc.getCity() + ", " + loc.getUf());
+                        textViewCurrently.setText(getString(R.string.currently) + " " + loc.getCity() + ", " + loc.getCountry());
                     }
 
                     String aux = userAux.getScoreS();

@@ -17,9 +17,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -28,7 +26,6 @@ import android.widget.EditText;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -131,14 +128,7 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
                     hideSoftKeyboard();
                 }
 
-                int validate = validateFields();
-                if(validate == 1) {
-                    spinner.setVisibility(View.VISIBLE);
-                    registerLocalization();
-                }
-                else if(validate == -1) {
-                    Toast.makeText(getApplicationContext(), getString(R.string.checkFields), Toast.LENGTH_SHORT).show();
-                }
+                validateFields();
             }
         });
     }
@@ -361,7 +351,7 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
         startActivity(intent);
     }
 
-    public int validateFields() {
+    public void validateFields() {
         int aux = 1;
         Age age = new Age();
         String dateOfBirth = editTextDateOfBirth.getText().toString();
@@ -373,7 +363,7 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
         else
             editTextName.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_line_success));
 
-        if(editTextDateOfBirth.getText().length() == 0) {// | !age.validateDate(dateOfBirth)){
+        if(editTextDateOfBirth.getText().length() == 0) {
             editTextDateOfBirth.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_line_error));
             aux = -1;
         }
@@ -396,7 +386,7 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
         else
             editTextLocalization.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_line_success));
 
-        if(editTextUserEmail.getText().length() == 0 | !editTextUserEmail.getText().toString().contains("@")){
+        if(editTextUserEmail.getText().length() == 0 | ! editTextUserEmail.getText().toString().contains("@")){
             editTextUserEmail.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_line_error));
             aux = -1;
         }
@@ -410,7 +400,8 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
         else
             editTextPassword.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_line_success));
 
-        return aux;
+        //
+        checkEmail(editTextUserEmail.getText().toString(), aux);
     }
 
     private synchronized void callConnection() {
@@ -453,7 +444,7 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
                 } catch (Exception e) {
                     e.getMessage();
                 }
-                String aux = localization.getCity() + ", " + localization.getUf();
+                String aux = localization.getCity() + ", " + localization.getArea();
                 editTextLocalization.setText(aux);
             }
         }
@@ -489,7 +480,7 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
             } catch (Exception e) {
                 e.getMessage();
             }
-            String aux = localization.getCity() + ", " + localization.getUf();
+            String aux = localization.getCity() + ", " + localization.getArea();
             editTextLocalization.setText(aux);
         }
         startLocationUpdate();
@@ -513,7 +504,7 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
         } catch (Exception e) {
             e.getMessage();
         }
-        String aux = localization.getCity() + ", " + localization.getUf();
+        String aux = localization.getCity() + ", " + localization.getArea();
         editTextLocalization.setText(aux);
     }
 
@@ -552,7 +543,7 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
         l.setLatitude(a.getLatitude());
         l.setLongitude(a.getLongitude());
         l.setCity(a.getLocality());
-        l.setUf(a.getAdminArea());
+        l.setArea(a.getAdminArea());
         l.setCountry(a.getCountryName());
         return l;
     }
@@ -592,5 +583,55 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
                 }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    public void checkEmail(String email, final int validate) {
+        final boolean[] aux = {false};
+
+        Gson g = new GsonBuilder()
+                .setLenient()
+                .create();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(UserService.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create(g))
+                .build();
+
+        UserService service = retrofit.create(UserService.class);
+
+        Call<Boolean> requestUser = service.checkEmail(email);
+
+        requestUser.enqueue(new Callback<Boolean>() {
+            @Override
+            public void onResponse(@NonNull Call<Boolean> call, @NonNull Response<Boolean> response) {
+                if (response.isSuccessful())
+                    aux[0] = response.body();
+                    if(aux[0]) {
+                        if(validate == -1)
+                            Toast.makeText(getApplicationContext(), getString(R.string.checkFields), Toast.LENGTH_SHORT).show();
+                        else if(validate == 0)
+                            System.out.print("nada");
+                        else
+                            Toast.makeText(getApplicationContext(), getText(R.string.emailExist), Toast.LENGTH_SHORT).show();
+
+                        editTextUserEmail.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.shape_line_error));
+                    }
+                    else {
+                        if(validate == -1)
+                            Toast.makeText(getApplicationContext(), getString(R.string.checkFields), Toast.LENGTH_SHORT).show();
+                        else if (validate == 1) {
+                            spinner.setVisibility(View.VISIBLE);
+                            registerLocalization();
+                        }
+                    }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Boolean> call, @NonNull Throwable t) {
+                String aux = "Erro: " + t.getMessage();
+                Log.e(TAG, aux);
+                Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }

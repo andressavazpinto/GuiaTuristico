@@ -2,9 +2,12 @@ package model;
 
 import com.google.firebase.database.Exclude;
 
+import org.joda.time.DateTimeZone;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 
 public class Message {
     private int idMessage, idUser;
@@ -21,7 +24,6 @@ public class Message {
         this.content = content;
         this.translation = translation;
         this.type = type;
-        dateTime = new Date().getTime();
     }
 
     public int getIdMessage() {
@@ -66,6 +68,13 @@ public class Message {
 
     public void setDateTime(long dateTime) {
         this.dateTime = dateTime;
+    }
+
+    public void setDateTime() {
+        final String TIME_ZONE = "America/Sao_Paulo";
+        TimeZone.setDefault(TimeZone.getTimeZone(TIME_ZONE));
+        DateTimeZone.setDefault(DateTimeZone.forID(TIME_ZONE));
+        dateTime = new Date().getTime();
     }
 
     @Exclude

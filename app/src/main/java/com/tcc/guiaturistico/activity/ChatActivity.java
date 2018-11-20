@@ -136,8 +136,8 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
         } catch(Exception e) {
             e.printStackTrace();
         }
+
         crud = new DBController(this);
-        //idChat = crud.getChat();
         s = crud.getStatusSearch();
         u = crud.getUser();
 
@@ -152,7 +152,6 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
             getMessages(idChat);
         }
 
-        //setTranslate();
         list = new ArrayList<Message>();
 
         readConnectGuides(u.getIdUser());
@@ -454,7 +453,6 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
             Translate t = new Translate();
 
             Log.d(TAG, "Dados do u: " + u.getIdUser() + u.getLanguage());
-            //t.setTarget(u.getLanguage());
             t.setTarget(user2.getLanguage());
             t.setQ(text);
             detect(t);
@@ -462,6 +460,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void sendMessage(Message m) {
+        m.setDateTime();
         DatabaseReference myRef = database.getReference();
         String key = myRef.child("messages").push().getKey();
         Map<String, Object> postValues = m.toMap();

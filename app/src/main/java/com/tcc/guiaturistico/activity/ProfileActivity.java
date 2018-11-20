@@ -45,6 +45,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import service.TranslationService;
 import service.UserService;
 import util.DBController;
+import util.StatusUser;
 
 /**
  * Created by Andressa on 07/06/2018.
@@ -225,8 +226,9 @@ public class ProfileActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
                 }
                 else if(response.isSuccessful()) {
-                    User us = response.body();
-                    crud.updateUser(us);
+                    //User us = response.body();
+                    u.setStatusAccount(Enum.valueOf(StatusUser.class, "Active"));
+                    crud.updateUser(u);
                     Toast.makeText(getApplicationContext(), getString(R.string.saveProfile), Toast.LENGTH_SHORT).show();
                     finish();
                 }

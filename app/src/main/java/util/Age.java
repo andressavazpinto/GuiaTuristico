@@ -47,6 +47,12 @@ public class Age {
         try {
             df.parse(date);
             aux = true;
+
+            String array[];
+            array = date.split("/");
+            Calendar today = Calendar.getInstance();
+            if(Integer.parseInt(array[2]) > today.get(Calendar.YEAR) | Integer.parseInt(array[1]) > 12)
+                aux = false;
         } catch (ParseException ex) {
             aux = false;
         }

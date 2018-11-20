@@ -33,7 +33,7 @@ public interface UserService {
     @POST("users/score/{id}")
     Call<Void> updateScore(@Path("id") int idUser, @Body Grade grade);
 
-    @GET("users/email/{email}")
+    @GET("users/check/{email}")
     Call<Boolean> checkEmail(@Path("email") String email);
 
     @GET("users/pass/{email}")

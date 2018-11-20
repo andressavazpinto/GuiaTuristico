@@ -369,7 +369,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 } catch (Exception e) {
                     e.getMessage();
                 }
-                String aux = localization.getCity() + ", " + localization.getUf();
+                String aux = localization.getCity() + ", " + localization.getArea();
                 localizationNavHeader.setText(aux);
             }
         }
@@ -404,7 +404,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             } catch (Exception e) {
                 e.getMessage();
             }
-            String aux = localization.getCity() + ", " + localization.getUf();
+            String aux = localization.getCity() + ", " + localization.getArea();
             localizationNavHeader.setText(aux);
         }
         startLocationUpdate();
@@ -428,7 +428,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         } catch (Exception e) {
             e.getMessage();
         }
-        String aux = localization.getCity() + ", " + localization.getUf();
+        String aux = localization.getCity() + ", " + localization.getArea();
         localizationNavHeader.setText(aux);
         updateLocalization(localization);
     }
@@ -450,7 +450,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         l.setLatitude(a.getLatitude());
         l.setLongitude(a.getLongitude());
         l.setCity(a.getLocality());
-        l.setUf(a.getAdminArea());
+        l.setArea(a.getAdminArea());
         l.setCountry(a.getCountryName());
         return l;
     }

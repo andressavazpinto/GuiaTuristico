@@ -363,7 +363,7 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
         else
             editTextName.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_line_success));
 
-        if(editTextDateOfBirth.getText().length() == 0) {
+        if(dateOfBirth.length() == 0) {
             editTextDateOfBirth.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_line_error));
             aux = -1;
         }
@@ -400,7 +400,6 @@ public class RegisterActivity extends AppCompatActivity implements GoogleApiClie
         else
             editTextPassword.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_line_success));
 
-        //
         checkEmail(editTextUserEmail.getText().toString(), aux);
     }
 

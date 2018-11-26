@@ -44,7 +44,9 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import service.TranslationService;
 import service.UserService;
+import util.Age;
 import util.DBController;
+import util.MaskDate;
 import util.StatusUser;
 
 /**
@@ -95,16 +97,14 @@ public class ProfileActivity extends AppCompatActivity {
 
         editTextName = findViewById(R.id.editTextName);
         editTextDateOfBirth = findViewById(R.id.editTextDateOfBirth);
+        editTextDateOfBirth.addTextChangedListener(MaskDate.insert(MaskDate.FORMAT_DATE, editTextDateOfBirth));
         editTextUserEmail = findViewById(R.id.editTextUserEmail);
         editTextPassword = findViewById(R.id.editTextPassword);
 
         editTextPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    if(validateFields()) {
-                        spinner.setVisibility(View.VISIBLE);
-                        update();
-                    }
+                    validateFields();
                 }
                 return false;
             }
@@ -119,10 +119,8 @@ public class ProfileActivity extends AppCompatActivity {
                 if (imm.isActive()) {
                     hideSoftKeyboard();
                 }
-                if(validateFields()) {
-                    spinner.setVisibility(View.VISIBLE);
-                    update();
-                }
+
+                validateFields();
             }
         });
     }
@@ -165,7 +163,6 @@ public class ProfileActivity extends AppCompatActivity {
                     Log.i(TAG, "Erro: " + response.code());
                 else {
                     u = response.body();
-                    System.out.println(response.body().toString());
 
                     editTextName.setText(u.getName());
 
@@ -189,6 +186,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     public void update() {
+        spinner.setVisibility(View.VISIBLE);
         Gson g = new GsonBuilder().registerTypeAdapter(User.class, new UserDeserializer())
                 .setLenient()
                 .create();
@@ -211,7 +209,12 @@ public class ProfileActivity extends AppCompatActivity {
         u.setDateOfBirth(aux);
 
         u.setEmail(editTextUserEmail.getText().toString());
-        u.setPassword(editTextPassword.getText().toString());
+
+        if(editTextPassword.getText().length() == 0)
+            u.setPassword(user.getPassword());
+        else
+            u.setPassword(editTextPassword.getText().toString());
+
         u.setLanguage(language);
 
         Call<User> requestUser = service.update(u);
@@ -226,7 +229,6 @@ public class ProfileActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
                 }
                 else if(response.isSuccessful()) {
-                    //User us = response.body();
                     u.setStatusAccount(Enum.valueOf(StatusUser.class, "Active"));
                     crud.updateUser(u);
                     Toast.makeText(getApplicationContext(), getString(R.string.saveProfile), Toast.LENGTH_SHORT).show();
@@ -244,30 +246,45 @@ public class ProfileActivity extends AppCompatActivity {
         spinner.setVisibility(View.GONE);
     }
 
-    public boolean validateFields() {
-        Boolean aux = true;
+    public void validateFields() {
+        spinner.setVisibility(View.VISIBLE);
+        int aux = 1;
+        String email = editTextUserEmail.getText().toString();
+        Age age = new Age();
+        String dateOfBirth = editTextDateOfBirth.getText().toString();
+
         if(editTextName.getText().length() == 0){
             editTextName.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_line_error));
-            aux = false;
+            aux = -1;
         }
         else
-            editTextUserEmail.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_line_success));
+            editTextName.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_line_success));
 
-        if(editTextDateOfBirth.getText().length() == 0){
+        if(dateOfBirth.length() == 0) {
             editTextDateOfBirth.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_line_error));
-            aux = false;
+            aux = -1;
+        }
+        else if(!age.validateDate(dateOfBirth)){
+            editTextDateOfBirth.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_line_error));
+            aux = -1;
+        }
+        else if(age.calculaIdade(dateOfBirth,"dd-MM-yyyy") < 18) {
+            editTextDateOfBirth.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_line_error));
+            aux = 0;
+            Toast.makeText(this, getText(R.string.age18), Toast.LENGTH_SHORT).show();
         }
         else
             editTextDateOfBirth.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_line_success));
 
-        if(editTextUserEmail.getText().length() == 0 | !editTextUserEmail.getText().toString().contains("@")){
+
+        if(email.length() == 0 | !email.contains("@")){
             editTextUserEmail.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_line_error));
-            aux = false;
+            aux = -1;
         }
         else
             editTextUserEmail.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_line_success));
 
-        return aux;
+        checkEmail(email, aux);
     }
 
     public boolean isServicesOK() {
@@ -350,6 +367,59 @@ public class ProfileActivity extends AppCompatActivity {
             public void onFailure(@NonNull Call<JsonObject> call, @NonNull Throwable t) {
                 String aux = " Erro: " + t.getMessage();
                 Log.e(TAG, aux);
+            }
+        });
+    }
+
+    public void checkEmail(final String email, final int validate) {
+        final boolean[] aux = {false};
+
+        Gson g = new GsonBuilder()
+                .setLenient()
+                .create();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(UserService.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create(g))
+                .build();
+
+        UserService service = retrofit.create(UserService.class);
+
+        Call<Boolean> requestUser = service.checkEmail(email);
+
+        requestUser.enqueue(new Callback<Boolean>() {
+            @Override
+            public void onResponse(@NonNull Call<Boolean> call, @NonNull Response<Boolean> response) {
+                if (response.isSuccessful())
+                    aux[0] = response.body();
+
+                if(aux[0]) {
+                    if(email.equals(user.getEmail()))
+                        System.out.print("email dele mesmo, então não faz nada");
+                    else {
+                        editTextUserEmail.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.shape_line_error));
+                        Toast.makeText(getApplicationContext(), getText(R.string.emailExist), Toast.LENGTH_SHORT).show();
+                    }
+
+                    if(validate == -1)
+                        Toast.makeText(getApplicationContext(), getString(R.string.checkFields), Toast.LENGTH_SHORT).show();
+                    else if (email.equals(user.getEmail()) && validate == 1)
+                        update();
+                }
+                else {
+                    if(validate == -1)
+                        Toast.makeText(getApplicationContext(), getString(R.string.checkFields), Toast.LENGTH_SHORT).show();
+                    else if (validate == 1)
+                        update();
+                }
+                spinner.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Boolean> call, @NonNull Throwable t) {
+                String aux = "Erro: " + t.getMessage();
+                Log.e(TAG, aux);
+                Toast.makeText(getApplicationContext(), aux, Toast.LENGTH_LONG).show();
             }
         });
     }

@@ -144,5 +144,5 @@
     <string name="emailOrPass">E-mail or password incorrect(s)</string>
     <string name="disconnected">Your guide left the chat</string>
     <string name="age18">Whoops, you\'re not old enough to use the app ...</string>
-    <string name="emailExist">Whoops, already has a registration with this email, please login</string>
+    <string name="emailExist">Whoops, already has a registration with this email</string>
 </resources>

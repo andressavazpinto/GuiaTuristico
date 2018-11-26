@@ -44,6 +44,7 @@ public class SplashActivity extends Activity implements Runnable {
 
         crud = new DBController(this);
         u = crud.getUser();
+        Log.d(TAG, "user " + u.toString());
 
         Handler splashScreen = new Handler();
         splashScreen.postDelayed(SplashActivity.this, 2800);
@@ -74,8 +75,8 @@ public class SplashActivity extends Activity implements Runnable {
 
         UserService service = retrofit.create(UserService.class);
 
-        u.setEmail(email);
-        u.setPassword(password);
+        //u.setEmail(email);
+        //u.setPassword(password);
 
         Call<User> requestUser = service.login(u);
 

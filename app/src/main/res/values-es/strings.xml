@@ -144,5 +144,5 @@
     <string name="emailOrPass">E-mail o contraseña incorrecto(s)</string>
     <string name="disconnected">Su guía abandonó la conversación</string>
     <string name="age18">Ops, no tienes edad suficiente para utilizar la aplicación ...</string>
-    <string name="emailExist">Ops, ya existe un registro con este email, inicie sesión</string>
+    <string name="emailExist">Ops, ya existe un registro con este email</string>
 </resources>

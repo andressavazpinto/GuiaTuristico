@@ -90,7 +90,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         editTextPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    login();
+                    String email = editTextUserEmail.getText().toString();
+                    String pass = editTextPassword.getText().toString();
+                    login(email, pass);
                 }
                 return false;
             }
@@ -106,8 +108,11 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 if (imm.isActive())
                     hideSoftKeyboard();
 
-                if(validateFields())
-                    login();
+                if(validateFields()) {
+                    String email = editTextUserEmail.getText().toString();
+                    String pass = editTextPassword.getText().toString();
+                    login(email, pass);
+                }
                 else
                     spinner.setVisibility(View.GONE);
             }
@@ -138,7 +143,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         return localizationDescription;
     }
 
-    public void login() {
+    public void login(String email, String pass) {
         Gson g = new GsonBuilder().registerTypeAdapter(User.class, new UserDeserializer())
                 .setLenient()
                 .create();
@@ -150,8 +155,11 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
         UserService service = retrofit.create(UserService.class);
 
-        u.setEmail(editTextUserEmail.getText().toString());
-        u.setPassword(editTextPassword.getText().toString());
+        if(u == null)
+            u = new User();
+
+        u.setEmail(email);
+        u.setPassword(pass);
 
         Call<User> requestUser = service.login(u);
 

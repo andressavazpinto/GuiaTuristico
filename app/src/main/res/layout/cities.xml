@@ -35,26 +35,25 @@
             <LinearLayout
                 android:id="@+id/linearScore"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/textViewScore"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
                     android:textSize="13sp" />
 
                 <ImageView
                     android:id="@+id/imageViewStar"
-                    android:layout_width="0dp"
+                    android:layout_width="13dp"
                     android:layout_height="13dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="@dimen/paddingBalaoDirTop"
-                    android:layout_weight="1"
-                    android:visibility="visible"
-                    app:srcCompat="@drawable/ic_star_fragment" />
+                    android:visibility="gone"
+                    android:src="@drawable/ic_star_fragment" />
             </LinearLayout>
 
         </LinearLayout>

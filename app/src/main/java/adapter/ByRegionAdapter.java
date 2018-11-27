@@ -82,7 +82,9 @@ public class ByRegionAdapter extends BaseExpandableListAdapter {
 
         tempChild = (ArrayList<SearchByRegion>) Childtem.get(groupPosition);
         int id = listUserInterests(listInterests, tempChild.get(childPosition).getIdUser());
-        tempInterests = (ArrayList<UserInterest>) listInterests.get(id);
+
+        if(id != -1)
+            tempInterests = (ArrayList<UserInterest>) listInterests.get(id);
 
         TextView textViewCity = convertView.findViewById(R.id.textViewCity);
         textViewCity.setText(tempChild.get(childPosition).getCity());
@@ -92,15 +94,12 @@ public class ByRegionAdapter extends BaseExpandableListAdapter {
 
         LinearLayout linearLayout = convertView.findViewById(R.id.linearScore);
         TextView textViewScore = linearLayout.findViewById(R.id.textViewScore);
-        //ImageView star = linearLayout.findViewById(R.id.imageViewStar);
+        ImageView star = linearLayout.findViewById(R.id.imageViewStar);
         String aux = " - " + tempChild.get(childPosition).getScoreS();
         double score = tempChild.get(childPosition).getScore();
         if(score != 0.00) {
-            //star.setVisibility(View.VISIBLE);
+            star.setVisibility(View.VISIBLE);
             textViewScore.setText(aux);
-        }
-        else  {
-            //star.setVisibility(View.GONE);
         }
 
         LinearLayout linearImages = convertView.findViewById(R.id.linearImages);

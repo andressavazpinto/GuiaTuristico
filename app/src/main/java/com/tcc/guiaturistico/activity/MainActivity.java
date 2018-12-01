@@ -4,13 +4,18 @@ package com.tcc.guiaturistico.activity;
  * Created by Andressa on 30/03/2018.
  */
 
+import android.arch.lifecycle.ViewModelProvider;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.tcc.guiaturistico.R;
+
+import model.User;
+import util.DBController;
 
 public class MainActivity extends AppCompatActivity {
 

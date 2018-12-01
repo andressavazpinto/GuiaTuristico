@@ -17,8 +17,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.tcc.guiaturistico.R;
 
-import org.w3c.dom.Text;
-
 import model.Grade;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -35,10 +33,8 @@ public class DialogScore {
     private AppCompatActivity mContext;
     private View mScoreView;
     private double mGrade = 0.1;
-    private Activity activity;
 
-    public DialogScore(AppCompatActivity context, Activity activity){
-        this.activity = activity;
+    public DialogScore(AppCompatActivity context){
         mContext = context;
     }
 
@@ -142,8 +138,8 @@ public class DialogScore {
             public void onClick(View view) {
                 mScoreDialog.dismiss();
 
-                activity.startActivity(new Intent(activity.getApplicationContext(), HomeActivity.class));
-                activity.finish();
+                mContext.startActivity(new Intent(mContext, HomeActivity.class));
+                mContext.finish();
             }
         });
 
@@ -155,8 +151,8 @@ public class DialogScore {
                 sendGrade(idUser, gradeG);
                 mScoreDialog.dismiss();
 
-                activity.startActivity(new Intent(activity.getApplicationContext(), HomeActivity.class));
-                activity.finish();
+                mContext.startActivity(new Intent(mContext, HomeActivity.class));
+                mContext.finish();
             }
         });
 

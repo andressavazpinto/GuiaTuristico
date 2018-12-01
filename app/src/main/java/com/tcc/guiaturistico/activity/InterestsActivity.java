@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -50,6 +51,7 @@ public class InterestsActivity extends AppCompatActivity {
     private ProgressBar spinner;
     private TextView textViewCheckInterests;
     private Boolean hasInterests;
+    private String search;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -57,7 +59,9 @@ public class InterestsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_interests);
 
         crud = new DBController(this);
+        search = crud.getStatusSearch();
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(getString(R.string.interests));
 
         linearLayoutHorizontal = findViewById(R.id.linearCheckHorizontal);
@@ -137,6 +141,17 @@ public class InterestsActivity extends AppCompatActivity {
         linearLayoutHorizontal.setVisibility(View.VISIBLE);
         buttonSave.setVisibility(View.VISIBLE);
         spinner.setVisibility(View.GONE);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) { //botão voltar na ToolBar
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
+            default:break;
+        }
+        return true;
     }
 
     private void listInterests() {
@@ -238,7 +253,8 @@ public class InterestsActivity extends AppCompatActivity {
         Log.i(TAG, "Score: "+crud.getUser().getScoreS());
         intent.putExtra("score", crud.getUser().getScoreS());
         startActivity(intent);
-        finishAffinity();
+        finish();
+        //finishAffinity();
     }
 
     public void selectInterests() {
@@ -384,7 +400,10 @@ public class InterestsActivity extends AppCompatActivity {
             @Override
             public void onResponse(@NonNull Call<Localization> call, @NonNull Response<Localization> response) {
                 if(response.isSuccessful()) {
-                    openHome(response.body());
+                    if(search.equals("Accepted"))
+                        finish();
+                    else
+                        openHome(response.body());
                 }
                 else {
                     Log.i(TAG, "Erro: " + (response.code()));

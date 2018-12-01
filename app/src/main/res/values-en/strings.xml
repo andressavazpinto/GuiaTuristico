@@ -145,4 +145,8 @@
     <string name="disconnected">Your guide left the chat</string>
     <string name="age18">Whoops, you\'re not old enough to use the app ...</string>
     <string name="emailExist">Whoops, already has a registration with this email</string>
+
+    <string name="checkEmail">Check your email</string>
+    <string name="enterEmail">Enter your email</string>
+    <string name="noneEmail">None email found</string>
 </resources>

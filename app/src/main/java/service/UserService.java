@@ -36,9 +36,6 @@ public interface UserService {
     @GET("users/check/{email}")
     Call<Boolean> checkEmail(@Path("email") String email);
 
-    @GET("users/pass/{email}")
-    Call<String> getPass(@Path("email") String email);
-
     @GET("users/score/{id}")
     Call<Double> getScore(@Path("id") int idUser);
 }

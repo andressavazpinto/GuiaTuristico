@@ -2,7 +2,6 @@ package adapter;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
@@ -13,24 +12,27 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.text.format.DateFormat;
 
+import com.google.common.base.Ascii;
 import com.tcc.guiaturistico.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import model.Message;
+import model.User;
 import util.DBController;
 
 public class ChatAdapter extends BaseAdapter {
     private final List<Message> messages;
     private boolean translate;
     private final Activity activity;
-    private DBController crud;
+    private User u;
 
-    public ChatAdapter(List<Message> messages, Boolean translate,  Activity activity, Context context) {
+    public ChatAdapter(List<Message> messages, Boolean translate,  Activity activity, User u) {
         this.messages = messages;
         this.translate = translate;
         this.activity = activity;
-        crud = new DBController(context);
+        this.u = u;
     }
 
     @Override
@@ -55,7 +57,7 @@ public class ChatAdapter extends BaseAdapter {
         @SuppressLint("ViewHolder")
         View view;
 
-        if (message.getIdUser() == crud.getUser().getIdUser())
+        if (message.getIdUser() == u.getIdUser())
             view = activity.getLayoutInflater().inflate(R.layout.balloon_right, parent, false);
         else {
             view = activity.getLayoutInflater().inflate(R.layout.balloon_left, parent, false);
@@ -63,7 +65,15 @@ public class ChatAdapter extends BaseAdapter {
 
             if(translate & message.getTranslation() != null) {
                 textViewTranslation.setVisibility(View.VISIBLE);
-                textViewTranslation.setText(message.getTranslation());
+
+                String change[] = {"&#39;"};
+                String changedTo = message.getTranslation();
+
+                for(String n:change){
+                   changedTo = message.getTranslation().replaceAll(n, "'");
+                }
+
+                textViewTranslation.setText(changedTo);
             }
         }
 

@@ -129,7 +129,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        dialogScore = new DialogScore(this, this);
+        dialogScore = new DialogScore(this);
 
         try {
             FirebaseApp.initializeApp(this);
@@ -244,11 +244,6 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
             public void onClick(View v) {
                 Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 if(takePicture.resolveActivity(getPackageManager()) != null) {
-                    //startActivityForResult(takePicture, TAKE_PICTURE);
-                    fileImage = createFile();
-
-                    Uri photoURI = FileProvider.getUriForFile(getBaseContext(), getBaseContext().getApplicationContext().getPackageName() + ".provider", fileImage);
-                    takePicture.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                     startActivityForResult(takePicture, TAKE_PICTURE);
                 }
             }
@@ -320,11 +315,13 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.nav_logout:
                 //fechar sessão
-                try {crud.deleteUser(crud.getUser());} catch (Exception e) {Log.d(TAG, e.getMessage());}
-                try {crud.deleteChat(crud.getChat());} catch (Exception e) {Log.d(TAG, e.getMessage());}
+                try {crud.deleteUser(u);} catch (Exception e) {Log.d(TAG, e.getMessage());}
+                try {crud.deleteChat(idChat);} catch (Exception e) {Log.d(TAG, e.getMessage());}
                 try {crud.deleteStatusSearch();} catch (Exception e) {e.printStackTrace();}
+
                 startActivity(new Intent(this, MainActivity.class));  //O efeito ao ser pressionado do botão (no caso abre a activity)
-                finishAffinity();
+                //finishAffinity();
+                finish();
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -348,8 +345,6 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.suggestions:
                 break;
-            //case R.id.reportGuide:
-                //break;
             case R.id.leftSession:
                 leftSession(new ChatConnectTO(idChat, connectGuides.getIdConnectGuides(), u.getIdUser(), search2.getIdUser(), Enum.valueOf(StatusChat.class, "Inactive")));
                 break;
@@ -415,7 +410,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
 
     private void listMessages() {
         spinner.setVisibility(View.GONE);
-        final ChatAdapter adapter = new ChatAdapter(list, translate, this, this);
+        final ChatAdapter adapter = new ChatAdapter(list, translate, this, u);
         chat.setAdapter(adapter);
         chat.setStackFromBottom(true);
     }
@@ -491,6 +486,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
             Log.w(TAG, "Encode image: " + encodedImage);
 
             m2.setContent(encodedImage);
+            m2.setTranslation("");
             sendMessage(m2);
         }
         if(requestCode == TAKE_PICTURE && resultCode == RESULT_OK) {
@@ -506,6 +502,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
 
             //sendMessage(suggestion, "String", 1);
             m2.setContent(encodedImage);
+            m2.setTranslation("");
             sendMessage(m2);
         }
         if(requestCode == CAMERA && resultCode == RESULT_OK) {
@@ -522,6 +519,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
 
             //sendMessage(suggestion, "String", 1);
             m2.setContent(encodedImage);
+            m2.setTranslation("");
             sendMessage(m2);
         }
 
@@ -572,8 +570,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
                         JsonElement jo = response.body().get("data").getAsJsonObject().get("translations").getAsJsonArray().get(0);
                         JSONObject detection = new JSONObject(new Gson().toJson(jo));
 
-                        translation = detection.getString("translatedText");
-                        Log.d(TAG, "translation: " + translation);
+                        translation  = detection.getString("translatedText");
 
                         m2.setTranslation(translation);
                         Log.d(TAG, "m2: " + m2.toString());
@@ -667,7 +664,8 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
                         setIdChat(c.getIdChat());
                         Log.d(TAG, "depois de chamar o setIdChat: " + c.getIdChat());
 
-                        try{crud.insertChat(c.getIdChat());} catch(Exception e){Log.i(TAG, e.getMessage());}
+                        //////////////
+                        try{crud.updateChat(c.getIdChat());} catch(Exception e){Log.i(TAG, e.getMessage());}
                     }
                     else {
                         Log.d(TAG, "Chat no read() vazio");

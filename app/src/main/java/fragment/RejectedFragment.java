@@ -16,6 +16,7 @@ import com.tcc.guiaturistico.R;
 
 import model.Search;
 import model.SearchDeserializer;
+import model.User;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -36,7 +37,8 @@ public class RejectedFragment extends Fragment {
         View view = inflater.inflate(R.layout.middle_rejected, v, false);
 
         DBController crud = new DBController(getContext());
-        search1 = new Search(1, Enum.valueOf(StatusSearch.class,"Searching"), crud.getUser().getIdUser());
+        User u = crud.getUser();
+        search1 = new Search(1, Enum.valueOf(StatusSearch.class,"Searching"), u.getIdUser());
 
         setupComponents(view);
         setRetainInstance(true); //preservar a instância do fragment

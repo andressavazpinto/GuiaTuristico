@@ -143,6 +143,10 @@
     <string name="checkFields">Compruebe lo(s) dato(s) de lo(s) campo(s) en rojo</string>
     <string name="emailOrPass">E-mail o contraseña incorrecto(s)</string>
     <string name="disconnected">Su guía abandonó la conversación</string>
-    <string name="age18">Ops, no tienes edad suficiente para utilizar la aplicación ...</string>
+    <string name="age18">Ops, no tienes edad suficiente para utilizar la aplicación …</string>
     <string name="emailExist">Ops, ya existe un registro con este email</string>
+
+    <string name="checkEmail">Mire su email</string>
+    <string name="enterEmail">Introduzca su email</string>
+    <string name="noneEmail">Nigún email encontrado</string>
 </resources>

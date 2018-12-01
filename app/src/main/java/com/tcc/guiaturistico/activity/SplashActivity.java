@@ -75,9 +75,6 @@ public class SplashActivity extends Activity implements Runnable {
 
         UserService service = retrofit.create(UserService.class);
 
-        //u.setEmail(email);
-        //u.setPassword(password);
-
         Call<User> requestUser = service.login(u);
 
         requestUser.enqueue(new Callback<User>() {

@@ -8,6 +8,7 @@ import com.google.android.gms.location.LocationServices;
 import android.Manifest;
 import android.app.Activity;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -122,10 +123,14 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         textForgetPass.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DialogFragment d = new DialogForgotPass();
-                d.show(getFragmentManager(), "esqueceu");
+                getDialog();
             }
         });
+    }
+
+    public void getDialog() {
+        DialogForgotPass d = new DialogForgotPass(this);
+        d.showLayoutDialog();
     }
 
     public void hideSoftKeyboard() {

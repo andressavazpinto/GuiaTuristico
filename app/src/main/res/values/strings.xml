@@ -145,4 +145,8 @@
     <string name="disconnected">Seu guia abandonou a conversa</string>
     <string name="age18">Ops, você não possui idade suficiente para utilizar o aplicativo...</string>
     <string name="emailExist">Ops, já existe um cadastro com este email</string>
+
+    <string name="checkEmail">Verifique seu email</string>
+    <string name="enterEmail">Informe seu email</string>
+    <string name="noneEmail">Nenhum email encontrado</string>
 </resources>

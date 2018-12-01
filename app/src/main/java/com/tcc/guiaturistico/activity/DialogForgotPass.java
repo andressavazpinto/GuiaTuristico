@@ -1,12 +1,13 @@
 package com.tcc.guiaturistico.activity;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.DialogFragment;
-import android.content.DialogInterface;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -20,33 +21,56 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import service.MailService;
 import service.UserService;
 
 /**
  * Created by Andressa on 31/03/2018.
  */
 
-public class DialogForgotPass extends DialogFragment{
+public class DialogForgotPass {
     private static final String TAG = "DialogForgotPass";
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setView(R.layout.dialog_forgotpass)
-                .setTitle(R.string.forgetPass)
-                .setPositiveButton(R.string.send, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                    }
-                })
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                    }
-                });
-        return builder.create();
+    private AlertDialog dialogForgot;
+    private AppCompatActivity context;
+    private EditText editTextEmail;
+
+    public DialogForgotPass(AppCompatActivity context){
+        this.context = context;
     }
 
-    public boolean checkEmail(String email) {
-        final boolean[] aux = {false};
+    public void showLayoutDialog() {
+        View passView = context.getLayoutInflater().inflate(R.layout.dialog_forgotpass, null, false);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setView(passView);
+        dialogForgot = builder.create();
+        dialogForgot.setTitle(R.string.forgetPass);
+
+        LinearLayout linearLayout = passView.findViewById(R.id.linear_texts);
+        LinearLayout linearLayout2 = passView.findViewById(R.id.linear_buttons);
+
+        editTextEmail = linearLayout.findViewById(R.id.editTextUserEmail);
+
+        TextView buttonCancel = linearLayout2.findViewById(R.id.button_cancel);
+        buttonCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialogForgot.dismiss();
+            }
+        });
+
+        TextView buttonSend = linearLayout2.findViewById(R.id.button_send);
+        buttonSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sendPass();
+            }
+        });
+
+        dialogForgot.show();
+    }
+
+    public void checkEmail(final String email) {
 
         Gson g = new GsonBuilder().registerTypeAdapter(User.class, new UserDeserializer())
                 .setLenient()
@@ -64,24 +88,25 @@ public class DialogForgotPass extends DialogFragment{
         requestUser.enqueue(new Callback<Boolean>() {
             @Override
             public void onResponse(@NonNull Call<Boolean> call, @NonNull Response<Boolean> response) {
-                if (response.isSuccessful())
-                    aux[0] = response.body();
+                if (response.isSuccessful()) {
+                    if(response.body())
+                        generatePass(email);
+                    else
+                        Toast.makeText(context, R.string.noneEmail, Toast.LENGTH_LONG).show();
+                }
             }
 
             @Override
             public void onFailure(@NonNull Call<Boolean> call, @NonNull Throwable t) {
                 String aux = "Erro: " + t.getMessage();
                 Log.e(TAG, aux);
-                Toast.makeText(getActivity(), aux, Toast.LENGTH_LONG).show();
+                Toast.makeText(context, aux, Toast.LENGTH_LONG).show();
             }
         });
-        return aux[0];
     }
 
-    public String getPass(String email) {
-        final String[] pass = {""};
-
-        Gson g = new GsonBuilder().registerTypeAdapter(User.class, new UserDeserializer())
+    public void generatePass(String email) {
+        Gson g = new GsonBuilder()
                 .setLenient()
                 .create();
 
@@ -90,27 +115,34 @@ public class DialogForgotPass extends DialogFragment{
                 .addConverterFactory(GsonConverterFactory.create(g))
                 .build();
 
-        UserService service = retrofit.create(UserService.class);
+        MailService service = retrofit.create(MailService.class);
 
-        Call<String> requestUser = service.getPass(email);
+        Call<Void> requestMail = service.generatePass(email);
 
-        requestUser.enqueue(new Callback<String>() {
+        requestMail.enqueue(new Callback<Void>() {
             @Override
-            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                if (response.isSuccessful())
-                    pass[0] = response.body();
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(context, R.string.checkEmail, Toast.LENGTH_LONG).show();
+                    dialogForgot.dismiss();
+                }
             }
 
             @Override
-            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
                 String aux = "Erro: " + t.getMessage();
                 Log.e(TAG, aux);
-                Toast.makeText(getActivity(), aux, Toast.LENGTH_LONG).show();
+                Toast.makeText(context, aux, Toast.LENGTH_LONG).show();
             }
         });
-        return pass[0];
     }
 
-    public void sendPass(String email, String pass) {
+    public void sendPass() {
+        String email = editTextEmail.getText().toString();
+
+        if(email.length() == 0)
+            Toast.makeText(context, R.string.enterEmail, Toast.LENGTH_LONG).show();
+        else
+            checkEmail(email);
     }
 }

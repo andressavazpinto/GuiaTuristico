@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -40,6 +41,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import fragment.RejectedFragment;
 import me.drakeet.materialdialog.MaterialDialog;
 import model.Chat;
 import model.ChatDeserializer;
@@ -79,7 +81,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private ConstraintLayout contentMain;
     private ProgressBar spinner;
     private Timer timer;
-    private boolean first = true;
     private boolean chat = true;
     private User u;
 
@@ -160,11 +161,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         StatusSearch status = (Enum.valueOf(StatusSearch.class, sea.getStatus().toString()));
         String aux = crud.getStatusSearch();
 
-        if(aux != null & aux.equals(status.toString()) & !first) {
-            //não faz nada
-            Log.d(TAG, "Entrou no setMiddle(), aux: " + aux);
-        }
-        else {
             switch (status) {
                 case Accepted:
                     //verifica se o usuário tem chat aberto, se não tiver
@@ -197,8 +193,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 default:
                     layout.setVisibility(View.VISIBLE);
             }
-            first = false;
-        }
+
         spinner.setVisibility(View.GONE);
 
     }
@@ -625,6 +620,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         startActivity(intent);
         finish();
-        finishAffinity();
+        //finishAffinity();
     }
 }

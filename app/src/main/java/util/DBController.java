@@ -32,7 +32,7 @@ public class DBController {
         cv.put("statusAccount", u.getStatusAccount().toString());
 
         db.insert("user", null, cv);
-        db.close();
+        //db.close();
     }
 
     public void insertChat(int idChat) {
@@ -40,7 +40,7 @@ public class DBController {
         cv.put("idChat", idChat);
 
         db.insert("chat", null, cv);
-        db.close();
+        //db.close();
     }
 
     public void insertStatusSearch(String status) {
@@ -49,7 +49,7 @@ public class DBController {
         cv.put("status", status);
 
         db.insert("statusSearch", null, cv);
-        db.close();
+        //db.close();
     }
 
     public void updateUser(User u) {
@@ -63,7 +63,7 @@ public class DBController {
         cv.put("statusAccount", u.getStatusAccount().toString());
 
         db.update("user", cv, "idUser = ?", new String[]{""+u.getIdUser()});
-        db.close();
+        //db.close();
     }
 
     public void updateChat(int idChat) {
@@ -71,7 +71,7 @@ public class DBController {
         cv.put("idChat", idChat);
 
         db.update("chat", cv, "idChat = ?", new String[]{""+idChat});
-        db.close();
+        //db.close();
     }
 
     public void updateStatusSearch(String status) {
@@ -79,8 +79,8 @@ public class DBController {
         cv.put("status", status);
 
         db.update("statusSearch", cv, "idStatusSearch = ?", new String[]{""+1});
-        db.close();
-}
+        //db.close();
+    }
 
     public void deleteUser(User u) {
         db.delete("user", "idUser = " + u.getIdUser(), null);

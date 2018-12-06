@@ -41,7 +41,6 @@ public class ByRegionAdapter extends BaseExpandableListAdapter {
     private static final String TAG = "ByRegionAdapter";
     private ArrayList<String> groupItem;
     private ArrayList<SearchByRegion> tempChild;
-    private ArrayList<UserInterest> tempInterests;
     private ArrayList<Object> Childtem;
     private ArrayList listInterests;
     private LayoutInflater inflater;
@@ -83,9 +82,6 @@ public class ByRegionAdapter extends BaseExpandableListAdapter {
         tempChild = (ArrayList<SearchByRegion>) Childtem.get(groupPosition);
         int id = listUserInterests(listInterests, tempChild.get(childPosition).getIdUser());
 
-        if(id != -1)
-            tempInterests = (ArrayList<UserInterest>) listInterests.get(id);
-
         TextView textViewCity = convertView.findViewById(R.id.textViewCity);
         textViewCity.setText(tempChild.get(childPosition).getCity());
 
@@ -112,27 +108,31 @@ public class ByRegionAdapter extends BaseExpandableListAdapter {
         ImageView language = linearImages.findViewById(R.id.imageViewLanguage);
         ImageView tecnology = linearImages.findViewById(R.id.imageViewTecnology);
 
-        for(int i=0; i<tempInterests.size(); i++) {
-            int j = tempInterests.get(i).getIdInterest();
-            if(j == 1)
-                art.setVisibility(View.VISIBLE);
-            else if(j == 2)
-                cooking.setVisibility(View.VISIBLE);
-            else if(j == 3)
-                culture.setVisibility(View.VISIBLE);
-            else if(j == 4)
-                economy.setVisibility(View.VISIBLE);
-            else if(j == 5)
-                sport.setVisibility(View.VISIBLE);
-            else if(j == 6)
-                style.setVisibility(View.VISIBLE);
-            else if(j == 7)
-                language.setVisibility(View.VISIBLE);
-            else if(j == 8)
-                tecnology.setVisibility(View.VISIBLE);
-        }
+        ArrayList<UserInterest> tempInterests;
+        if(id != -1) {
+            tempInterests = (ArrayList<UserInterest>) listInterests.get(id);
 
-        linearImages.setVisibility(View.VISIBLE);
+            for (int i = 0; i < tempInterests.size(); i++) {
+                int j = tempInterests.get(i).getIdInterest();
+                if (j == 1)
+                    art.setVisibility(View.VISIBLE);
+                else if (j == 2)
+                    cooking.setVisibility(View.VISIBLE);
+                else if (j == 3)
+                    culture.setVisibility(View.VISIBLE);
+                else if (j == 4)
+                    economy.setVisibility(View.VISIBLE);
+                else if (j == 5)
+                    sport.setVisibility(View.VISIBLE);
+                else if (j == 6)
+                    style.setVisibility(View.VISIBLE);
+                else if (j == 7)
+                    language.setVisibility(View.VISIBLE);
+                else if (j == 8)
+                    tecnology.setVisibility(View.VISIBLE);
+            }
+            linearImages.setVisibility(View.VISIBLE);
+        }
 
         ImageView imageViewCircle = convertView.findViewById(R.id.imageCircle);
         if(tempChild.get(childPosition).getStatusSearch() != java.lang.Enum.valueOf(StatusSearch.class, "Searching"))

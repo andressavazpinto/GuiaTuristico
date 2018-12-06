@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +34,7 @@ public class DialogForgotPass {
 
     private AlertDialog dialogForgot;
     private AppCompatActivity context;
+    private ProgressBar spinner;
     private EditText editTextEmail;
 
     public DialogForgotPass(AppCompatActivity context){
@@ -67,6 +69,8 @@ public class DialogForgotPass {
             }
         });
 
+        spinner = passView.findViewById(R.id.progressBar);
+
         dialogForgot.show();
     }
 
@@ -91,8 +95,10 @@ public class DialogForgotPass {
                 if (response.isSuccessful()) {
                     if(response.body())
                         generatePass(email);
-                    else
+                    else {
+                        spinner.setVisibility(View.GONE);
                         Toast.makeText(context, R.string.noneEmail, Toast.LENGTH_LONG).show();
+                    }
                 }
             }
 
@@ -100,6 +106,7 @@ public class DialogForgotPass {
             public void onFailure(@NonNull Call<Boolean> call, @NonNull Throwable t) {
                 String aux = "Erro: " + t.getMessage();
                 Log.e(TAG, aux);
+                spinner.setVisibility(View.GONE);
                 Toast.makeText(context, aux, Toast.LENGTH_LONG).show();
             }
         });
@@ -124,6 +131,7 @@ public class DialogForgotPass {
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 if (response.isSuccessful()) {
                     Toast.makeText(context, R.string.checkEmail, Toast.LENGTH_LONG).show();
+                    spinner.setVisibility(View.GONE);
                     dialogForgot.dismiss();
                 }
             }
@@ -132,6 +140,7 @@ public class DialogForgotPass {
             public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
                 String aux = "Erro: " + t.getMessage();
                 Log.e(TAG, aux);
+                spinner.setVisibility(View.GONE);
                 Toast.makeText(context, aux, Toast.LENGTH_LONG).show();
             }
         });
@@ -142,7 +151,9 @@ public class DialogForgotPass {
 
         if(email.length() == 0)
             Toast.makeText(context, R.string.enterEmail, Toast.LENGTH_LONG).show();
-        else
+        else {
+            spinner.setVisibility(View.VISIBLE);
             checkEmail(email);
+        }
     }
 }

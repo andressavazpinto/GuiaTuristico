@@ -199,7 +199,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void setupComponents() {
-
         spinner = findViewById(R.id.progressBar);
         spinner.setVisibility(View.VISIBLE);
 

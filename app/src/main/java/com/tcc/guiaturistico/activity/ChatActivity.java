@@ -4,6 +4,8 @@
 package com.tcc.guiaturistico.activity;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -20,7 +22,6 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -346,7 +347,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
             case R.id.suggestions:
                 break;
             case R.id.leftSession:
-                leftSession(new ChatConnectTO(idChat, connectGuides.getIdConnectGuides(), u.getIdUser(), search2.getIdUser(), Enum.valueOf(StatusChat.class, "Inactive")));
+                confirmLeftSession();
                 break;
             case R.id.submenu_cooking:
                 break;
@@ -664,7 +665,6 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
                         setIdChat(c.getIdChat());
                         Log.d(TAG, "depois de chamar o setIdChat: " + c.getIdChat());
 
-                        //////////////
                         try{crud.updateChat(c.getIdChat());} catch(Exception e){Log.i(TAG, e.getMessage());}
                     }
                     else {
@@ -717,7 +717,7 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
                     if(connectGuides != null) {
                         Log.d(TAG, "connectGuides: " + response.body());
                         Log.d(TAG, "connectGuides: " + connectGuides.toString());
-                        //first = false;
+
                         if (connectGuides.getIdUser1() != u.getIdUser())
                             getSearch(connectGuides.getIdUser1());
                         else {
@@ -880,5 +880,17 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
                 Log.e(TAG, "Erro: " + t.getMessage());
             }
         });
+    }
+
+    private void confirmLeftSession() {
+        new AlertDialog.Builder(this)
+        .setMessage(getString(R.string.confirmLeftSession))
+        .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface arg0, int arg1) {
+                leftSession(new ChatConnectTO(idChat, connectGuides.getIdConnectGuides(), u.getIdUser(), search2.getIdUser(), Enum.valueOf(StatusChat.class, "Inactive")));
+            }
+        })
+        .setNegativeButton(getString(R.string.no), null)
+        .show();
     }
 }

@@ -149,4 +149,7 @@
     <string name="checkEmail">Check your email</string>
     <string name="enterEmail">Enter your email</string>
     <string name="noneEmail">None email found</string>
+
+    <string name="confirmLeftSession">Are you sure you want to leave the chat?</string>
+    <string name="no">No</string>
 </resources>

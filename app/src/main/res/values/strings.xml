@@ -149,4 +149,7 @@
     <string name="checkEmail">Verifique seu email</string>
     <string name="enterEmail">Informe seu email</string>
     <string name="noneEmail">Nenhum email encontrado</string>
+
+    <string name="confirmLeftSession">Tem certeza que deseja abandonar a conversa?</string>
+    <string name="no">Não</string>
 </resources>
